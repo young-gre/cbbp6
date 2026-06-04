@@ -16,25 +16,27 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);}
 
-/* ── Top Nav ── */
-.topnav{background:linear-gradient(135deg,#183b68 0%,#0f69b4 100%);padding:0 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;min-height:64px;}
-.topnav-brand{color:#fff;}
+.topnav{background:linear-gradient(135deg,#183b68 0%,#0f69b4 100%);padding:0 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0;height:64px;}
+.topnav-brand{color:#fff;cursor:pointer;user-select:none;}
 .topnav-brand h1{font-size:17px;font-weight:800;letter-spacing:-.02em;}
-.topnav-brand p{font-size:11px;opacity:.65;margin-top:2px;}
+.topnav-brand p{font-size:10px;opacity:.55;margin-top:2px;letter-spacing:.06em;}
 .topnav-tabs{display:flex;gap:4px;}
-.topnav-tab{height:40px;padding:0 16px;border-radius:10px;border:none;font-family:inherit;font-size:13px;font-weight:700;color:rgba(255,255,255,.65);background:transparent;cursor:pointer;transition:.2s;white-space:nowrap;}
+.topnav-tab{height:38px;padding:0 16px;border-radius:10px;border:none;font-family:inherit;font-size:13px;font-weight:700;color:rgba(255,255,255,.6);background:transparent;cursor:pointer;transition:.2s;white-space:nowrap;}
 .topnav-tab.active{background:rgba(255,255,255,.18);color:#fff;}
 .topnav-right{display:flex;align-items:center;gap:8px;}
-.admin-btn{height:36px;padding:0 14px;border-radius:10px;border:1px solid rgba(255,255,255,.3);background:transparent;font-family:inherit;font-size:12px;font-weight:700;color:rgba(255,255,255,.8);cursor:pointer;transition:.2s;}
-.admin-btn.active{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.5);}
-.last-upd{font-size:11px;color:rgba(255,255,255,.5);}
+.last-upd{font-size:11px;color:rgba(255,255,255,.45);}
 
-/* ── Page ── */
 .page{max-width:1440px;margin:0 auto;padding:20px 24px;}
 .section{display:none;}
 .section.active{display:block;}
 
-/* ── Upload Panel ── */
+.sec-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.sec-title{font-size:17px;font-weight:800;color:var(--blue-dark);}
+.sec-sub{font-size:12px;color:var(--text-sub);margin-top:3px;}
+.type-tabs{display:flex;gap:5px;}
+.type-tab{height:34px;padding:0 14px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:12px;font-weight:700;color:#6e8198;background:#fff;cursor:pointer;transition:.18s;}
+.type-tab.active{background:var(--blue-dark);color:#fff;border-color:var(--blue-dark);}
+
 .upload-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px;display:none;}
 .upload-panel.show{display:block;}
 .upload-tabs{display:flex;gap:6px;margin-bottom:14px;}
@@ -43,28 +45,18 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .upload-section{display:none;}
 .upload-section.active{display:block;}
 .paste-hint{font-size:12px;color:var(--text-sub);margin-bottom:8px;}
-.paste-area{width:100%;height:140px;border:1px solid var(--line);border-radius:10px;padding:10px;font-family:monospace;font-size:12px;resize:vertical;outline:none;}
+.paste-area{width:100%;height:130px;border:1px solid var(--line);border-radius:10px;padding:10px;font-family:monospace;font-size:12px;resize:vertical;outline:none;}
 .paste-area:focus{border-color:#8ebce4;box-shadow:0 0 0 3px rgba(15,105,180,.08);}
-.paste-area.tall{height:200px;}
-.apply-btn{margin-top:8px;height:38px;padding:0 16px;border-radius:10px;background:linear-gradient(180deg,#1976c5,#0f69b4);color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.paste-area.tall{height:190px;}
+.apply-btn{margin-top:8px;height:38px;padding:0 16px;border-radius:10px;background:linear-gradient(180deg,#1976c5,#0f69b4);color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 6px 16px rgba(15,105,180,.18);}
 .upload-status{margin-top:8px;font-size:12px;font-weight:700;min-height:16px;}
 
-/* ── Summary cards ── */
 .summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
 @media(max-width:800px){.summary-row{grid-template-columns:repeat(2,1fr);}}
-.scard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);}
+.scard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 18px;box-shadow:var(--shadow);}
 .scard span{font-size:11px;color:var(--text-sub);display:block;margin-bottom:4px;}
-.scard strong{font-size:19px;font-weight:800;color:var(--blue-dark);}
+.scard strong{font-size:20px;font-weight:800;color:var(--blue-dark);}
 
-/* ── Section header ── */
-.sec-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
-.sec-title{font-size:16px;font-weight:800;color:var(--blue-dark);}
-.sec-sub{font-size:12px;color:var(--text-sub);}
-.type-tabs{display:flex;gap:5px;}
-.type-tab{height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--line);font-family:inherit;font-size:12px;font-weight:700;color:#6e8198;background:#f8fbfe;cursor:pointer;transition:.2s;}
-.type-tab.active{background:var(--blue-dark);color:#fff;border-color:var(--blue-dark);}
-
-/* ── Group panels ── */
 .groups-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px;}
 @media(max-width:900px){.groups-grid{grid-template-columns:1fr;}}
 .gpanel{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;}
@@ -72,32 +64,28 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .gpanel-head h3{font-size:16px;font-weight:800;color:var(--blue-dark);}
 .gpanel-head span{font-size:11px;color:var(--text-sub);}
 .gtable{width:100%;border-collapse:collapse;}
-.gtable th{background:#eef5fc;font-size:11px;font-weight:800;color:var(--blue-dark);padding:9px 12px;text-align:center;}
+.gtable th{background:#eef5fc;font-size:11px;font-weight:800;color:var(--blue-dark);padding:9px 12px;text-align:center;letter-spacing:.04em;}
 .gtable td{padding:11px 12px;text-align:center;border-bottom:1px solid #f0f4f8;font-size:12px;font-weight:600;color:#294564;}
 .gtable tr:last-child td{border-bottom:none;}
 .gtable tr.advance td:first-child{border-left:3px solid var(--blue);}
 .gtable tr.advance{background:rgba(15,105,180,.03);}
 
-/* rank */
 .rank{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:11px;font-weight:800;}
 .r1{background:#fef3c7;color:#b45309;}
 .r2{background:#f1f5f9;color:#475569;}
 .r3{background:#fff7ed;color:#92400e;}
 .r4,.r5{background:#f8fafc;color:#94a3b8;}
 
-/* rate bar */
 .rw{display:flex;align-items:center;gap:6px;justify-content:center;}
 .rb{width:70px;height:6px;border-radius:999px;background:#e7eef6;overflow:hidden;flex-shrink:0;}
 .rf{height:100%;border-radius:inherit;background:linear-gradient(90deg,#0f69b4,#4b97d6);transition:.4s;}
 .rv{font-size:12px;font-weight:800;color:var(--blue-dark);min-width:40px;text-align:right;}
 
-/* advance badge */
 .abadge{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;font-size:10px;font-weight:800;}
 .ab-champ{background:#fef3c7;color:#b45309;border:1px solid #fde68a;}
 .ab-premier{background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe;}
 .ab-challenger{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;}
 
-/* ── Promo panel ── */
 .promo-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow);}
 .promo-panel h3{font-size:14px;font-weight:800;color:var(--blue-dark);margin-bottom:12px;}
 .promo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
@@ -115,37 +103,35 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .pitem{font-size:12px;color:#294564;padding:3px 0;border-bottom:1px dashed #e5e7eb;}
 .pitem:last-child{border-bottom:none;}
 
-/* ── Matchup (재고맞수) ── */
 .match-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;}
 @media(max-width:900px){.match-grid{grid-template-columns:1fr;}}
 .match-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);}
-.match-no{font-size:10px;font-weight:800;color:var(--text-sub);letter-spacing:.06em;margin-bottom:6px;}
+.match-no{font-size:10px;font-weight:800;color:var(--text-sub);letter-spacing:.06em;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+.match-prize{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:#fef3c7;border:1px solid #fde68a;color:#b45309;font-size:11px;font-weight:800;}
 .match-body{display:flex;align-items:center;gap:10px;}
 .match-team{flex:1;text-align:center;}
 .match-team .name{font-size:14px;font-weight:800;color:var(--blue-dark);margin-bottom:4px;}
-.match-team .rate{font-size:18px;font-weight:800;}
+.match-team .rate{font-size:22px;font-weight:800;}
 .match-team .shipped{font-size:11px;color:var(--text-sub);margin-top:2px;}
 .match-vs{font-size:12px;font-weight:800;color:var(--text-sub);flex-shrink:0;}
-.match-prize{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:#fef3c7;border:1px solid #fde68a;color:#b45309;font-size:11px;font-weight:800;margin-top:8px;}
 .match-bar{margin-top:10px;}
-.match-bar-wrap{display:flex;height:8px;border-radius:999px;overflow:hidden;background:#e7eef6;}
+.match-bar-wrap{display:flex;height:7px;border-radius:999px;overflow:hidden;background:#e7eef6;}
 .match-bar-l{background:linear-gradient(90deg,#0f69b4,#4b97d6);transition:.4s;}
 .match-bar-r{background:linear-gradient(90deg,#f6851a,#f6ad1a);transition:.4s;}
-.win-badge{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;font-size:10px;font-weight:800;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;margin-left:4px;}
-.lose-badge{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;font-size:10px;font-weight:800;background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;margin-left:4px;}
-.draw-badge{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;font-size:10px;font-weight:800;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;margin-left:4px;}
+.win-badge{display:inline-flex;align-items:center;height:19px;padding:0 7px;border-radius:999px;font-size:9px;font-weight:800;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;margin-left:4px;}
+.lose-badge{display:inline-flex;align-items:center;height:19px;padding:0 7px;border-radius:999px;font-size:9px;font-weight:800;background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;margin-left:4px;}
+.draw-badge{display:inline-flex;align-items:center;height:19px;padding:0 7px;border-radius:999px;font-size:9px;font-weight:800;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;margin-left:4px;}
 
-/* ── Spot campaign ── */
 .spot-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow);}
-.spot-table{width:100%;border-collapse:collapse;margin-top:10px;}
-.spot-table th{background:#eef5fc;font-size:11px;font-weight:800;color:var(--blue-dark);padding:9px 12px;text-align:center;}
+.spot-panel h3{font-size:14px;font-weight:800;color:var(--blue-dark);margin-bottom:12px;}
+.spot-table{width:100%;border-collapse:collapse;}
+.spot-table th{background:#eef5fc;font-size:11px;font-weight:800;color:var(--blue-dark);padding:9px 12px;text-align:center;letter-spacing:.04em;}
 .spot-table td{padding:10px 12px;text-align:center;border-bottom:1px solid #f0f4f8;font-size:12px;font-weight:600;color:#294564;}
 .spot-table tr:last-child td{border-bottom:none;}
 .pass-badge{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;font-size:10px;font-weight:800;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;}
 .fail-badge{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;font-size:10px;font-weight:800;background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;}
 .reward-val{font-size:13px;font-weight:800;color:var(--blue-dark);}
 
-/* ── Password Modal ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(14,27,44,.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:9999;}
 .modal-overlay.show{display:flex;}
 .modal{background:#fff;border-radius:18px;padding:26px;width:min(340px,90vw);box-shadow:0 24px 60px rgba(21,53,84,.18);}
@@ -158,7 +144,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .modal-btns .confirm{background:linear-gradient(180deg,#1976c5,#0f69b4);color:#fff;border-color:transparent;}
 .modal-err{font-size:12px;color:var(--red);min-height:16px;margin-bottom:6px;}
 
-/* ── Toast ── */
 .toast-wrap{position:fixed;top:18px;right:18px;z-index:10000;display:grid;gap:7px;width:min(320px,calc(100vw - 28px));}
 .toast{background:rgba(24,59,104,.96);color:#fff;border-radius:12px;padding:11px 14px;font-size:13px;font-weight:700;animation:tIn .22s ease;}
 .toast.hide{animation:tOut .22s ease forwards;}
@@ -185,7 +170,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
 <!-- Top Nav -->
 <nav class="topnav">
-  <div class="topnav-brand">
+  <div class="topnav-brand" id="brand-logo" onclick="handleLogoClick()" style="cursor:pointer;user-select:none;">
     <h1>충북지역본부 6월 비즈니스플랜</h1>
     <p>HYUNDAI MOTOR · CHUNGBUK REGIONAL HQ · 2026.06</p>
   </div>
@@ -196,7 +181,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   </div>
   <div class="topnav-right">
     <span class="last-upd" id="last-upd">데이터 없음</span>
-    <button class="admin-btn" id="admin-btn" onclick="toggleAdmin()">🔒 관리자</button>
   </div>
 </nav>
 
@@ -254,12 +238,20 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   ══════════════════════════════════════════════ -->
   <div class="section" id="section-inventory">
     <div class="upload-panel" id="upload-inventory">
-      <div class="paste-hint">
-        엑셀 전체 데이터 복사 → 붙여넣기<br/>
-        <span style="color:#94a3b8;font-size:11px;">자동 필터: 계출상태=출고, 상호≠현대자동차(주), 차량구분≠정상재고</span>
+      <div class="upload-tabs">
+        <button class="utab active" id="inv-utab-agency" onclick="switchUpTab('inventory','agency')">대리점 데이터</button>
+        <button class="utab" id="inv-utab-branch" onclick="switchUpTab('inventory','branch')">지점 데이터</button>
       </div>
-      <textarea class="paste-area tall" id="inv-paste" placeholder="엑셀 전체 내용을 여기에 붙여넣기 하세요 (헤더 포함)"></textarea>
-      <button class="apply-btn" onclick="applyInvPaste()">✅ 적용하기</button>
+      <div class="upload-section active" id="inv-up-agency">
+        <div class="paste-hint">엑셀에서 <b>거점명 + 발급가능차종 출고대수</b> 복사 → 붙여넣기</div>
+        <textarea class="paste-area" id="inv-paste-agency" placeholder="가경	12&#10;오창제일	8&#10;서청주	5"></textarea>
+        <button class="apply-btn" onclick="applyInvPaste('agency')">✅ 대리점 적용</button>
+      </div>
+      <div class="upload-section" id="inv-up-branch">
+        <div class="paste-hint">엑셀에서 <b>거점명 + 발급가능차종 출고대수</b> 복사 → 붙여넣기</div>
+        <textarea class="paste-area" id="inv-paste-branch" placeholder="청주남부	18&#10;충주	10&#10;청주서부	7"></textarea>
+        <button class="apply-btn" onclick="applyInvPaste('branch')">✅ 지점 적용</button>
+      </div>
       <div class="upload-status" id="upload-status-inventory"></div>
     </div>
 
@@ -364,6 +356,20 @@ const WC_TARGETS = {
   '교현':80,'연수':84,'음성':65,'단양':44
 };
 
+// 거점 코드 → 거점명 매핑
+const CODE_MAP = {
+  'DG27001':'가경','DG16002':'오창제일','DG22001':'음성','DG21003':'연수',
+  'DG23003':'제천중앙','DG42001':'서청주','G27':'청주서부','G21':'충주',
+  'G42':'청주남부','G16':'청주북부','DG13001':'보은','DG21004':'교현',
+  'DG17001':'증평삼보','G18':'진천','DG23001':'단양','G17':'오창',
+  'G22':'금왕','G11':'청주','G23':'제천','G13':'옥천영동',
+  'DG18001':'진천중앙','DG13003':'영동금강'
+};
+function resolveCode(code) {
+  const c = (code||'').trim();
+  return CODE_MAP[c] || c;
+}
+
 // 재고 맞수 대진
 const INV_MATCHES_AGENCY = [
   {no:'1조', a:'가경', b:'오창제일', prize:'60만'},
@@ -422,10 +428,13 @@ async function save() {
 async function load() {
   try {
     const res = await fetch('/api/load');
-    const json = await res.json();
-    if (json.ok && json.data) {
-      data = json.data;
-      return;
+    if (res.ok) {
+      const json = await res.json();
+      if (json.ok && json.data) {
+        data = json.data;
+        localStorage.setItem(SK, JSON.stringify(data));
+        return;
+      }
     }
   } catch(e) {
     console.warn('API 불러오기 실패, 로컬 사용:', e);
@@ -433,18 +442,59 @@ async function load() {
   // fallback: localStorage
   try {
     const r = localStorage.getItem(SK);
-    if (r) data = JSON.parse(r);
+    if (r) data = { ...data, ...JSON.parse(r) };
   } catch(e){}
 }
 
 // ════════════════════════════════════════════════
 // Admin
 // ════════════════════════════════════════════════
+// ── 로고 5번 클릭 관리자 진입 ──────────────────────
+let logoClickCount = 0;
+let logoClickTimer = null;
+
+function handleLogoClick() {
+  logoClickCount++;
+  if (logoClickTimer) clearTimeout(logoClickTimer);
+
+  if (logoClickCount >= 5) {
+    logoClickCount = 0;
+    if (isAdmin) {
+      toggleAdmin();
+    } else {
+      document.getElementById('pw-modal').classList.add('show');
+      setTimeout(() => document.getElementById('pw-input').focus(), 100);
+    }
+    return;
+  }
+
+  // 2초 안에 5번 안 누르면 초기화
+  logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 2000);
+}
+
+// ── 로고 5번 클릭 관리자 진입 ──────────────────────
+let logoClickCount = 0;
+let logoClickTimer = null;
+
+function handleLogoClick() {
+  logoClickCount++;
+  clearTimeout(logoClickTimer);
+  logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 2000);
+
+  if (logoClickCount >= 5) {
+    logoClickCount = 0;
+    if (isAdmin) {
+      toggleAdmin();
+    } else {
+      document.getElementById('pw-modal').classList.add('show');
+      setTimeout(() => document.getElementById('pw-input').focus(), 100);
+    }
+  }
+}
+
 function toggleAdmin() {
   if (isAdmin) {
     isAdmin = false;
-    document.getElementById('admin-btn').textContent = '🔒 관리자';
-    document.getElementById('admin-btn').classList.remove('active');
     ['worldcup','inventory','spot'].forEach(s => {
       const el = document.getElementById('upload-'+s);
       if (el) el.classList.remove('show');
@@ -464,11 +514,9 @@ function checkPw() {
   if (document.getElementById('pw-input').value === ADMIN_PW) {
     isAdmin = true;
     closeModal();
-    document.getElementById('admin-btn').textContent = '🔓 관리자 모드';
-    document.getElementById('admin-btn').classList.add('active');
     const upEl = document.getElementById('upload-' + currentSection);
     if (upEl) upEl.classList.add('show');
-    showToast('관리자 모드 활성화');
+    showToast('✅ 관리자 모드 활성화');
   } else {
     document.getElementById('pw-err').textContent = '비밀번호가 올바르지 않습니다.';
     document.getElementById('pw-input').value = '';
@@ -517,17 +565,13 @@ function switchSpotType(t) {
   });
 }
 function switchUpTab(campaign, t) {
-  if (campaign==='worldcup') {
-    ['branch','agency'].forEach(x => {
-      document.getElementById('wc-utab-'+x).classList.toggle('active', x===t);
-      document.getElementById('wc-up-'+x).classList.toggle('active', x===t);
-    });
-  } else if (campaign==='spot') {
-    ['branch','agency'].forEach(x => {
-      document.getElementById('sp-utab-'+x).classList.toggle('active', x===t);
-      document.getElementById('sp-up-'+x).classList.toggle('active', x===t);
-    });
-  }
+  const prefix = campaign==='worldcup'?'wc':campaign==='spot'?'sp':'inv';
+  ['branch','agency'].forEach(x => {
+    const utab = document.getElementById(prefix+'-utab-'+x);
+    const usec = document.getElementById(prefix+'-up-'+x);
+    if (utab) utab.classList.toggle('active', x===t);
+    if (usec) usec.classList.toggle('active', x===t);
+  });
 }
 
 // ════════════════════════════════════════════════
@@ -600,7 +644,14 @@ function applyInvPaste() {
   const agencyCount = {};
   let total = 0, skipped = 0;
 
-  lines.slice(1).forEach(line => {
+  // 첫 행이 헤더인지 확인 (No 또는 숫자로 시작하면 데이터)
+  const dataStartIdx = lines.findIndex(l => {
+    const first = (l.split('\t')[0]||'').trim();
+    return /^\d+$/.test(first);
+  });
+  const dataLines = dataStartIdx >= 0 ? lines.slice(dataStartIdx) : lines.slice(1);
+
+  dataLines.forEach(line => {
     const cols = line.split('\t');
     if (cols.length < 10) return;
     const status = (cols[idx.status]||'').trim();
@@ -614,15 +665,17 @@ function applyInvPaste() {
     if (personName === '현대자동차(주)' || personName === '현대자동차') { skipped++; return; }
     if (carType === '정상재고') { skipped++; return; }
 
-    // 거점 결정
-    const loc = agency || branch;
+    // 거점 결정 (코드 → 거점명 변환)
+    const agencyName = resolveCode(agency);
+    const branchName = resolveCode(branch);
+    const loc = agencyName || branchName;
     if (!loc) return;
 
     total++;
     if (agency) {
-      agencyCount[agency] = (agencyCount[agency]||0) + 1;
+      agencyCount[agencyName] = (agencyCount[agencyName]||0) + 1;
     } else {
-      branchCount[branch] = (branchCount[branch]||0) + 1;
+      branchCount[branchName] = (branchCount[branchName]||0) + 1;
     }
   });
 
@@ -886,7 +939,11 @@ function showToast(msg) {
 // Init
 // ════════════════════════════════════════════════
 (async () => {
-  await load();
+  try {
+    await load();
+  } catch(e) {
+    console.warn('load 실패, 기본값으로 렌더:', e);
+  }
   renderAll();
 })();
 </script>
