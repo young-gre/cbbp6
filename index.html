@@ -425,6 +425,20 @@ async function save() {
     console.warn('API 저장 실패, 로컬 저장:', e);
   }
 }
+function fixData() {
+  if (!data) data = {};
+  if (!data.wc) data.wc = {};
+  if (!data.wc.branch) data.wc.branch = {};
+  if (!data.wc.agency) data.wc.agency = {};
+  if (!data.inv) data.inv = {};
+  if (!data.inv.branch) data.inv.branch = {};
+  if (!data.inv.agency) data.inv.agency = {};
+  if (!data.spot) data.spot = {};
+  if (!data.spot.branch) data.spot.branch = {};
+  if (!data.spot.agency) data.spot.agency = {};
+  if (!data.updatedAt) data.updatedAt = {};
+}
+
 async function load() {
   try {
     const res = await fetch('/api/load');
@@ -432,6 +446,7 @@ async function load() {
       const json = await res.json();
       if (json.ok && json.data) {
         data = json.data;
+        fixData();
         localStorage.setItem(SK, JSON.stringify(data));
         return;
       }
@@ -442,8 +457,9 @@ async function load() {
   // fallback: localStorage
   try {
     const r = localStorage.getItem(SK);
-    if (r) data = { ...data, ...JSON.parse(r) };
+    if (r) data = JSON.parse(r);
   } catch(e){}
+  fixData();
 }
 
 // ════════════════════════════════════════════════
