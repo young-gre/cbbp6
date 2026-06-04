@@ -620,7 +620,14 @@ function applyInvPaste() {
   const agencyCount = {};
   let total = 0, skipped = 0;
 
-  lines.slice(1).forEach(line => {
+  // 첫 행이 헤더인지 확인 (No 또는 숫자로 시작하면 데이터)
+  const dataStartIdx = lines.findIndex(l => {
+    const first = (l.split('\t')[0]||'').trim();
+    return /^\d+$/.test(first);
+  });
+  const dataLines = dataStartIdx >= 0 ? lines.slice(dataStartIdx) : lines.slice(1);
+
+  dataLines.forEach(line => {
     const cols = line.split('\t');
     if (cols.length < 10) return;
     const status = (cols[idx.status]||'').trim();
