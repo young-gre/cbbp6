@@ -185,7 +185,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
 <!-- Top Nav -->
 <nav class="topnav">
-  <div class="topnav-brand">
+  <div class="topnav-brand" id="brand-logo" onclick="handleLogoClick()" style="cursor:pointer;user-select:none;">
     <h1>충북지역본부 6월 비즈니스플랜</h1>
     <p>HYUNDAI MOTOR · CHUNGBUK REGIONAL HQ · 2026.06</p>
   </div>
@@ -196,7 +196,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   </div>
   <div class="topnav-right">
     <span class="last-upd" id="last-upd">데이터 없음</span>
-    <button class="admin-btn" id="admin-btn" onclick="toggleAdmin()">🔒 관리자</button>
   </div>
 </nav>
 
@@ -440,11 +439,32 @@ async function load() {
 // ════════════════════════════════════════════════
 // Admin
 // ════════════════════════════════════════════════
+// ── 로고 5번 클릭 관리자 진입 ──────────────────────
+let logoClickCount = 0;
+let logoClickTimer = null;
+
+function handleLogoClick() {
+  logoClickCount++;
+  if (logoClickTimer) clearTimeout(logoClickTimer);
+
+  if (logoClickCount >= 5) {
+    logoClickCount = 0;
+    if (isAdmin) {
+      toggleAdmin();
+    } else {
+      document.getElementById('pw-modal').classList.add('show');
+      setTimeout(() => document.getElementById('pw-input').focus(), 100);
+    }
+    return;
+  }
+
+  // 2초 안에 5번 안 누르면 초기화
+  logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 2000);
+}
+
 function toggleAdmin() {
   if (isAdmin) {
     isAdmin = false;
-    document.getElementById('admin-btn').textContent = '🔒 관리자';
-    document.getElementById('admin-btn').classList.remove('active');
     ['worldcup','inventory','spot'].forEach(s => {
       const el = document.getElementById('upload-'+s);
       if (el) el.classList.remove('show');
@@ -464,11 +484,9 @@ function checkPw() {
   if (document.getElementById('pw-input').value === ADMIN_PW) {
     isAdmin = true;
     closeModal();
-    document.getElementById('admin-btn').textContent = '🔓 관리자 모드';
-    document.getElementById('admin-btn').classList.add('active');
     const upEl = document.getElementById('upload-' + currentSection);
     if (upEl) upEl.classList.add('show');
-    showToast('관리자 모드 활성화');
+    showToast('✅ 관리자 모드 활성화');
   } else {
     document.getElementById('pw-err').textContent = '비밀번호가 올바르지 않습니다.';
     document.getElementById('pw-input').value = '';
