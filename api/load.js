@@ -9,7 +9,16 @@ export default async function handler(req) {
       headers: { Authorization: `Bearer ${token}` }
     });
     const json = await res.json();
-    const data = json.result ? JSON.parse(json.result) : null;
+
+    // Upstash는 { result: "값" } 형태로 반환
+    let data = null;
+    if (json.result) {
+      try {
+        data = JSON.parse(json.result);
+      } catch(e) {
+        data = json.result;
+      }
+    }
 
     return new Response(JSON.stringify({ ok: true, data }), {
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }

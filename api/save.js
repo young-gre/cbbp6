@@ -20,13 +20,12 @@ export default async function handler(req) {
     const token = process.env.KV_REST_API_TOKEN;
     const body = await req.json();
 
-    const res = await fetch(`${url}/set/campaignData`, {
-      method: 'POST',
+    // Upstash REST API: SET 명령어는 배열 형태로 전송
+    const res = await fetch(`${url}/set/campaignData/${encodeURIComponent(JSON.stringify(body))}`, {
+      method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ value: JSON.stringify(body) })
+      }
     });
     const json = await res.json();
 
