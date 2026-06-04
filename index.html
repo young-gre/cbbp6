@@ -420,10 +420,13 @@ async function save() {
 async function load() {
   try {
     const res = await fetch('/api/load');
-    const json = await res.json();
-    if (json.ok && json.data) {
-      data = json.data;
-      return;
+    if (res.ok) {
+      const json = await res.json();
+      if (json.ok && json.data) {
+        data = json.data;
+        localStorage.setItem(SK, JSON.stringify(data));
+        return;
+      }
     }
   } catch(e) {
     console.warn('API 불러오기 실패, 로컬 사용:', e);
@@ -431,7 +434,7 @@ async function load() {
   // fallback: localStorage
   try {
     const r = localStorage.getItem(SK);
-    if (r) data = JSON.parse(r);
+    if (r) data = { ...data, ...JSON.parse(r) };
   } catch(e){}
 }
 
@@ -905,7 +908,11 @@ function showToast(msg) {
 // Init
 // ════════════════════════════════════════════════
 (async () => {
-  await load();
+  try {
+    await load();
+  } catch(e) {
+    console.warn('load 실패, 기본값으로 렌더:', e);
+  }
   renderAll();
 })();
 </script>
