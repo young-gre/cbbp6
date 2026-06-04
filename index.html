@@ -3,144 +3,167 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>2026 충북 월드컵 캠페인 - 예선전</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<title>충북지역본부 6월 비즈니스플랜</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap');
 :root {
   --blue:#0f69b4; --blue-dark:#183b68; --blue-light:#e8f2fc;
   --green:#1b9d68; --green-light:#edf7f2;
-  --red:#e53e3e; --red-light:#fff5f5;
-  --gold:#f6ad1a; --silver:#94a3b8; --bronze:#c47c2e;
+  --red:#e53e3e; --orange:#f6851a;
   --line:#d9e4ef; --text:#18283c; --text-sub:#6e7f93;
-  --card:#fff; --bg:#f4f8fc;
-  --shadow:0 8px 24px rgba(21,53,84,.08);
+  --bg:#f0f5fb; --shadow:0 8px 24px rgba(21,53,84,.08);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);}
 
-/* ── Layout ── */
-.page{max-width:1400px;margin:0 auto;padding:24px;}
-.header{background:linear-gradient(135deg,#183b68 0%,#0f69b4 100%);border-radius:20px;padding:28px 32px;margin-bottom:20px;color:#fff;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
-.header h1{font-size:clamp(20px,3vw,28px);font-weight:800;letter-spacing:-.03em;}
-.header .sub{font-size:13px;opacity:.75;margin-top:4px;}
-.header-right{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+/* ── Top Nav ── */
+.topnav{background:linear-gradient(135deg,#183b68 0%,#0f69b4 100%);padding:0 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;min-height:64px;}
+.topnav-brand{color:#fff;}
+.topnav-brand h1{font-size:17px;font-weight:800;letter-spacing:-.02em;}
+.topnav-brand p{font-size:11px;opacity:.65;margin-top:2px;}
+.topnav-tabs{display:flex;gap:4px;}
+.topnav-tab{height:40px;padding:0 16px;border-radius:10px;border:none;font-family:inherit;font-size:13px;font-weight:700;color:rgba(255,255,255,.65);background:transparent;cursor:pointer;transition:.2s;white-space:nowrap;}
+.topnav-tab.active{background:rgba(255,255,255,.18);color:#fff;}
+.topnav-right{display:flex;align-items:center;gap:8px;}
+.admin-btn{height:36px;padding:0 14px;border-radius:10px;border:1px solid rgba(255,255,255,.3);background:transparent;font-family:inherit;font-size:12px;font-weight:700;color:rgba(255,255,255,.8);cursor:pointer;transition:.2s;}
+.admin-btn.active{background:rgba(255,255,255,.2);color:#fff;border-color:rgba(255,255,255,.5);}
+.last-upd{font-size:11px;color:rgba(255,255,255,.5);}
 
-/* ── Tabs ── */
-.tabs{display:flex;gap:6px;background:#edf4fb;border:1px solid #d9e6f2;border-radius:14px;padding:5px;margin-bottom:20px;}
-.tab{flex:1;height:42px;border-radius:10px;border:none;font-family:inherit;font-size:14px;font-weight:700;color:#6e8198;background:transparent;cursor:pointer;transition:.2s;}
-.tab.active{background:#fff;color:var(--blue-dark);box-shadow:0 4px 12px rgba(15,105,180,.1);}
+/* ── Page ── */
+.page{max-width:1440px;margin:0 auto;padding:20px 24px;}
+.section{display:none;}
+.section.active{display:block;}
 
-/* ── Mode toggle ── */
-.mode-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
-.mode-label{font-size:13px;color:var(--text-sub);}
-.admin-btn{height:36px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:#fff;font-family:inherit;font-size:13px;font-weight:700;color:var(--blue-dark);cursor:pointer;transition:.2s;}
-.admin-btn:hover{border-color:var(--blue);color:var(--blue);}
-.admin-btn.active{background:var(--blue-dark);color:#fff;border-color:var(--blue-dark);}
-
-/* ── Upload area ── */
-.upload-panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;margin-bottom:20px;display:none;}
+/* ── Upload Panel ── */
+.upload-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px;display:none;}
 .upload-panel.show{display:block;}
-.upload-tabs{display:flex;gap:6px;margin-bottom:18px;}
-.upload-tab{flex:1;height:38px;border-radius:10px;border:1px solid var(--line);font-family:inherit;font-size:13px;font-weight:700;color:#6e8198;background:#f8fbfe;cursor:pointer;transition:.2s;}
-.upload-tab.active{background:var(--blue-dark);color:#fff;border-color:var(--blue-dark);}
+.upload-tabs{display:flex;gap:6px;margin-bottom:14px;}
+.utab{flex:1;height:36px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:12px;font-weight:700;color:#6e8198;background:#f8fbfe;cursor:pointer;transition:.2s;}
+.utab.active{background:var(--blue-dark);color:#fff;border-color:var(--blue-dark);}
 .upload-section{display:none;}
 .upload-section.active{display:block;}
-/* 파일 업로드 */
-.file-drop{border:2px dashed #c8dcee;border-radius:14px;padding:24px;text-align:center;transition:.2s;}
-.file-drop:hover{border-color:var(--blue);}
-.upload-icon{font-size:32px;margin-bottom:8px;}
-.file-drop p{font-size:13px;color:var(--text-sub);margin-bottom:12px;}
-.file-input{display:none;}
-.upload-btn{height:42px;padding:0 18px;border-radius:11px;background:linear-gradient(180deg,#1976c5,#0f69b4);color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 8px 16px rgba(15,105,180,.18);}
-/* 붙여넣기 */
-.paste-label{font-size:13px;font-weight:700;color:var(--blue-dark);margin-bottom:8px;display:block;}
-.paste-hint{font-size:12px;color:var(--text-sub);margin-bottom:10px;}
-.paste-area{width:100%;height:160px;border:1px solid var(--line);border-radius:12px;padding:12px;font-family:'Noto Sans KR',monospace;font-size:13px;color:var(--text);resize:vertical;outline:none;transition:.2s;}
-.paste-area:focus{border-color:#8ebce4;box-shadow:0 0 0 4px rgba(15,105,180,.08);}
-.paste-btn{margin-top:10px;height:42px;padding:0 18px;border-radius:11px;background:linear-gradient(180deg,#1976c5,#0f69b4);color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 8px 16px rgba(15,105,180,.18);}
-.upload-status{margin-top:10px;font-size:13px;font-weight:700;min-height:18px;}
+.paste-hint{font-size:12px;color:var(--text-sub);margin-bottom:8px;}
+.paste-area{width:100%;height:140px;border:1px solid var(--line);border-radius:10px;padding:10px;font-family:monospace;font-size:12px;resize:vertical;outline:none;}
+.paste-area:focus{border-color:#8ebce4;box-shadow:0 0 0 3px rgba(15,105,180,.08);}
+.paste-area.tall{height:200px;}
+.apply-btn{margin-top:8px;height:38px;padding:0 16px;border-radius:10px;background:linear-gradient(180deg,#1976c5,#0f69b4);color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.upload-status{margin-top:8px;font-size:12px;font-weight:700;min-height:16px;}
 
 /* ── Summary cards ── */
-.summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
 @media(max-width:800px){.summary-row{grid-template-columns:repeat(2,1fr);}}
-.summary-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);}
-.summary-card span{font-size:12px;color:var(--text-sub);display:block;margin-bottom:6px;}
-.summary-card strong{font-size:20px;font-weight:800;color:var(--blue-dark);}
+.scard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);}
+.scard span{font-size:11px;color:var(--text-sub);display:block;margin-bottom:4px;}
+.scard strong{font-size:19px;font-weight:800;color:var(--blue-dark);}
 
-/* ── Group grid ── */
-.groups-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px;}
+/* ── Section header ── */
+.sec-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.sec-title{font-size:16px;font-weight:800;color:var(--blue-dark);}
+.sec-sub{font-size:12px;color:var(--text-sub);}
+.type-tabs{display:flex;gap:5px;}
+.type-tab{height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--line);font-family:inherit;font-size:12px;font-weight:700;color:#6e8198;background:#f8fbfe;cursor:pointer;transition:.2s;}
+.type-tab.active{background:var(--blue-dark);color:#fff;border-color:var(--blue-dark);}
+
+/* ── Group panels ── */
+.groups-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:16px;}
 @media(max-width:900px){.groups-grid{grid-template-columns:1fr;}}
-.group-panel{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;}
-.group-header{padding:16px 20px;background:linear-gradient(180deg,#f8fbff,#f0f6fc);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
-.group-header h3{font-size:18px;font-weight:800;color:var(--blue-dark);}
-.group-header .group-sub{font-size:12px;color:var(--text-sub);}
-.group-table{width:100%;border-collapse:collapse;}
-.group-table th{background:#eef5fc;font-size:11px;font-weight:800;color:var(--blue-dark);padding:10px 12px;text-align:center;letter-spacing:.04em;}
-.group-table td{padding:12px;text-align:center;border-bottom:1px solid #f0f4f8;font-size:13px;font-weight:600;color:#294564;}
-.group-table tr:last-child td{border-bottom:none;}
-.group-table tr.advance{background:linear-gradient(90deg,rgba(15,105,180,.04),transparent);}
-.group-table tr.advance td:first-child{border-left:3px solid var(--blue);}
+.gpanel{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);overflow:hidden;}
+.gpanel-head{padding:14px 18px;background:linear-gradient(180deg,#f8fbff,#f0f6fc);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+.gpanel-head h3{font-size:16px;font-weight:800;color:var(--blue-dark);}
+.gpanel-head span{font-size:11px;color:var(--text-sub);}
+.gtable{width:100%;border-collapse:collapse;}
+.gtable th{background:#eef5fc;font-size:11px;font-weight:800;color:var(--blue-dark);padding:9px 12px;text-align:center;}
+.gtable td{padding:11px 12px;text-align:center;border-bottom:1px solid #f0f4f8;font-size:12px;font-weight:600;color:#294564;}
+.gtable tr:last-child td{border-bottom:none;}
+.gtable tr.advance td:first-child{border-left:3px solid var(--blue);}
+.gtable tr.advance{background:rgba(15,105,180,.03);}
 
-/* rank badge */
-.rank{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:800;}
-.rank.r1{background:#fef3c7;color:#b45309;}
-.rank.r2{background:#f1f5f9;color:#475569;}
-.rank.r3{background:#fff7ed;color:#92400e;}
-.rank.r4,.rank.r5{background:#f8fafc;color:#94a3b8;}
+/* rank */
+.rank{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;font-size:11px;font-weight:800;}
+.r1{background:#fef3c7;color:#b45309;}
+.r2{background:#f1f5f9;color:#475569;}
+.r3{background:#fff7ed;color:#92400e;}
+.r4,.r5{background:#f8fafc;color:#94a3b8;}
 
 /* rate bar */
-.rate-wrap{display:flex;align-items:center;gap:8px;justify-content:center;}
-.rate-bar{width:80px;height:7px;border-radius:999px;background:#e7eef6;overflow:hidden;}
-.rate-fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,#0f69b4,#4b97d6);transition:.4s;}
-.rate-val{font-size:13px;font-weight:800;color:var(--blue-dark);min-width:44px;text-align:right;}
+.rw{display:flex;align-items:center;gap:6px;justify-content:center;}
+.rb{width:70px;height:6px;border-radius:999px;background:#e7eef6;overflow:hidden;flex-shrink:0;}
+.rf{height:100%;border-radius:inherit;background:linear-gradient(90deg,#0f69b4,#4b97d6);transition:.4s;}
+.rv{font-size:12px;font-weight:800;color:var(--blue-dark);min-width:40px;text-align:right;}
 
 /* advance badge */
-.adv-badge{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:800;}
-.adv-badge.champ{background:#fef3c7;color:#b45309;border:1px solid #fde68a;}
-.adv-badge.premier{background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe;}
-.adv-badge.challenger{background:var(--green-light);color:var(--green);border:1px solid #d1fae5;}
-.adv-badge.tbd{background:#f1f5f9;color:#94a3b8;border:1px solid #e2e8f0;}
+.abadge{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;font-size:10px;font-weight:800;}
+.ab-champ{background:#fef3c7;color:#b45309;border:1px solid #fde68a;}
+.ab-premier{background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe;}
+.ab-challenger{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;}
 
-/* ── Promotion preview ── */
-.promo-panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow);margin-bottom:20px;}
-.promo-panel h3{font-size:16px;font-weight:800;color:var(--blue-dark);margin-bottom:14px;}
+/* ── Promo panel ── */
+.promo-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow);}
+.promo-panel h3{font-size:14px;font-weight:800;color:var(--blue-dark);margin-bottom:12px;}
 .promo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
 @media(max-width:700px){.promo-grid{grid-template-columns:1fr;}}
-.promo-card{border-radius:14px;padding:14px 16px;border:1px solid;}
-.promo-card.champ{background:#fffbeb;border-color:#fde68a;}
-.promo-card.premier{background:#eef2ff;border-color:#c7d2fe;}
-.promo-card.challenger{background:#f0fdf4;border-color:#bbf7d0;}
-.promo-card h4{font-size:13px;font-weight:800;margin-bottom:8px;}
-.promo-card.champ h4{color:#b45309;}
-.promo-card.premier h4{color:#3730a3;}
-.promo-card.challenger h4{color:#15803d;}
-.promo-item{font-size:13px;color:#294564;padding:4px 0;border-bottom:1px dashed #e5e7eb;}
-.promo-item:last-child{border-bottom:none;}
-.promo-item.tbd{color:#94a3b8;font-style:italic;}
+.pcard{border-radius:12px;padding:12px 14px;border:1px solid;}
+.pc-champ{background:#fffbeb;border-color:#fde68a;}
+.pc-premier{background:#eef2ff;border-color:#c7d2fe;}
+.pc-challenger{background:#f0fdf4;border-color:#bbf7d0;}
+.pc-info{background:#f8fafc;border-color:#e2e8f0;}
+.pcard h4{font-size:12px;font-weight:800;margin-bottom:8px;}
+.pc-champ h4{color:#b45309;}
+.pc-premier h4{color:#3730a3;}
+.pc-challenger h4{color:#15803d;}
+.pc-info h4{color:#64748b;}
+.pitem{font-size:12px;color:#294564;padding:3px 0;border-bottom:1px dashed #e5e7eb;}
+.pitem:last-child{border-bottom:none;}
 
-/* ── Last updated ── */
-.last-update{font-size:12px;color:var(--text-sub);text-align:right;margin-bottom:8px;}
+/* ── Matchup (재고맞수) ── */
+.match-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;}
+@media(max-width:900px){.match-grid{grid-template-columns:1fr;}}
+.match-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);}
+.match-no{font-size:10px;font-weight:800;color:var(--text-sub);letter-spacing:.06em;margin-bottom:6px;}
+.match-body{display:flex;align-items:center;gap:10px;}
+.match-team{flex:1;text-align:center;}
+.match-team .name{font-size:14px;font-weight:800;color:var(--blue-dark);margin-bottom:4px;}
+.match-team .rate{font-size:18px;font-weight:800;}
+.match-team .shipped{font-size:11px;color:var(--text-sub);margin-top:2px;}
+.match-vs{font-size:12px;font-weight:800;color:var(--text-sub);flex-shrink:0;}
+.match-prize{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;background:#fef3c7;border:1px solid #fde68a;color:#b45309;font-size:11px;font-weight:800;margin-top:8px;}
+.match-bar{margin-top:10px;}
+.match-bar-wrap{display:flex;height:8px;border-radius:999px;overflow:hidden;background:#e7eef6;}
+.match-bar-l{background:linear-gradient(90deg,#0f69b4,#4b97d6);transition:.4s;}
+.match-bar-r{background:linear-gradient(90deg,#f6851a,#f6ad1a);transition:.4s;}
+.win-badge{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;font-size:10px;font-weight:800;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;margin-left:4px;}
+.lose-badge{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;font-size:10px;font-weight:800;background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;margin-left:4px;}
+.draw-badge{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:999px;font-size:10px;font-weight:800;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0;margin-left:4px;}
 
-/* ── Password modal ── */
+/* ── Spot campaign ── */
+.spot-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow);}
+.spot-table{width:100%;border-collapse:collapse;margin-top:10px;}
+.spot-table th{background:#eef5fc;font-size:11px;font-weight:800;color:var(--blue-dark);padding:9px 12px;text-align:center;}
+.spot-table td{padding:10px 12px;text-align:center;border-bottom:1px solid #f0f4f8;font-size:12px;font-weight:600;color:#294564;}
+.spot-table tr:last-child td{border-bottom:none;}
+.pass-badge{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;font-size:10px;font-weight:800;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;}
+.fail-badge{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:999px;font-size:10px;font-weight:800;background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;}
+.reward-val{font-size:13px;font-weight:800;color:var(--blue-dark);}
+
+/* ── Password Modal ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(14,27,44,.4);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:9999;}
 .modal-overlay.show{display:flex;}
-.modal{background:#fff;border-radius:20px;padding:28px;width:min(360px,90vw);box-shadow:0 24px 60px rgba(21,53,84,.18);}
-.modal h3{font-size:18px;font-weight:800;color:var(--blue-dark);margin-bottom:6px;}
-.modal p{font-size:13px;color:var(--text-sub);margin-bottom:18px;}
-.modal input{width:100%;height:48px;border-radius:12px;border:1px solid var(--line);padding:0 14px;font-size:15px;font-family:inherit;outline:none;margin-bottom:12px;}
-.modal input:focus{border-color:#8ebce4;box-shadow:0 0 0 4px rgba(15,105,180,.08);}
+.modal{background:#fff;border-radius:18px;padding:26px;width:min(340px,90vw);box-shadow:0 24px 60px rgba(21,53,84,.18);}
+.modal h3{font-size:17px;font-weight:800;color:var(--blue-dark);margin-bottom:4px;}
+.modal p{font-size:12px;color:var(--text-sub);margin-bottom:16px;}
+.modal input{width:100%;height:46px;border-radius:11px;border:1px solid var(--line);padding:0 14px;font-size:14px;font-family:inherit;outline:none;margin-bottom:10px;}
+.modal input:focus{border-color:#8ebce4;}
 .modal-btns{display:flex;gap:8px;}
-.modal-btns button{flex:1;height:44px;border-radius:11px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border:1px solid var(--line);}
-.modal-btns .confirm{background:linear-gradient(180deg,#1976c5,#0f69b4);color:#fff;border-color:transparent;box-shadow:0 8px 16px rgba(15,105,180,.18);}
-.modal-err{font-size:13px;color:var(--red);margin-bottom:8px;min-height:18px;}
+.modal-btns button{flex:1;height:42px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--text);}
+.modal-btns .confirm{background:linear-gradient(180deg,#1976c5,#0f69b4);color:#fff;border-color:transparent;}
+.modal-err{font-size:12px;color:var(--red);min-height:16px;margin-bottom:6px;}
 
 /* ── Toast ── */
-.toast-wrap{position:fixed;top:20px;right:20px;z-index:10000;display:grid;gap:8px;width:min(340px,calc(100vw - 32px));}
-.toast{background:rgba(24,59,104,.96);color:#fff;border-radius:14px;padding:12px 16px;font-size:13px;font-weight:700;animation:toastIn .25s ease;}
-.toast.hide{animation:toastOut .25s ease forwards;}
-@keyframes toastIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-@keyframes toastOut{to{opacity:0;transform:translateY(-6px)}}
+.toast-wrap{position:fixed;top:18px;right:18px;z-index:10000;display:grid;gap:7px;width:min(320px,calc(100vw - 28px));}
+.toast{background:rgba(24,59,104,.96);color:#fff;border-radius:12px;padding:11px 14px;font-size:13px;font-weight:700;animation:tIn .22s ease;}
+.toast.hide{animation:tOut .22s ease forwards;}
+@keyframes tIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tOut{to{opacity:0;transform:translateY(-5px)}}
 </style>
 </head>
 <body>
@@ -150,90 +173,177 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 <div class="modal-overlay" id="pw-modal">
   <div class="modal">
     <h3>관리자 인증</h3>
-    <p>엑셀 업로드 및 데이터 관리 기능을 사용하려면 비밀번호를 입력해 주세요.</p>
+    <p>데이터 입력 기능을 사용하려면 비밀번호를 입력해 주세요.</p>
     <div class="modal-err" id="pw-err"></div>
-    <input type="password" id="pw-input" placeholder="비밀번호 입력" />
+    <input type="password" id="pw-input" placeholder="비밀번호"/>
     <div class="modal-btns">
       <button onclick="closeModal()">취소</button>
-      <button class="confirm" onclick="checkPassword()">확인</button>
+      <button class="confirm" onclick="checkPw()">확인</button>
     </div>
   </div>
 </div>
+
+<!-- Top Nav -->
+<nav class="topnav">
+  <div class="topnav-brand">
+    <h1>충북지역본부 6월 비즈니스플랜</h1>
+    <p>HYUNDAI MOTOR · CHUNGBUK REGIONAL HQ · 2026.06</p>
+  </div>
+  <div class="topnav-tabs">
+    <button class="topnav-tab active" onclick="switchSection('worldcup')">⚽ 월드컵</button>
+    <button class="topnav-tab" onclick="switchSection('inventory')">📦 재고 맞수</button>
+    <button class="topnav-tab" onclick="switchSection('spot')">📋 계약 Spot</button>
+  </div>
+  <div class="topnav-right">
+    <span class="last-upd" id="last-upd">데이터 없음</span>
+    <button class="admin-btn" id="admin-btn" onclick="toggleAdmin()">🔒 관리자</button>
+  </div>
+</nav>
 
 <div class="page">
-  <div class="header">
-    <div>
-      <div style="font-size:11px;opacity:.6;letter-spacing:.12em;margin-bottom:6px;">HYUNDAI MOTOR · CHUNGBUK REGIONAL HQ</div>
-      <h1>2026 충북 월드컵 캠페인</h1>
-      <div class="sub">예선전 (6월 1일 ~ 12일) · 조별 순위 현황</div>
-    </div>
-    <div class="header-right">
-      <div id="last-update" style="font-size:12px;opacity:.7;">데이터 없음</div>
-      <button class="admin-btn" id="admin-toggle-btn" onclick="toggleAdminMode()">🔒 관리자</button>
-    </div>
-  </div>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('branch')">지점 (10개)</button>
-    <button class="tab" onclick="switchTab('agency')">대리점 (12개)</button>
-  </div>
-
-  <!-- Upload Panel -->
-  <div class="upload-panel" id="upload-panel">
-    <div class="upload-tabs">
-      <button class="upload-tab active" id="utab-paste" onclick="switchUploadTab('paste')">📋 붙여넣기</button>
-      <button class="upload-tab" id="utab-file" onclick="switchUploadTab('file')">📂 엑셀 파일</button>
+  <!-- ══════════════════════════════════════════════
+       ① 월드컵 캠페인
+  ══════════════════════════════════════════════ -->
+  <div class="section active" id="section-worldcup">
+    <!-- Upload -->
+    <div class="upload-panel" id="upload-worldcup">
+      <div class="upload-tabs">
+        <button class="utab active" id="wc-utab-branch" onclick="switchUpTab('worldcup','branch')">지점 데이터</button>
+        <button class="utab" id="wc-utab-agency" onclick="switchUpTab('worldcup','agency')">대리점 데이터</button>
+      </div>
+      <div class="upload-section active" id="wc-up-branch">
+        <div class="paste-hint">엑셀에서 <b>거점명 + 누계 출고</b> 복사 → 붙여넣기</div>
+        <textarea class="paste-area" id="wc-paste-branch" placeholder="청주북부	10&#10;청주서부	11&#10;오창	3"></textarea>
+        <button class="apply-btn" onclick="applyWcPaste('branch')">✅ 지점 적용</button>
+      </div>
+      <div class="upload-section" id="wc-up-agency">
+        <div class="paste-hint">엑셀에서 <b>거점명 + 누계 출고</b> 복사 → 붙여넣기</div>
+        <textarea class="paste-area" id="wc-paste-agency" placeholder="영동금강	8&#10;오창제일	15"></textarea>
+        <button class="apply-btn" onclick="applyWcPaste('agency')">✅ 대리점 적용</button>
+      </div>
+      <div class="upload-status" id="upload-status-worldcup"></div>
     </div>
-    <div class="upload-section active" id="upload-paste">
-      <span class="paste-label">엑셀에서 복사 → 여기에 붙여넣기</span>
-      <div class="paste-hint">엑셀에서 <strong>거점명 + 누계 출고</strong> 두 컬럼 선택 후 복사(Ctrl+C) → 아래 박스 클릭 후 붙여넣기(Ctrl+V)</div>
-      <textarea class="paste-area" id="paste-area" placeholder="여기에 붙여넣기 하세요
 
-예시:
-청주북부	10
-청주서부	11
-오창	3"></textarea>
-      <br/>
-      <button class="paste-btn" onclick="parsePaste()">✅ 적용하기</button>
-    </div>
-    <div class="upload-section" id="upload-file">
-      <div class="file-drop">
-        <div class="upload-icon">📂</div>
-        <p><strong>엑셀 파일 업로드</strong> · 컬럼: <code>거점명</code> / <code>누계 출고</code></p>
-        <button class="upload-btn" onclick="document.getElementById('file-input').click()">엑셀 파일 선택</button>
-        <input type="file" id="file-input" class="file-input" accept=".xlsx,.xls" onchange="handleFile(event)"/>
+    <!-- Branch / Agency tabs -->
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">⚽ 월드컵 캠페인 예선전</div>
+        <div class="sec-sub">6월 1일 ~ 12일 · 판매 달성율 기준 조별 순위</div>
+      </div>
+      <div class="type-tabs">
+        <button class="type-tab active" id="wc-tab-branch" onclick="switchWcType('branch')">지점</button>
+        <button class="type-tab" id="wc-tab-agency" onclick="switchWcType('agency')">대리점</button>
       </div>
     </div>
-    <div class="upload-status" id="upload-status"></div>
-  </div>
 
-  <!-- Branch Section -->
-  <div id="section-branch">
-    <div class="summary-row" id="branch-summary"></div>
-    <div class="groups-grid" id="branch-groups"></div>
-    <div class="promo-panel">
-      <h3>🏆 본선 진출 현황 (예상)</h3>
-      <div class="promo-grid" id="branch-promo"></div>
+    <div id="wc-branch-view">
+      <div class="summary-row" id="wc-branch-summary"></div>
+      <div class="groups-grid" id="wc-branch-groups"></div>
+      <div class="promo-panel"><h3>🏆 본선 진출 현황 (예상)</h3><div class="promo-grid" id="wc-branch-promo"></div></div>
+    </div>
+    <div id="wc-agency-view" style="display:none;">
+      <div class="summary-row" id="wc-agency-summary"></div>
+      <div class="groups-grid" id="wc-agency-groups"></div>
+      <div class="promo-panel"><h3>🏆 본선 진출 현황 (예상)</h3><div class="promo-grid" id="wc-agency-promo"></div></div>
     </div>
   </div>
 
-  <!-- Agency Section -->
-  <div id="section-agency" style="display:none;">
-    <div class="summary-row" id="agency-summary"></div>
-    <div class="groups-grid" id="agency-groups"></div>
-    <div class="promo-panel">
-      <h3>🏆 본선 진출 현황 (예상)</h3>
-      <div class="promo-grid" id="agency-promo"></div>
+  <!-- ══════════════════════════════════════════════
+       ② 재고 맞수 캠페인
+  ══════════════════════════════════════════════ -->
+  <div class="section" id="section-inventory">
+    <div class="upload-panel" id="upload-inventory">
+      <div class="paste-hint">
+        엑셀 전체 데이터 복사 → 붙여넣기<br/>
+        <span style="color:#94a3b8;font-size:11px;">자동 필터: 계출상태=출고, 상호≠현대자동차(주), 차량구분≠정상재고</span>
+      </div>
+      <textarea class="paste-area tall" id="inv-paste" placeholder="엑셀 전체 내용을 여기에 붙여넣기 하세요 (헤더 포함)"></textarea>
+      <button class="apply-btn" onclick="applyInvPaste()">✅ 적용하기</button>
+      <div class="upload-status" id="upload-status-inventory"></div>
+    </div>
+
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">📦 발급가능재고 맞수 캠페인</div>
+        <div class="sec-sub">6월 1일 ~ 30일 · 전시차+조건재고+판촉차 출고 비중 기준</div>
+      </div>
+      <div class="type-tabs">
+        <button class="type-tab active" id="inv-tab-agency" onclick="switchInvType('agency')">대리점</button>
+        <button class="type-tab" id="inv-tab-branch" onclick="switchInvType('branch')">지점</button>
+      </div>
+    </div>
+
+    <div id="inv-agency-view">
+      <div class="summary-row" id="inv-agency-summary"></div>
+      <div class="match-grid" id="inv-agency-matches"></div>
+    </div>
+    <div id="inv-branch-view" style="display:none;">
+      <div class="summary-row" id="inv-branch-summary"></div>
+      <div class="match-grid" id="inv-branch-matches"></div>
     </div>
   </div>
-</div>
+
+  <!-- ══════════════════════════════════════════════
+       ③ 계약 Spot 캠페인
+  ══════════════════════════════════════════════ -->
+  <div class="section" id="section-spot">
+    <div class="upload-panel" id="upload-spot">
+      <div class="upload-tabs">
+        <button class="utab active" id="sp-utab-branch" onclick="switchUpTab('spot','branch')">지점 데이터</button>
+        <button class="utab" id="sp-utab-agency" onclick="switchUpTab('spot','agency')">대리점 데이터</button>
+      </div>
+      <div class="upload-section active" id="sp-up-branch">
+        <div class="paste-hint">엑셀에서 <b>거점명 + 누계 계약</b> 복사 → 붙여넣기</div>
+        <textarea class="paste-area" id="sp-paste-branch" placeholder="청주북부	45&#10;청주서부	60"></textarea>
+        <button class="apply-btn" onclick="applySpotPaste('branch')">✅ 지점 적용</button>
+      </div>
+      <div class="upload-section" id="sp-up-agency">
+        <div class="paste-hint">엑셀에서 <b>거점명 + 누계 계약</b> 복사 → 붙여넣기</div>
+        <textarea class="paste-area" id="sp-paste-agency" placeholder="영동금강	30&#10;오창제일	85"></textarea>
+        <button class="apply-btn" onclick="applySpotPaste('agency')">✅ 대리점 적용</button>
+      </div>
+      <div class="upload-status" id="upload-status-spot"></div>
+    </div>
+
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">📋 계약 Spot 캠페인</div>
+        <div class="sec-sub">6월 4일 ~ 17일 · 국내승용 계약 달성율 60% 이상 거점 포상 (200만원 분배)</div>
+      </div>
+      <div class="type-tabs">
+        <button class="type-tab active" id="sp-tab-branch" onclick="switchSpotType('branch')">지점</button>
+        <button class="type-tab" id="sp-tab-agency" onclick="switchSpotType('agency')">대리점</button>
+      </div>
+    </div>
+
+    <div id="sp-branch-view">
+      <div class="summary-row" id="sp-branch-summary"></div>
+      <div class="spot-panel" id="sp-branch-table-wrap">
+        <h3 style="font-size:14px;font-weight:800;color:var(--blue-dark);margin-bottom:10px;">지점별 달성 현황</h3>
+        <table class="spot-table"><thead><tr><th>순위</th><th>지점명</th><th>계약</th><th>목표</th><th>달성율</th><th>기준(60%)</th><th>예상 포상금</th></tr></thead>
+        <tbody id="sp-branch-tbody"></tbody></table>
+      </div>
+    </div>
+    <div id="sp-agency-view" style="display:none;">
+      <div class="summary-row" id="sp-agency-summary"></div>
+      <div class="spot-panel" id="sp-agency-table-wrap">
+        <h3 style="font-size:14px;font-weight:800;color:var(--blue-dark);margin-bottom:10px;">대리점별 달성 현황</h3>
+        <table class="spot-table"><thead><tr><th>순위</th><th>대리점명</th><th>계약</th><th>목표</th><th>달성율</th><th>기준(60%)</th><th>예상 포상금</th></tr></thead>
+        <tbody id="sp-agency-tbody"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /page -->
 
 <script>
-// ── 비밀번호 ────────────────────────────────────────────
-const ADMIN_PASSWORD = '1234'; // 원하는 비밀번호로 변경
-const STORAGE_KEY = 'campaign2026_data';
+// ════════════════════════════════════════════════
+// 데이터 정의
+// ════════════════════════════════════════════════
+const ADMIN_PW = '1234';
+const SK = 'cbbp2026_v2';
 
-// ── 데이터 정의 ──────────────────────────────────────────
 const BRANCH_GROUPS = {
   'A조': ['오창','청주','옥천영동','진천','제천'],
   'B조': ['청주북부','청주서부','충주','청주남부','금왕']
@@ -245,7 +355,8 @@ const AGENCY_GROUPS = {
   'D조': ['증평삼보','보은','단양']
 };
 
-const TARGETS = {
+// 월드컵 목표 (전차종)
+const WC_TARGETS = {
   '청주북부':60,'옥천영동':46,'청주서부':91,'청주남부':130,
   '충주':96,'청주':70,'오창':42,'진천':54,'금왕':40,'제천':73,
   '영동금강':47,'증평삼보':81,'오창제일':139,'보은':65,
@@ -253,33 +364,91 @@ const TARGETS = {
   '교현':80,'연수':84,'음성':65,'단양':44
 };
 
-// ── 상태 ────────────────────────────────────────────────
+// 재고 맞수 대진
+const INV_MATCHES_AGENCY = [
+  {no:'1조', a:'가경', b:'오창제일', prize:'60만'},
+  {no:'2조', a:'서청주', b:'연수', prize:'50만'},
+  {no:'3조', a:'증평삼보', b:'교현', prize:'40만'},
+  {no:'4조', a:'제천중앙', b:'진천중앙', prize:'30만'},
+  {no:'5조', a:'보은', b:'음성', prize:'20만'},
+  {no:'6조', a:'영동금강', b:'단양', prize:'10만'},
+];
+const INV_MATCHES_BRANCH = [
+  {no:'1조', a:'청주남부', b:'충주', prize:'60만'},
+  {no:'2조', a:'청주서부', b:'제천', prize:'50만'},
+  {no:'3조', a:'청주', b:'청주북부', prize:'40만'},
+  {no:'4조', a:'진천', b:'옥천영동', prize:'30만'},
+  {no:'5조', a:'오창', b:'금왕', prize:'20만'},
+];
+
+// 계약 Spot 목표 (국내승용 = 전차종 목표 동일 적용)
+const SPOT_TARGETS = { ...WC_TARGETS };
+const SPOT_PRIZE = 2000000;
+
+// ════════════════════════════════════════════════
+// 상태
+// ════════════════════════════════════════════════
 let isAdmin = false;
-let currentTab = 'branch';
-let shippingData = {}; // { 거점명: 누계출고 }
-let lastUpdated = '';
+let currentSection = 'worldcup';
+let wcType = 'branch';
+let invType = 'agency';
+let spotType = 'branch';
 
-// ── localStorage ────────────────────────────────────────
-function saveData() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ shippingData, lastUpdated }));
-}
-function loadData() {
+let data = {
+  wc: { branch:{}, agency:{} },
+  inv: { branch:{}, agency:{} },
+  spot: { branch:{}, agency:{} },
+  updatedAt: {}
+};
+
+// ════════════════════════════════════════════════
+// Storage (Upstash KV via API)
+// ════════════════════════════════════════════════
+async function save() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const d = JSON.parse(raw);
-    shippingData = d.shippingData || {};
-    lastUpdated = d.lastUpdated || '';
-  } catch(e) {}
+    await fetch('/api/save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    // 로컬에도 백업
+    localStorage.setItem(SK, JSON.stringify(data));
+  } catch(e) {
+    // API 실패시 로컬에만 저장
+    localStorage.setItem(SK, JSON.stringify(data));
+    console.warn('API 저장 실패, 로컬 저장:', e);
+  }
+}
+async function load() {
+  try {
+    const res = await fetch('/api/load');
+    const json = await res.json();
+    if (json.ok && json.data) {
+      data = json.data;
+      return;
+    }
+  } catch(e) {
+    console.warn('API 불러오기 실패, 로컬 사용:', e);
+  }
+  // fallback: localStorage
+  try {
+    const r = localStorage.getItem(SK);
+    if (r) data = JSON.parse(r);
+  } catch(e){}
 }
 
-// ── 관리자 모드 ──────────────────────────────────────────
-function toggleAdminMode() {
+// ════════════════════════════════════════════════
+// Admin
+// ════════════════════════════════════════════════
+function toggleAdmin() {
   if (isAdmin) {
     isAdmin = false;
-    document.getElementById('admin-toggle-btn').textContent = '🔒 관리자';
-    document.getElementById('admin-toggle-btn').classList.remove('active');
-    document.getElementById('upload-panel').classList.remove('show');
+    document.getElementById('admin-btn').textContent = '🔒 관리자';
+    document.getElementById('admin-btn').classList.remove('active');
+    ['worldcup','inventory','spot'].forEach(s => {
+      const el = document.getElementById('upload-'+s);
+      if (el) el.classList.remove('show');
+    });
     showToast('관리자 모드 종료');
   } else {
     document.getElementById('pw-modal').classList.add('show');
@@ -291,328 +460,435 @@ function closeModal() {
   document.getElementById('pw-input').value = '';
   document.getElementById('pw-err').textContent = '';
 }
-function checkPassword() {
-  const val = document.getElementById('pw-input').value;
-  if (val === ADMIN_PASSWORD) {
+function checkPw() {
+  if (document.getElementById('pw-input').value === ADMIN_PW) {
     isAdmin = true;
     closeModal();
-    document.getElementById('admin-toggle-btn').textContent = '🔓 관리자 모드';
-    document.getElementById('admin-toggle-btn').classList.add('active');
-    document.getElementById('upload-panel').classList.add('show');
+    document.getElementById('admin-btn').textContent = '🔓 관리자 모드';
+    document.getElementById('admin-btn').classList.add('active');
+    const upEl = document.getElementById('upload-' + currentSection);
+    if (upEl) upEl.classList.add('show');
     showToast('관리자 모드 활성화');
   } else {
     document.getElementById('pw-err').textContent = '비밀번호가 올바르지 않습니다.';
     document.getElementById('pw-input').value = '';
-    document.getElementById('pw-input').focus();
   }
 }
-document.getElementById('pw-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') checkPassword();
-});
+document.getElementById('pw-input').addEventListener('keydown', e => { if(e.key==='Enter') checkPw(); });
 
-// ── 업로드 탭 전환 ──────────────────────────────────────
-function switchUploadTab(tab) {
-  ['paste','file'].forEach(t => {
-    document.getElementById('utab-' + t).classList.toggle('active', t === tab);
-    document.getElementById('upload-' + t).classList.toggle('active', t === tab);
+// ════════════════════════════════════════════════
+// Section / Tab switch
+// ════════════════════════════════════════════════
+function switchSection(s) {
+  currentSection = s;
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+  document.getElementById('section-'+s).classList.add('active');
+  document.querySelectorAll('.topnav-tab').forEach((el,i) => {
+    el.classList.toggle('active', ['worldcup','inventory','spot'][i]===s);
   });
-  document.getElementById('upload-status').textContent = '';
+  ['worldcup','inventory','spot'].forEach(sec => {
+    const el = document.getElementById('upload-'+sec);
+    if (el) el.classList.toggle('show', isAdmin && sec===s);
+  });
+}
+function switchWcType(t) {
+  wcType = t;
+  ['branch','agency'].forEach(x => {
+    document.getElementById('wc-tab-'+x).classList.toggle('active', x===t);
+    document.getElementById('wc-'+x+'-view').style.display = x===t?'block':'none';
+    document.getElementById('wc-utab-'+x) && document.getElementById('wc-utab-'+x).classList.toggle('active', x===t);
+    document.getElementById('wc-up-'+x) && document.getElementById('wc-up-'+x).classList.toggle('active', x===t);
+  });
+}
+function switchInvType(t) {
+  invType = t;
+  ['branch','agency'].forEach(x => {
+    document.getElementById('inv-tab-'+x).classList.toggle('active', x===t);
+    document.getElementById('inv-'+x+'-view').style.display = x===t?'block':'none';
+  });
+}
+function switchSpotType(t) {
+  spotType = t;
+  ['branch','agency'].forEach(x => {
+    document.getElementById('sp-tab-'+x).classList.toggle('active', x===t);
+    document.getElementById('sp-'+x+'-view').style.display = x===t?'block':'none';
+    document.getElementById('sp-utab-'+x) && document.getElementById('sp-utab-'+x).classList.toggle('active', x===t);
+    document.getElementById('sp-up-'+x) && document.getElementById('sp-up-'+x).classList.toggle('active', x===t);
+  });
+}
+function switchUpTab(campaign, t) {
+  if (campaign==='worldcup') {
+    ['branch','agency'].forEach(x => {
+      document.getElementById('wc-utab-'+x).classList.toggle('active', x===t);
+      document.getElementById('wc-up-'+x).classList.toggle('active', x===t);
+    });
+  } else if (campaign==='spot') {
+    ['branch','agency'].forEach(x => {
+      document.getElementById('sp-utab-'+x).classList.toggle('active', x===t);
+      document.getElementById('sp-up-'+x).classList.toggle('active', x===t);
+    });
+  }
 }
 
-// ── 붙여넣기 파싱 ────────────────────────────────────────
-function parsePaste() {
-  const raw = document.getElementById('paste-area').value.trim();
-  const status = document.getElementById('upload-status');
-  if (!raw) {
-    status.textContent = '내용을 붙여넣어 주세요.';
-    status.style.color = 'var(--red)';
-    return;
-  }
-  const lines = raw.split('\n').filter(l => l.trim());
-  let count = 0;
-  lines.forEach(line => {
+// ════════════════════════════════════════════════
+// 붙여넣기 파서 (공통)
+// ════════════════════════════════════════════════
+function parsePasteSimple(raw) {
+  const result = {};
+  raw.split('\n').forEach(line => {
     const parts = line.split('\t');
     if (parts.length < 2) return;
-    const name = parts[0].trim().replace(/\s/g, '');
-    const val = parseInt(parts[parts.length - 1].trim());
-    if (name && !isNaN(val) && name !== '거점명' && name !== '지점명') {
-      shippingData[name] = val;
-      count++;
+    const name = parts[0].trim().replace(/\s/g,'');
+    const val = parseInt(parts[parts.length-1].trim());
+    if (name && !isNaN(val) && name !== '거점명' && name !== '지점명' && name !== '대리점명') {
+      result[name] = val;
     }
   });
-  if (count === 0) {
-    status.textContent = '❌ 인식된 데이터가 없어요. 탭으로 구분된 형식인지 확인해 주세요.';
-    status.style.color = 'var(--red)';
-    return;
-  }
-  lastUpdated = new Date().toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
-  saveData();
-  renderAll();
-  status.textContent = `✅ ${count}개 거점 데이터 적용 완료`;
+  return result;
+}
+
+// ════════════════════════════════════════════════
+// ① 월드컵 적용
+// ════════════════════════════════════════════════
+function applyWcPaste(type) {
+  const raw = document.getElementById('wc-paste-'+type).value.trim();
+  const status = document.getElementById('upload-status-worldcup');
+  if (!raw) { status.textContent='내용을 입력해 주세요.'; status.style.color='var(--red)'; return; }
+  const parsed = parsePasteSimple(raw);
+  const count = Object.keys(parsed).length;
+  if (!count) { status.textContent='❌ 인식된 데이터가 없어요.'; status.style.color='var(--red)'; return; }
+  Object.assign(data.wc[type], parsed);
+  data.updatedAt['wc_'+type] = new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  save().then(() => renderAll());
+  status.textContent = `✅ ${count}개 거점 적용 완료`;
   status.style.color = 'var(--green)';
-  showToast(`${count}개 거점 데이터 업데이트 완료`);
-  document.getElementById('paste-area').value = '';
+  document.getElementById('wc-paste-'+type).value = '';
+  showToast(`월드컵 ${type==='branch'?'지점':'대리점'} ${count}개 업데이트`);
 }
 
-// ── 엑셀 파일 처리 ───────────────────────────────────────
-function handleFile(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const status = document.getElementById('upload-status');
-  status.textContent = '파일 읽는 중...';
-  status.style.color = 'var(--text-sub)';
+// ════════════════════════════════════════════════
+// ② 재고 맞수 붙여넣기 파서
+// ════════════════════════════════════════════════
+function applyInvPaste() {
+  const raw = document.getElementById('inv-paste').value.trim();
+  const status = document.getElementById('upload-status-inventory');
+  if (!raw) { status.textContent='내용을 입력해 주세요.'; status.style.color='var(--red)'; return; }
 
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    try {
-      const wb = XLSX.read(ev.target.result, { type: 'binary' });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+  const lines = raw.split('\n').filter(l => l.trim());
+  if (lines.length < 2) { status.textContent='❌ 데이터가 너무 적어요.'; status.style.color='var(--red)'; return; }
 
-      let count = 0;
-      rows.forEach(row => {
-        // 컬럼명 유연하게 매칭
-        const name = (row['거점명'] || row['지점명'] || row['대리점명'] || '').toString().replace(/\s/g,'');
-        const val = parseInt(row['누계 출고'] || row['누계출고'] || row['출고'] || 0);
-        if (name && !isNaN(val)) {
-          shippingData[name] = val;
-          count++;
-        }
-      });
-
-      lastUpdated = new Date().toLocaleString('ko-KR', {
-        month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'
-      });
-
-      saveData();
-      renderAll();
-      status.textContent = `✅ ${count}개 거점 데이터 업로드 완료`;
-      status.style.color = 'var(--green)';
-      showToast(`${count}개 거점 데이터 업데이트 완료`);
-    } catch(err) {
-      status.textContent = '❌ 파일 읽기 실패. 컬럼명을 확인해 주세요.';
-      status.style.color = 'var(--red)';
-    }
+  // 헤더 파싱
+  const headers = lines[0].split('\t').map(h => h.trim());
+  // 컬럼 인덱스 찾기
+  // 순서: No/계출상태/계약번호/고객구분/긴급주문/중고차/가사업자/변/상호및성명/판매코드/칼라/파츠/차량구분/출고센터/계약일/요청일/발급일/예정출고/해약메취/판매유형/차량가격/매출할인/이손/할부A/할부B/선수금/지점/대리점
+  const idx = {
+    status: headers.findIndex(h => h.includes('계출상태')),
+    name: headers.findIndex(h => h.includes('상호') || h.includes('성명')),
+    carType: headers.findIndex(h => h.includes('차량구분')),
+    branch: headers.findIndex(h => h === '지점' || h.includes('지점')),
+    agency: headers.findIndex(h => h === '대리점' || h.includes('대리점')),
   };
-  reader.readAsBinaryString(file);
-  e.target.value = '';
+
+  // 못 찾으면 위치 기반으로 fallback (이미지 순서 기반)
+  if (idx.status < 0) idx.status = 1;
+  if (idx.name < 0) idx.name = 8;
+  if (idx.carType < 0) idx.carType = 12;
+  if (idx.branch < 0) idx.branch = 26;
+  if (idx.agency < 0) idx.agency = 27;
+
+  const branchCount = {};
+  const agencyCount = {};
+  let total = 0, skipped = 0;
+
+  lines.slice(1).forEach(line => {
+    const cols = line.split('\t');
+    if (cols.length < 10) return;
+    const status = (cols[idx.status]||'').trim();
+    const personName = (cols[idx.name]||'').trim();
+    const carType = (cols[idx.carType]||'').trim();
+    const branch = (cols[idx.branch]||'').trim().replace(/\s/g,'');
+    const agency = (cols[idx.agency]||'').trim().replace(/\s/g,'');
+
+    // 필터
+    if (status !== '출고') { skipped++; return; }
+    if (personName === '현대자동차(주)' || personName === '현대자동차') { skipped++; return; }
+    if (carType === '정상재고') { skipped++; return; }
+
+    // 거점 결정
+    const loc = agency || branch;
+    if (!loc) return;
+
+    total++;
+    if (agency) {
+      agencyCount[agency] = (agencyCount[agency]||0) + 1;
+    } else {
+      branchCount[branch] = (branchCount[branch]||0) + 1;
+    }
+  });
+
+  data.inv.branch = branchCount;
+  data.inv.agency = agencyCount;
+  data.updatedAt['inv'] = new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  save(); renderAll();
+  status.textContent = `✅ 총 ${total}건 집계 완료 (제외 ${skipped}건)`;
+  status.style.color = 'var(--green)';
+  document.getElementById('inv-paste').value = '';
+  showToast(`재고 맞수 ${total}건 집계 완료`);
 }
 
-// ── 계산 ─────────────────────────────────────────────────
-function calcRate(name) {
-  const shipped = shippingData[name] ?? 0;
-  const target = TARGETS[name] ?? 1;
-  return shipped / target;
+// ════════════════════════════════════════════════
+// ③ 계약 Spot 적용
+// ════════════════════════════════════════════════
+function applySpotPaste(type) {
+  const raw = document.getElementById('sp-paste-'+type).value.trim();
+  const status = document.getElementById('upload-status-spot');
+  if (!raw) { status.textContent='내용을 입력해 주세요.'; status.style.color='var(--red)'; return; }
+  const parsed = parsePasteSimple(raw);
+  const count = Object.keys(parsed).length;
+  if (!count) { status.textContent='❌ 인식된 데이터가 없어요.'; status.style.color='var(--red)'; return; }
+  Object.assign(data.spot[type], parsed);
+  data.updatedAt['spot_'+type] = new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  save().then(() => renderAll());
+  status.textContent = `✅ ${count}개 거점 적용 완료`;
+  status.style.color = 'var(--green)';
+  document.getElementById('sp-paste-'+type).value = '';
+  showToast(`계약 Spot ${type==='branch'?'지점':'대리점'} ${count}개 업데이트`);
 }
 
-function calcRate2(name) {
-  return (calcRate(name) * 100).toFixed(1);
-}
-
-function getRankedGroup(groupName, members) {
-  return [...members].sort((a, b) => calcRate(b) - calcRate(a));
-}
-
-// ── 렌더 ─────────────────────────────────────────────────
+// ════════════════════════════════════════════════
+// 렌더
+// ════════════════════════════════════════════════
 function renderAll() {
-  document.getElementById('last-update').textContent =
-    lastUpdated ? `최종 업데이트: ${lastUpdated}` : '데이터 없음';
-  renderBranch();
-  renderAgency();
+  updateLastUpd();
+  renderWc('branch'); renderWc('agency');
+  renderInv('agency'); renderInv('branch');
+  renderSpot('branch'); renderSpot('agency');
 }
 
-function renderBranch() {
-  // Summary
-  const allBranch = Object.values(BRANCH_GROUPS).flat();
-  const totalShipped = allBranch.reduce((s,n) => s + (shippingData[n]||0), 0);
-  const totalTarget = allBranch.reduce((s,n) => s + (TARGETS[n]||0), 0);
-  document.getElementById('branch-summary').innerHTML = `
-    <div class="summary-card"><span>총 지점</span><strong>10개</strong></div>
-    <div class="summary-card"><span>누계 출고</span><strong>${totalShipped}대</strong></div>
-    <div class="summary-card"><span>총 목표</span><strong>${totalTarget}대</strong></div>
-    <div class="summary-card"><span>달성율</span><strong>${totalTarget?(totalShipped/totalTarget*100).toFixed(1):0}%</strong></div>
+function updateLastUpd() {
+  const times = Object.values(data.updatedAt).filter(Boolean);
+  document.getElementById('last-upd').textContent = times.length ? '업데이트: ' + times[times.length-1] : '데이터 없음';
+}
+
+// ── 월드컵 렌더 ──────────────────────────────────
+function getRate(name, type) {
+  const d = type==='wc' ? data.wc : type==='inv' ? data.inv : data.spot;
+  // find in branch or agency
+  const bv = d.branch[name] ?? null;
+  const av = d.agency[name] ?? null;
+  const val = av !== null ? av : bv !== null ? bv : null;
+  if (val === null) return 0;
+  return val / (WC_TARGETS[name] || 1);
+}
+function getWcShipped(name, type) {
+  const t = type === 'branch' ? data.wc.branch : data.wc.agency;
+  return t[name] ?? 0;
+}
+function getInvShipped(name, type) {
+  const t = type === 'branch' ? data.inv.branch : data.inv.agency;
+  return t[name] ?? 0;
+}
+
+function renderWc(type) {
+  const groups = type==='branch' ? BRANCH_GROUPS : AGENCY_GROUPS;
+  const shipped = type==='branch' ? data.wc.branch : data.wc.agency;
+  const allNames = Object.values(groups).flat();
+  const totalShip = allNames.reduce((s,n)=>s+(shipped[n]||0),0);
+  const totalTgt = allNames.reduce((s,n)=>s+(WC_TARGETS[n]||0),0);
+
+  document.getElementById(`wc-${type}-summary`).innerHTML = `
+    <div class="scard"><span>총 ${type==='branch'?'지점':'대리점'}</span><strong>${allNames.length}개</strong></div>
+    <div class="scard"><span>누계 출고</span><strong>${totalShip}대</strong></div>
+    <div class="scard"><span>목표</span><strong>${totalTgt}대</strong></div>
+    <div class="scard"><span>달성율</span><strong>${totalTgt?(totalShip/totalTgt*100).toFixed(1):0}%</strong></div>
   `;
 
-  // Groups
-  const groupsEl = document.getElementById('branch-groups');
+  const groupsEl = document.getElementById(`wc-${type}-groups`);
   groupsEl.innerHTML = '';
-  const promoData = { champ:[], premier:[] };
+  const promoData = {champ:[],premier:[],challenger:[]};
 
-  Object.entries(BRANCH_GROUPS).forEach(([gname, members]) => {
-    const ranked = getRankedGroup(gname, members);
+  Object.entries(groups).forEach(([gname, members]) => {
+    const ranked = [...members].sort((a,b)=>(shipped[b]||0)/WC_TARGETS[b] - (shipped[a]||0)/WC_TARGETS[a]);
     const card = document.createElement('div');
-    card.className = 'group-panel';
+    card.className = 'gpanel';
+    const isAgency = type==='agency';
+    const subText = isAgency ? '3개 · 1위 챔피언스 / 2위 프리미어 / 3위 챌린저스' : '5개 · 1~2위 챔피언스 / 3~5위 프리미어';
 
-    let rows = ranked.map((name, i) => {
-      const rate = calcRate(name);
-      const rateStr = calcRate2(name);
-      const shipped = shippingData[name] ?? 0;
-      const target = TARGETS[name];
+    let rows = ranked.map((name,i) => {
+      const s = shipped[name]||0;
+      const tgt = WC_TARGETS[name]||1;
+      const rate = s/tgt;
+      const barW = Math.min(rate*100,100).toFixed(0);
       const rankClass = ['r1','r2','r3','r4','r5'][i];
-      const isAdvance = i < 2; // 1,2위 챔피언스
-      const advBadge = i < 2
-        ? '<span class="adv-badge champ">챔피언스</span>'
-        : '<span class="adv-badge premier">프리미어</span>';
-      const barW = Math.min(rate * 100, 100).toFixed(0);
-      return `<tr class="${isAdvance?'advance':''}">
+      let badge = '';
+      if (isAgency) {
+        badge = i===0?'<span class="abadge ab-champ">챔피언스</span>':i===1?'<span class="abadge ab-premier">프리미어</span>':'<span class="abadge ab-challenger">챌린저스</span>';
+      } else {
+        badge = i<2?'<span class="abadge ab-champ">챔피언스</span>':'<span class="abadge ab-premier">프리미어</span>';
+      }
+      const advance = isAgency?(i===0):(i<2);
+      return `<tr class="${advance?'advance':''}">
         <td><span class="rank ${rankClass}">${i+1}</span></td>
         <td style="text-align:left;font-weight:700;">${name}</td>
-        <td>${shipped} / ${target}</td>
-        <td>
-          <div class="rate-wrap">
-            <div class="rate-bar"><div class="rate-fill" style="width:${barW}%"></div></div>
-            <span class="rate-val">${rateStr}%</span>
-          </div>
-        </td>
-        <td>${advBadge}</td>
+        <td>${s} / ${tgt}</td>
+        <td><div class="rw"><div class="rb"><div class="rf" style="width:${barW}%"></div></div><span class="rv">${(rate*100).toFixed(1)}%</span></div></td>
+        <td>${badge}</td>
       </tr>`;
     }).join('');
 
-    card.innerHTML = `
-      <div class="group-header">
-        <h3>${gname}</h3>
-        <span class="group-sub">5개 지점 · 1~2위 챔피언스 진출</span>
-      </div>
-      <table class="group-table">
-        <thead><tr><th>순위</th><th>지점명</th><th>출고/목표</th><th>달성율</th><th>본선</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>`;
+    card.innerHTML = `<div class="gpanel-head"><h3>${gname}</h3><span>${subText}</span></div>
+      <table class="gtable"><thead><tr><th>순위</th><th>${type==='branch'?'지점':'대리점'}</th><th>출고/목표</th><th>달성율</th><th>본선</th></tr></thead>
+      <tbody>${rows}</tbody></table>`;
     groupsEl.appendChild(card);
 
-    // 진출 데이터 수집
-    ranked.forEach((name, i) => {
-      if (i < 2) promoData.champ.push({ name, group: gname, rank: i+1 });
-      else promoData.premier.push({ name, group: gname, rank: i+1 });
+    ranked.forEach((name,i) => {
+      if (isAgency) {
+        if (i===0) promoData.champ.push({name,group:gname});
+        else if (i===1) promoData.premier.push({name,group:gname});
+        else promoData.challenger.push({name,group:gname});
+      } else {
+        if (i<2) promoData.champ.push({name,group:gname,rank:i+1});
+        else promoData.premier.push({name,group:gname,rank:i+1});
+      }
     });
   });
 
-  // Promo preview
-  const promoEl = document.getElementById('branch-promo');
-  promoEl.innerHTML = `
-    <div class="promo-card champ">
-      <h4>🏆 챔피언스 리그 (4개)</h4>
-      ${promoData.champ.map(d=>`<div class="promo-item">${d.name} <span style="color:var(--text-sub);font-size:12px;">${d.group} ${d.rank}위</span></div>`).join('')}
-    </div>
-    <div class="promo-card premier">
-      <h4>⚽ 프리미어 리그 (6개)</h4>
-      ${promoData.premier.map(d=>`<div class="promo-item">${d.name} <span style="color:var(--text-sub);font-size:12px;">${d.group} ${d.rank}위</span></div>`).join('')}
-    </div>
-    <div class="promo-card" style="background:#f8fafc;border-color:#e2e8f0;">
-      <h4 style="color:#64748b;">📋 포상 규모</h4>
-      <div class="promo-item">챔피언스 1위 120만원</div>
-      <div class="promo-item">챔피언스 2위 100만원</div>
-      <div class="promo-item">챔피언스 3위 80만원</div>
-      <div class="promo-item">챔피언스 4위 70만원</div>
-      <div class="promo-item">프리미어 1위 50만원</div>
-      <div class="promo-item" style="color:var(--text-sub);font-size:12px;">총 510만원 규모</div>
-    </div>
-  `;
+  const promoEl = document.getElementById(`wc-${type}-promo`);
+  if (type==='branch') {
+    promoEl.innerHTML = `
+      <div class="pcard pc-champ"><h4>🏆 챔피언스 리그 (4개)</h4>${promoData.champ.map(d=>`<div class="pitem">${d.name} <span style="color:var(--text-sub);font-size:11px;">${d.group} ${d.rank}위</span></div>`).join('')}</div>
+      <div class="pcard pc-premier"><h4>⚽ 프리미어 리그 (6개)</h4>${promoData.premier.map(d=>`<div class="pitem">${d.name} <span style="color:var(--text-sub);font-size:11px;">${d.group} ${d.rank}위</span></div>`).join('')}</div>
+      <div class="pcard pc-info"><h4>📋 포상 규모 (총 510만원)</h4><div class="pitem">챔피언스 1위 120만 / 2위 100만</div><div class="pitem">챔피언스 3위 80만 / 4위 70만</div><div class="pitem">프리미어 1위 50만 / 2위 40만</div><div class="pitem">프리미어 3~4위 30만 / 5~6위 20만</div></div>
+    `;
+  } else {
+    promoEl.innerHTML = `
+      <div class="pcard pc-champ"><h4>🏆 챔피언스 리그 (4개)</h4>${promoData.champ.map(d=>`<div class="pitem">${d.name} <span style="color:var(--text-sub);font-size:11px;">${d.group}</span></div>`).join('')}</div>
+      <div class="pcard pc-premier"><h4>⚽ 프리미어 리그 (4개)</h4>${promoData.premier.map(d=>`<div class="pitem">${d.name} <span style="color:var(--text-sub);font-size:11px;">${d.group}</span></div>`).join('')}</div>
+      <div class="pcard pc-challenger"><h4>🌱 챌린저스 리그 (4개)</h4>${promoData.challenger.map(d=>`<div class="pitem">${d.name} <span style="color:var(--text-sub);font-size:11px;">${d.group}</span></div>`).join('')}</div>
+    `;
+  }
 }
 
-function renderAgency() {
-  const allAgency = Object.values(AGENCY_GROUPS).flat();
-  const totalShipped = allAgency.reduce((s,n) => s + (shippingData[n]||0), 0);
-  const totalTarget = allAgency.reduce((s,n) => s + (TARGETS[n]||0), 0);
-  document.getElementById('agency-summary').innerHTML = `
-    <div class="summary-card"><span>총 대리점</span><strong>12개</strong></div>
-    <div class="summary-card"><span>누계 출고</span><strong>${totalShipped}대</strong></div>
-    <div class="summary-card"><span>총 목표</span><strong>${totalTarget}대</strong></div>
-    <div class="summary-card"><span>달성율</span><strong>${totalTarget?(totalShipped/totalTarget*100).toFixed(1):0}%</strong></div>
+// ── 재고 맞수 렌더 ────────────────────────────────
+function renderInv(type) {
+  const matches = type==='agency' ? INV_MATCHES_AGENCY : INV_MATCHES_BRANCH;
+  const shipped = type==='agency' ? data.inv.agency : data.inv.branch;
+  const targets = WC_TARGETS;
+
+  const allNames = matches.flatMap(m=>[m.a,m.b]);
+  const totalShip = allNames.reduce((s,n)=>s+(shipped[n]||0),0);
+  const totalTgt = allNames.reduce((s,n)=>s+(targets[n]||0),0);
+
+  document.getElementById(`inv-${type}-summary`).innerHTML = `
+    <div class="scard"><span>총 대진</span><strong>${matches.length}조</strong></div>
+    <div class="scard"><span>발급재고 출고</span><strong>${totalShip}대</strong></div>
+    <div class="scard"><span>전체 목표</span><strong>${totalTgt}대</strong></div>
+    <div class="scard"><span>전체 달성율</span><strong>${totalTgt?(totalShip/totalTgt*100).toFixed(1):0}%</strong></div>
   `;
 
-  const groupsEl = document.getElementById('agency-groups');
-  groupsEl.innerHTML = '';
-  const promoData = { champ:[], premier:[], challenger:[] };
+  const el = document.getElementById(`inv-${type}-matches`);
+  el.innerHTML = '';
+  matches.forEach(m => {
+    const aS = shipped[m.a]||0, bS = shipped[m.b]||0;
+    const aTgt = targets[m.a]||1, bTgt = targets[m.b]||1;
+    const aR = aS/aTgt, bR = bS/bTgt;
+    const total = aR + bR;
+    const aW = total>0?(aR/total*100).toFixed(0):50;
+    const bW = total>0?(bR/total*100).toFixed(0):50;
+    const aWin = aR > bR, bWin = bR > aR, draw = aR === bR;
 
-  Object.entries(AGENCY_GROUPS).forEach(([gname, members]) => {
-    const ranked = getRankedGroup(gname, members);
     const card = document.createElement('div');
-    card.className = 'group-panel';
-
-    let rows = ranked.map((name, i) => {
-      const rate = calcRate(name);
-      const rateStr = calcRate2(name);
-      const shipped = shippingData[name] ?? 0;
-      const target = TARGETS[name];
-      const rankClass = ['r1','r2','r3'][i];
-      const barW = Math.min(rate * 100, 100).toFixed(0);
-      const advBadge = i === 0
-        ? '<span class="adv-badge champ">챔피언스</span>'
-        : i === 1
-        ? '<span class="adv-badge premier">프리미어</span>'
-        : '<span class="adv-badge challenger">챌린저스</span>';
-      return `<tr class="${i===0?'advance':''}">
-        <td><span class="rank ${rankClass}">${i+1}</span></td>
-        <td style="text-align:left;font-weight:700;">${name}</td>
-        <td>${shipped} / ${target}</td>
-        <td>
-          <div class="rate-wrap">
-            <div class="rate-bar"><div class="rate-fill" style="width:${barW}%"></div></div>
-            <span class="rate-val">${rateStr}%</span>
-          </div>
-        </td>
-        <td>${advBadge}</td>
-      </tr>`;
-    }).join('');
-
+    card.className = 'match-card';
     card.innerHTML = `
-      <div class="group-header">
-        <h3>${gname}</h3>
-        <span class="group-sub">3개 대리점 · 1위 챔피언스 / 2위 프리미어 / 3위 챌린저스</span>
+      <div class="match-no">${m.no} · 포상 ${m.prize}</div>
+      <div class="match-body">
+        <div class="match-team">
+          <div class="name">${m.a}${aWin?'<span class="win-badge">WIN</span>':draw&&total>0?'<span class="draw-badge">무</span>':bWin&&total>0?'<span class="lose-badge">-</span>':''}</div>
+          <div class="rate" style="color:${aWin?'var(--blue-dark)':'var(--text-sub)'}">${(aR*100).toFixed(1)}%</div>
+          <div class="shipped">${aS}대 / ${aTgt}대</div>
+        </div>
+        <div class="match-vs">VS</div>
+        <div class="match-team">
+          <div class="name">${m.b}${bWin?'<span class="win-badge">WIN</span>':draw&&total>0?'<span class="draw-badge">무</span>':aWin&&total>0?'<span class="lose-badge">-</span>':''}</div>
+          <div class="rate" style="color:${bWin?'var(--blue-dark)':'var(--text-sub)'}">${(bR*100).toFixed(1)}%</div>
+          <div class="shipped">${bS}대 / ${bTgt}대</div>
+        </div>
       </div>
-      <table class="group-table">
-        <thead><tr><th>순위</th><th>대리점명</th><th>출고/목표</th><th>달성율</th><th>본선</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>`;
-    groupsEl.appendChild(card);
+      <div class="match-bar">
+        <div class="match-bar-wrap">
+          <div class="match-bar-l" style="width:${aW}%"></div>
+          <div class="match-bar-r" style="width:${bW}%"></div>
+        </div>
+      </div>
+    `;
+    el.appendChild(card);
+  });
+}
 
-    ranked.forEach((name, i) => {
-      if (i === 0) promoData.champ.push({ name, group: gname });
-      else if (i === 1) promoData.premier.push({ name, group: gname });
-      else promoData.challenger.push({ name, group: gname });
-    });
+// ── 계약 Spot 렌더 ────────────────────────────────
+function renderSpot(type) {
+  const allNames = type==='branch'
+    ? Object.values(BRANCH_GROUPS).flat()
+    : Object.values(AGENCY_GROUPS).flat();
+  const contracted = type==='branch' ? data.spot.branch : data.spot.agency;
+
+  const ranked = [...allNames].sort((a,b)=>(contracted[b]||0)/SPOT_TARGETS[b]-(contracted[a]||0)/SPOT_TARGETS[a]);
+  const passers = ranked.filter(n => (contracted[n]||0)/SPOT_TARGETS[n] >= 0.6);
+  const totalPass = passers.reduce((s,n)=>s+(contracted[n]||0),0);
+
+  // 예상 포상금 계산
+  const rewardMap = {};
+  passers.forEach(n => {
+    rewardMap[n] = totalPass > 0 ? Math.floor(SPOT_PRIZE * (contracted[n]||0) / totalPass / 1000) * 1000 : 0;
   });
 
-  const promoEl = document.getElementById('agency-promo');
-  promoEl.innerHTML = `
-    <div class="promo-card champ">
-      <h4>🏆 챔피언스 리그 (4개)</h4>
-      ${promoData.champ.map(d=>`<div class="promo-item">${d.name} <span style="color:var(--text-sub);font-size:12px;">${d.group} 1위</span></div>`).join('')}
-    </div>
-    <div class="promo-card premier">
-      <h4>⚽ 프리미어 리그 (4개)</h4>
-      ${promoData.premier.map(d=>`<div class="promo-item">${d.name} <span style="color:var(--text-sub);font-size:12px;">${d.group} 2위</span></div>`).join('')}
-    </div>
-    <div class="promo-card challenger">
-      <h4>🌱 챌린저스 리그 (4개)</h4>
-      ${promoData.challenger.map(d=>`<div class="promo-item">${d.name} <span style="color:var(--text-sub);font-size:12px;">${d.group} 3위</span></div>`).join('')}
-    </div>
+  const totalContract = allNames.reduce((s,n)=>s+(contracted[n]||0),0);
+  const totalTgt = allNames.reduce((s,n)=>s+(SPOT_TARGETS[n]||0),0);
+
+  document.getElementById(`sp-${type}-summary`).innerHTML = `
+    <div class="scard"><span>기준 달성 거점</span><strong>${passers.length}개</strong></div>
+    <div class="scard"><span>누계 계약</span><strong>${totalContract}대</strong></div>
+    <div class="scard"><span>달성 거점 계약합계</span><strong>${totalPass}대</strong></div>
+    <div class="scard"><span>포상 재원</span><strong>200만원</strong></div>
   `;
+
+  const tbody = document.getElementById(`sp-${type}-tbody`);
+  tbody.innerHTML = ranked.map((name, i) => {
+    const c = contracted[name]||0;
+    const tgt = SPOT_TARGETS[name]||1;
+    const rate = c/tgt;
+    const pass = rate >= 0.6;
+    const reward = rewardMap[name] || 0;
+    return `<tr>
+      <td>${i+1}</td>
+      <td style="font-weight:700;">${name}</td>
+      <td>${c}</td>
+      <td>${tgt}</td>
+      <td><div class="rw"><div class="rb"><div class="rf" style="width:${Math.min(rate*100,100).toFixed(0)}%;background:${pass?'linear-gradient(90deg,var(--green),#4db890)':'linear-gradient(90deg,#e53e3e,#f87171)'}"></div></div><span class="rv" style="color:${pass?'var(--green)':'var(--red)'}">${(rate*100).toFixed(1)}%</span></div></td>
+      <td>${pass?'<span class="pass-badge">✅ 달성</span>':'<span class="fail-badge">미달성</span>'}</td>
+      <td class="reward-val">${pass&&reward>0?(reward/10000).toFixed(0)+'만원':'-'}</td>
+    </tr>`;
+  }).join('');
 }
 
-// ── 탭 전환 ──────────────────────────────────────────────
-function switchTab(tab) {
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach((el, i) => {
-    el.classList.toggle('active', (i===0&&tab==='branch')||(i===1&&tab==='agency'));
-  });
-  document.getElementById('section-branch').style.display = tab==='branch'?'block':'none';
-  document.getElementById('section-agency').style.display = tab==='agency'?'block':'none';
-}
-
-// ── Toast ────────────────────────────────────────────────
+// ════════════════════════════════════════════════
+// Toast
+// ════════════════════════════════════════════════
 function showToast(msg) {
   const wrap = document.getElementById('toast-wrap');
   const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
+  t.className = 'toast'; t.textContent = msg;
   wrap.appendChild(t);
-  setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 260); }, 2400);
+  setTimeout(()=>{ t.classList.add('hide'); setTimeout(()=>t.remove(),220); }, 2400);
 }
 
-// ── Init ─────────────────────────────────────────────────
-loadData();
-renderAll();
+// ════════════════════════════════════════════════
+// Init
+// ════════════════════════════════════════════════
+(async () => {
+  await load();
+  renderAll();
+})();
 </script>
 </body>
 </html>
