@@ -124,6 +124,34 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .toast.hide{animation:tOut .22s ease forwards;}
 @keyframes tIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
 @keyframes tOut{to{opacity:0;transform:translateY(-5px)}}
+
+/* ── 재고 계산기 ── */
+.calc-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:16px;box-shadow:var(--shadow);}
+.calc-panel h3{font-size:15px;font-weight:800;color:var(--blue-dark);margin-bottom:6px;}
+.calc-panel .hint{font-size:12px;color:var(--text-sub);margin-bottom:12px;line-height:1.6;}
+.calc-textarea{width:100%;height:200px;border:1px solid var(--line);border-radius:10px;padding:10px;font-family:monospace;font-size:11px;resize:vertical;outline:none;}
+.calc-textarea:focus{border-color:#8ebce4;box-shadow:0 0 0 3px rgba(15,105,180,.08);}
+.calc-btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.calc-btn{height:38px;padding:0 16px;border-radius:10px;border:none;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.calc-btn-primary{background:linear-gradient(180deg,#1976c5,#0f69b4);color:#fff;box-shadow:0 6px 16px rgba(15,105,180,.18);}
+.calc-btn-apply{background:linear-gradient(180deg,#1b9d68,#16855a);color:#fff;box-shadow:0 6px 16px rgba(27,157,104,.2);}
+.calc-btn-clear{background:#fff;color:var(--text-sub);border:1px solid var(--line);}
+.calc-summary{background:#f8fbfe;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px;display:none;}
+.calc-summary.show{display:block;}
+.calc-summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px;}
+@media(max-width:700px){.calc-summary-grid{grid-template-columns:repeat(2,1fr);}}
+.cscard{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:center;}
+.cscard span{font-size:11px;color:var(--text-sub);display:block;margin-bottom:3px;}
+.cscard strong{font-size:16px;font-weight:800;color:var(--blue-dark);}
+.calc-result-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:700px){.calc-result-grid{grid-template-columns:1fr;}}
+.calc-result-table{width:100%;border-collapse:collapse;font-size:12px;}
+.calc-result-table th{background:#eef5fc;font-size:11px;font-weight:800;color:var(--blue-dark);padding:8px 10px;text-align:center;}
+.calc-result-table td{padding:8px 10px;text-align:center;border-bottom:1px solid #f0f4f8;font-weight:600;color:#294564;}
+.calc-result-table tr:last-child td{border-bottom:none;}
+.calc-result-table .bar-cell{text-align:left;}
+.unmapped-box{background:#fff8f0;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:12px;color:#b45309;display:none;}
+.unmapped-box.show{display:block;}
 </style>
 </head>
 <body>
@@ -149,6 +177,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <button class="topnav-tab active" onclick="switchSection('worldcup')">⚽ 월드컵</button>
     <button class="topnav-tab" onclick="switchSection('inventory')">📦 재고 맞수</button>
     <button class="topnav-tab" onclick="switchSection('spot')">📋 계약 Spot</button>
+    <button class="topnav-tab" id="tab-calc" style="display:none;" onclick="switchSection('calc')">🧮 재고 계산기</button>
   </div>
   <div class="topnav-right">
     <span class="last-upd" id="last-upd">데이터 없음</span>
@@ -263,6 +292,37 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
         <tbody id="sp-agency-tbody"></tbody></table></div>
     </div>
   </div>
+  <!-- 재고 계산기 (관리자 전용) -->
+  <div class="section" id="section-calc">
+    <div class="calc-panel">
+      <h3>🧮 발급가능재고 계산기</h3>
+      <div class="hint">
+        국내판매시스템에서 전체 데이터 복사(Ctrl+A → Ctrl+C) → 아래 붙여넣기<br/>
+        <b>자동 처리:</b> 계출상태=출고 / 차량구분≠정상재고 / 거점코드→거점명 변환
+      </div>
+      <textarea class="calc-textarea" id="calc-paste" placeholder="엑셀 전체 데이터를 여기에 붙여넣기 하세요 (헤더 포함)&#10;&#10;No	계출상태	계약번호	...	지점	대리점&#10;1	출고	..."></textarea>
+      <div class="calc-btn-row">
+        <button class="calc-btn calc-btn-primary" onclick="runCalc()">🔍 집계 실행</button>
+        <button class="calc-btn calc-btn-clear" onclick="clearCalc()">🗑️ 초기화</button>
+      </div>
+      <div class="upload-status" id="calc-status" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- 처리 요약 -->
+    <div class="calc-summary" id="calc-summary">
+      <div class="calc-summary-grid" id="calc-summary-grid"></div>
+      <!-- 결과 테이블 -->
+      <div class="calc-result-grid" id="calc-result-grid"></div>
+      <!-- 미매핑 경고 -->
+      <div class="unmapped-box" id="calc-unmapped"></div>
+      <!-- 적용 버튼 -->
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="calc-btn calc-btn-apply" onclick="applyCalcToInv()">✅ 재고 맞수에 적용</button>
+        <span style="font-size:12px;color:var(--text-sub);align-self:center;">결과를 📦 재고 맞수 탭에 바로 반영합니다</span>
+      </div>
+    </div>
+  </div>
+
 </div>
 <script>
 // 비밀번호는 서버에서 검증 (api/auth.js)
@@ -367,6 +427,8 @@ function toggleAdmin() {
   isAdmin = false;
   sessionStorage.removeItem('admin_token');
   ['worldcup','inventory','spot'].forEach(s=>{ const el=document.getElementById('upload-'+s); if(el) el.classList.remove('show'); });
+  document.getElementById('tab-calc').style.display = 'none';
+  if (currentSection === 'calc') switchSection('worldcup');
   showToast('관리자 모드 종료');
 }
 function closeModal() {
@@ -394,6 +456,7 @@ async function checkPw() {
       closeModal();
       const el = document.getElementById('upload-'+currentSection);
       if (el) el.classList.add('show');
+      document.getElementById('tab-calc').style.display = '';
       showToast('✅ 관리자 모드 활성화');
     } else {
       errEl.textContent = '비밀번호가 올바르지 않습니다.';
@@ -413,7 +476,7 @@ function switchSection(s) {
   currentSection=s;
   document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
   document.getElementById('section-'+s).classList.add('active');
-  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['worldcup','inventory','spot'][i]===s));
+  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['worldcup','inventory','spot','calc'][i]===s));
   ['worldcup','inventory','spot'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
 }
 function switchWcType(t) {
@@ -603,6 +666,135 @@ function renderSpot(type) {
   }).join('');
 }
 
+// ── 재고 계산기 ─────────────────────────────────────────
+const CALC_CODE_MAP = {
+  'DG27001':'가경','DG16002':'오창제일','DG22001':'음성','DG21003':'연수',
+  'DG23003':'제천중앙','DG42001':'서청주','G27':'청주서부','G21':'충주',
+  'G42':'청주남부','G16':'청주북부','DG13001':'보은','DG21004':'교현',
+  'DG17001':'증평삼보','G18':'진천','DG23001':'단양','G17':'오창',
+  'G22':'금왕','G11':'청주','G23':'제천','G13':'옥천영동',
+  'DG18001':'진천중앙','DG13003':'영동금강'
+};
+const AGENCY_CODES = new Set([
+  'DG27001','DG16002','DG22001','DG21003','DG23003',
+  'DG42001','DG13001','DG21004','DG17001','DG23001',
+  'DG18001','DG13003'
+]);
+
+let calcResult = { branch:{}, agency:{}, summary:{} };
+
+function runCalc() {
+  const raw = document.getElementById('calc-paste').value.trim();
+  const st = document.getElementById('calc-status');
+  if (!raw) { st.textContent='데이터를 붙여넣어 주세요.'; st.style.color='var(--red)'; return; }
+
+  const lines = raw.split('\n').filter(l => l.trim());
+  if (lines.length < 2) { st.textContent='❌ 데이터가 너무 적어요.'; st.style.color='var(--red)'; return; }
+
+  // 헤더 찾기
+  let startIdx = 0;
+  const headerKws = ['계출상태','차량구분','지점'];
+  for (let i = 0; i < Math.min(lines.length, 5); i++) {
+    if (headerKws.some(kw => lines[i].includes(kw))) { startIdx = i + 1; break; }
+  }
+
+  const branchResult = {}, agencyResult = {}, unmapped = {};
+  let total=0, cntShipped=0, cntNormal=0, cntSkip=0, cntValid=0;
+
+  lines.slice(startIdx).forEach(line => {
+    const cols = line.split('\t');
+    if (cols.length < 27) return;
+    total++;
+    const status   = cols[1].trim();
+    const carType  = cols[12].trim();
+    const branchCd = cols[26].trim();
+    const agencyCd = cols.length > 27 ? cols[27].trim() : '';
+
+    if (status !== '출고') { cntSkip++; return; }
+    cntShipped++;
+    if (carType === '정상재고') { cntNormal++; return; }
+    cntValid++;
+
+    const code = agencyCd || branchCd;
+    const name = CALC_CODE_MAP[code];
+    if (!name) { unmapped[code] = (unmapped[code]||0) + 1; return; }
+
+    if (agencyCd && AGENCY_CODES.has(agencyCd)) {
+      agencyResult[name] = (agencyResult[name]||0) + 1;
+    } else {
+      branchResult[name] = (branchResult[name]||0) + 1;
+    }
+  });
+
+  calcResult = { branch: branchResult, agency: agencyResult, unmapped };
+
+  // 요약 카드
+  document.getElementById('calc-summary-grid').innerHTML = `
+    <div class="cscard"><span>전체 데이터</span><strong>${total}건</strong></div>
+    <div class="cscard"><span>출고</span><strong>${cntShipped}건</strong></div>
+    <div class="cscard"><span>출고 아님 제외</span><strong>${cntSkip}건</strong></div>
+    <div class="cscard"><span>정상재고 제외</span><strong>${cntNormal}건</strong></div>
+    <div class="cscard"><span style="color:var(--green);font-weight:800;">발급가능재고</span><strong style="color:var(--green);">${cntValid}대</strong></div>
+  `;
+
+  // 결과 테이블
+  const makeTable = (title, result) => {
+    const sorted = Object.entries(result).sort((a,b)=>b[1]-a[1]);
+    const tot = sorted.reduce((s,[,v])=>s+v,0);
+    const maxV = sorted[0]?.[1] || 1;
+    const rows = sorted.map(([name,cnt]) => {
+      const pct = (cnt/tot*100).toFixed(1);
+      const bar = '█'.repeat(Math.round(cnt/maxV*12));
+      return `<tr><td style="text-align:left;font-weight:700;">${name}</td><td>${cnt}대</td><td>${pct}%</td><td class="bar-cell" style="color:var(--blue);font-size:10px;">${bar}</td></tr>`;
+    }).join('');
+    return `<div>
+      <div style="font-size:13px;font-weight:800;color:var(--blue-dark);margin-bottom:8px;">${title} (총 ${tot}대)</div>
+      <table class="calc-result-table">
+        <thead><tr><th>거점명</th><th>출고</th><th>비율</th><th>막대</th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="4" style="color:var(--text-sub);">데이터 없음</td></tr>'}</tbody>
+      </table>
+    </div>`;
+  };
+
+  document.getElementById('calc-result-grid').innerHTML =
+    makeTable('📍 지점별', branchResult) + makeTable('🏪 대리점별', agencyResult);
+
+  // 미매핑 경고
+  const unmappedEl = document.getElementById('calc-unmapped');
+  if (Object.keys(unmapped).length > 0) {
+    unmappedEl.innerHTML = '⚠️ 미매핑 거점 코드 (CODE_MAP 확인 필요): ' +
+      Object.entries(unmapped).map(([k,v])=>`<b>${k}</b>(${v}건)`).join(', ');
+    unmappedEl.classList.add('show');
+  } else {
+    unmappedEl.classList.remove('show');
+  }
+
+  document.getElementById('calc-summary').classList.add('show');
+  st.textContent = `✅ 집계 완료 · 발급가능재고 ${cntValid}대`;
+  st.style.color = 'var(--green)';
+}
+
+function applyCalcToInv() {
+  if (!Object.keys(calcResult.branch).length && !Object.keys(calcResult.agency).length) {
+    showToast('❌ 먼저 집계를 실행해 주세요.');
+    return;
+  }
+  Object.assign(data.inv.branch, calcResult.branch);
+  Object.assign(data.inv.agency, calcResult.agency);
+  data.updatedAt['inv_calc'] = new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  save().then(() => renderAll());
+  showToast('✅ 재고 맞수에 적용 완료!');
+  switchSection('inventory');
+}
+
+function clearCalc() {
+  document.getElementById('calc-paste').value = '';
+  document.getElementById('calc-status').textContent = '';
+  document.getElementById('calc-summary').classList.remove('show');
+  document.getElementById('calc-unmapped').classList.remove('show');
+  calcResult = { branch:{}, agency:{} };
+}
+
 function showToast(msg) {
   const t=document.createElement('div');t.className='toast';t.textContent=msg;
   document.getElementById('toast-wrap').appendChild(t);
@@ -642,6 +834,7 @@ function applyUrlType() {
         isAdmin = true;
         const el = document.getElementById('upload-'+currentSection);
         if (el) el.classList.add('show');
+        document.getElementById('tab-calc').style.display = '';
       } else {
         sessionStorage.removeItem('admin_token');
       }
