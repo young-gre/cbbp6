@@ -202,7 +202,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <button class="topnav-tab" onclick="switchSection('inventory')">📦 재고 맞수</button>
     <button class="topnav-tab" onclick="switchSection('spot')">📋 계약 Spot</button>
     <button class="topnav-tab" id="tab-calc" style="display:none;" onclick="switchSection('calc')">🧮 재고 계산기</button>
-    <button class="topnav-tab" id="tab-incentive" style="display:none;" onclick="switchSection('incentive')">💰 판촉지원금</button>
+    <button class="topnav-tab" id="tab-incentive" onclick="switchSection('incentive')">💰 판촉지원금</button>
   </div>
   <div class="topnav-right">
     <span class="last-upd" id="last-upd">데이터 없음</span>
@@ -350,8 +350,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 
   <!-- 판촉지원금 탭 (관리자 전용) -->
   <div class="section" id="section-incentive">
-    <div class="calc-panel">
-      <h3>💰 고급차 판매 우수 판촉지원금</h3>
+    <div class="upload-panel" id="upload-incentive">
+      <h3 style="font-size:15px;font-weight:800;color:var(--blue-dark);margin-bottom:6px;">💰 고급차 판매 우수 판촉지원금 데이터 입력</h3>
       <div class="hint">
         국내판매시스템에서 전체 데이터 복사 → 붙여넣기<br/>
         <b>대상 차종:</b> 제네시스 전차종 (GN·JJ·JP·JK·JV·JX·JI) + 펠리세이드 (FX)<br/>
@@ -422,6 +422,7 @@ let data = {
   wc:{branch:{},agency:{}},
   inv:{branch:{},agency:{}},
   spot:{branch:{},agency:{}},
+  incentive:{branch:{},agency:{}},
   updatedAt:{}
 };
 
@@ -437,6 +438,9 @@ function fixData() {
   if (!data.spot.branch) data.spot.branch = {};
   if (!data.spot.agency) data.spot.agency = {};
   if (!data.updatedAt) data.updatedAt = {};
+  if (!data.incentive) data.incentive = {};
+  if (!data.incentive.branch) data.incentive.branch = {};
+  if (!data.incentive.agency) data.incentive.agency = {};
 }
 
 async function save() {
@@ -476,10 +480,9 @@ function handleLogoClick() {
 function toggleAdmin() {
   isAdmin = false;
   sessionStorage.removeItem('admin_token');
-  ['worldcup','inventory','spot'].forEach(s=>{ const el=document.getElementById('upload-'+s); if(el) el.classList.remove('show'); });
+  ['worldcup','inventory','spot','incentive'].forEach(s=>{ const el=document.getElementById('upload-'+s); if(el) el.classList.remove('show'); });
   document.getElementById('tab-calc').style.display = 'none';
-  document.getElementById('tab-incentive').style.display = 'none';
-  if (currentSection === 'calc' || currentSection === 'incentive') switchSection('worldcup');
+  if (currentSection === 'calc') switchSection('worldcup');
   showToast('관리자 모드 종료');
 }
 function closeModal() {
@@ -508,7 +511,6 @@ async function checkPw() {
       const el = document.getElementById('upload-'+currentSection);
       if (el) el.classList.add('show');
       document.getElementById('tab-calc').style.display = '';
-      document.getElementById('tab-incentive').style.display = '';
       showToast('✅ 관리자 모드 활성화');
     } else {
       errEl.textContent = '비밀번호가 올바르지 않습니다.';
@@ -529,7 +531,7 @@ function switchSection(s) {
   document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
   document.getElementById('section-'+s).classList.add('active');
   document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['worldcup','inventory','spot','calc','incentive'][i]===s));
-  ['worldcup','inventory','spot'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
+  ['worldcup','inventory','spot','incentive'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
 }
 function switchWcType(t) {
   wcType=t;
@@ -630,6 +632,7 @@ function renderAll() {
   renderWc('branch');renderWc('agency');
   renderInv('agency');renderInv('branch');
   renderSpot('branch');renderSpot('agency');
+  renderIncentiveFromDB();
 }
 
 function renderWc(type) {
@@ -943,16 +946,23 @@ function runIncentive() {
     <div class="scard"><span style="color:var(--green);font-weight:800;">예상 총 포상금</span><strong style="color:var(--green);">${(totalAmt/10000).toFixed(0)}만원</strong></div>
   `;
 
-  renderIncentiveGrid();
-  document.getElementById('incentive-result').style.display = 'block';
+  // DB에 저장
+  data.incentive.branch = branchResult;
+  data.incentive.agency = agencyResult;
+  data.updatedAt['incentive'] = new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  save().then(() => {
+    renderIncentiveGrid();
+    document.getElementById('incentive-result').style.display = 'block';
+  });
   st.textContent = `✅ 집계 완료 · 대상 ${totalTarget}대 / 포상 대상 ${eligible}명`;
   st.style.color = 'var(--green)';
 }
 
-function renderIncentiveGrid() {
+function renderIncentiveGrid(overrideData) {
   const grid = document.getElementById('incentive-grid');
   grid.innerHTML = '';
 
+  const src = overrideData || incentiveData;
   const branchOrder = ['청주북부','청주서부','청주남부','청주','오창','충주','금왕','진천','옥천영동','제천'];
   const agencyOrder = ['가경','오창제일','서청주','증평삼보','보은','영동금강','진천중앙','제천중앙','교현','연수','음성','단양'];
 
@@ -1000,7 +1010,7 @@ function renderIncentiveGrid() {
   }
 
   // 지점
-  const branchData = incentiveData.branch || {};
+  const branchData = src.branch || {};
   if (Object.keys(branchData).length > 0) {
     makeSectionTitle('🏢 지점');
     const sorted = Object.keys(branchData).sort((a,b) => {
@@ -1011,7 +1021,7 @@ function renderIncentiveGrid() {
   }
 
   // 대리점
-  const agencyData = incentiveData.agency || {};
+  const agencyData = src.agency || {};
   if (Object.keys(agencyData).length > 0) {
     makeSectionTitle('🏪 대리점');
     const sorted = Object.keys(agencyData).sort((a,b) => {
@@ -1027,6 +1037,29 @@ function clearIncentive() {
   document.getElementById('incentive-status').textContent = '';
   document.getElementById('incentive-result').style.display = 'none';
   incentiveData = { branch:{}, agency:{} };
+}
+
+function renderIncentiveFromDB() {
+  const src = data.incentive;
+  if (!src || (!Object.keys(src.branch||{}).length && !Object.keys(src.agency||{}).length)) return;
+  document.getElementById('incentive-result').style.display = 'block';
+
+  // 요약 카드
+  const allLocs = {...(src.branch||{}), ...(src.agency||{})};
+  const totalAmt = Object.values(allLocs).reduce((s,b) =>
+    s + Object.values(b).reduce((s2,cm) => s2 + calcIncentive(cm.count), 0), 0);
+  const eligible = Object.values(allLocs).reduce((s,b) =>
+    s + Object.values(b).filter(cm => cm.count >= 2).length, 0);
+  const totalTarget = Object.values(allLocs).reduce((s,b) =>
+    s + Object.values(b).reduce((s2,cm) => s2 + cm.count, 0), 0);
+
+  document.getElementById('incentive-summary').innerHTML = `
+    <div class="scard"><span>대상 출고</span><strong>${totalTarget}대</strong></div>
+    <div class="scard"><span>대상 거점</span><strong>${Object.keys(allLocs).length}개</strong></div>
+    <div class="scard"><span>포상 대상 카마스터</span><strong>${eligible}명</strong></div>
+    <div class="scard"><span style="color:var(--green);font-weight:800;">예상 총 포상금</span><strong style="color:var(--green);">${(totalAmt/10000).toFixed(0)}만원</strong></div>
+  `;
+  renderIncentiveGrid(src);
 }
 
 function showToast(msg) {
@@ -1069,7 +1102,7 @@ function applyUrlType() {
         const el = document.getElementById('upload-'+currentSection);
         if (el) el.classList.add('show');
         document.getElementById('tab-calc').style.display = '';
-        document.getElementById('tab-incentive').style.display = '';
+
       } else {
         sessionStorage.removeItem('admin_token');
       }
