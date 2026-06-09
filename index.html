@@ -331,10 +331,14 @@ function fixData() {
 
 async function save() {
   try {
-    await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    const res = await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    const json = await res.json();
+    if (!json.ok) throw new Error('save failed');
     localStorage.setItem(SK,JSON.stringify(data));
   } catch(e) {
     localStorage.setItem(SK,JSON.stringify(data));
+    console.warn('API 저장 실패, 로컬 백업:', e);
+    showToast('⚠️ 서버 저장 실패 (로컬 백업됨)');
   }
 }
 async function load() {
@@ -423,12 +427,17 @@ function switchUpTab(campaign,t) {
 
 function parsePasteSimple(raw) {
   const result={};
+  const skipNames=['거점명','지점명','대리점명','합계','소계','total','sum'];
   raw.split('\n').forEach(line=>{
     const parts=line.split('\t');
     if(parts.length<2) return;
     const name=parts[0].trim().replace(/\s/g,'');
-    const val=parseInt(parts[parts.length-1].trim());
-    if(name&&!isNaN(val)&&!['거점명','지점명','대리점명'].includes(name)) result[name]=val;
+    if(!name) return;
+    if(skipNames.some(s=>name.includes(s))) return;
+    // 쉼표 제거 후 숫자 파싱
+    const rawVal=parts[parts.length-1].trim().replace(/,/g,'');
+    const val=parseInt(rawVal);
+    if(name&&!isNaN(val)&&val>=0) result[name]=val;
   });
   return result;
 }

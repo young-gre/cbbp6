@@ -20,22 +20,31 @@ export default async function handler(req) {
     const token = process.env.KV_REST_API_TOKEN;
     const body = await req.json();
 
-    // Upstash REST API: SET 명령어는 배열 형태로 전송
-    const res = await fetch(`${url}/set/campaignData/${encodeURIComponent(JSON.stringify(body))}`, {
-      method: 'GET',
+    // Upstash REST API: POST body로 SET (URL 길이 제한 없음)
+    const res = await fetch(`${url}/set/campaignData`, {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
-      }
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(JSON.stringify(body)) // 문자열로 한번 더 감싸기
     });
+
     const json = await res.json();
 
     return new Response(JSON.stringify({ ok: true, result: json }), {
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
   } catch (e) {
     return new Response(JSON.stringify({ ok: false, error: e.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
   }
 }
