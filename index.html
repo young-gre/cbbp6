@@ -152,6 +152,30 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .calc-result-table .bar-cell{text-align:left;}
 .unmapped-box{background:#fff8f0;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:12px;color:#b45309;display:none;}
 .unmapped-box.show{display:block;}
+
+/* ── 판촉지원금 ── */
+.inc-branch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+@media(max-width:900px){.inc-branch-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.inc-branch-grid{grid-template-columns:1fr;}}
+.inc-branch-card{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:.2s;}
+.inc-branch-card:hover{border-color:var(--blue);box-shadow:0 8px 24px rgba(15,105,180,.12);transform:translateY(-2px);}
+.inc-branch-head{padding:14px 16px;background:linear-gradient(180deg,#f8fbff,#f0f6fc);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+.inc-branch-head h4{font-size:15px;font-weight:800;color:var(--blue-dark);}
+.inc-branch-head .inc-total{font-size:12px;color:var(--text-sub);}
+.inc-branch-body{padding:14px 16px;}
+.inc-cm-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f4f8;font-size:13px;}
+.inc-cm-row:last-child{border-bottom:none;}
+.inc-cm-name{font-weight:700;color:var(--text);}
+.inc-cm-detail{display:flex;gap:8px;align-items:center;}
+.inc-cm-count{font-size:12px;color:var(--text-sub);}
+.inc-cm-prize{font-weight:800;font-size:13px;color:var(--blue-dark);}
+.inc-cm-prize.high{color:#b45309;}
+.inc-branch-total-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0 0;margin-top:4px;border-top:2px solid var(--line);font-size:13px;font-weight:800;}
+.inc-branch-total-row .tlabel{color:var(--text-sub);}
+.inc-branch-total-row .tamount{color:var(--blue-dark);font-size:15px;}
+.inc-empty{color:var(--text-sub);font-size:13px;padding:8px 0;}
+.inc-summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+@media(max-width:700px){.inc-summary-row{grid-template-columns:repeat(2,1fr);}}
 </style>
 </head>
 <body>
@@ -178,6 +202,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <button class="topnav-tab" onclick="switchSection('inventory')">📦 재고 맞수</button>
     <button class="topnav-tab" onclick="switchSection('spot')">📋 계약 Spot</button>
     <button class="topnav-tab" id="tab-calc" style="display:none;" onclick="switchSection('calc')">🧮 재고 계산기</button>
+    <button class="topnav-tab" id="tab-incentive" style="display:none;" onclick="switchSection('incentive')">💰 판촉지원금</button>
   </div>
   <div class="topnav-right">
     <span class="last-upd" id="last-upd">데이터 없음</span>
@@ -323,6 +348,31 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     </div>
   </div>
 
+  <!-- 판촉지원금 탭 (관리자 전용) -->
+  <div class="section" id="section-incentive">
+    <div class="calc-panel">
+      <h3>💰 고급차 판매 우수 판촉지원금</h3>
+      <div class="hint">
+        국내판매시스템에서 전체 데이터 복사 → 붙여넣기<br/>
+        <b>대상 차종:</b> 제네시스 전차종 (GN·JJ·JP·JK·JV·JX·JI) + 펠리세이드 (FX)<br/>
+        <b>포상기준:</b> 2대 30만×대수 / 3대 40만×대수 / 4대 이상 50만×대수
+      </div>
+      <textarea class="calc-textarea" id="incentive-paste" placeholder="엑셀 전체 데이터를 여기에 붙여넣기 하세요 (헤더 포함)"></textarea>
+      <div class="calc-btn-row">
+        <button class="calc-btn calc-btn-primary" onclick="runIncentive()">🔍 집계 실행</button>
+        <button class="calc-btn calc-btn-clear" onclick="clearIncentive()">🗑️ 초기화</button>
+      </div>
+      <div class="upload-status" id="incentive-status" style="margin-top:10px;"></div>
+    </div>
+    <div id="incentive-result" style="display:none;">
+      <div class="inc-summary-row" id="incentive-summary"></div>
+      <div class="sec-header" style="margin-bottom:12px;">
+        <div><div class="sec-title">지점별 카마스터 현황</div><div class="sec-sub">지점을 클릭하면 카마스터별 상세 내역을 볼 수 있습니다</div></div>
+      </div>
+      <div class="inc-branch-grid" id="incentive-grid"></div>
+    </div>
+  </div>
+
 </div>
 <script>
 // 비밀번호는 서버에서 검증 (api/auth.js)
@@ -428,7 +478,8 @@ function toggleAdmin() {
   sessionStorage.removeItem('admin_token');
   ['worldcup','inventory','spot'].forEach(s=>{ const el=document.getElementById('upload-'+s); if(el) el.classList.remove('show'); });
   document.getElementById('tab-calc').style.display = 'none';
-  if (currentSection === 'calc') switchSection('worldcup');
+  document.getElementById('tab-incentive').style.display = 'none';
+  if (currentSection === 'calc' || currentSection === 'incentive') switchSection('worldcup');
   showToast('관리자 모드 종료');
 }
 function closeModal() {
@@ -457,6 +508,7 @@ async function checkPw() {
       const el = document.getElementById('upload-'+currentSection);
       if (el) el.classList.add('show');
       document.getElementById('tab-calc').style.display = '';
+      document.getElementById('tab-incentive').style.display = '';
       showToast('✅ 관리자 모드 활성화');
     } else {
       errEl.textContent = '비밀번호가 올바르지 않습니다.';
@@ -476,7 +528,7 @@ function switchSection(s) {
   currentSection=s;
   document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
   document.getElementById('section-'+s).classList.add('active');
-  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['worldcup','inventory','spot','calc'][i]===s));
+  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['worldcup','inventory','spot','calc','incentive'][i]===s));
   ['worldcup','inventory','spot'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
 }
 function switchWcType(t) {
@@ -795,6 +847,188 @@ function clearCalc() {
   calcResult = { branch:{}, agency:{} };
 }
 
+// ── 판촉지원금 계산기 ───────────────────────────────────
+const GENESIS_CODES = new Set(['GN','JJ','JP','JK','JV','JX','JI']);
+const PALISADE_CODE = 'FX';
+const TARGET_CODES = new Set([...GENESIS_CODES, PALISADE_CODE]);
+
+const CAR_NAMES = {
+  'CN':'아반떼','DN':'쏘나타','GN':'그랜저','CE':'아이오닉6',
+  'JU':'G70','JJ':'G80','JP':'G90','QX':'베뉴','SX':'코나',
+  'NX':'투싼','MX':'싼타페','FX':'펠리세이드','NE':'아이오닉5',
+  'ME':'아이오닉9','HE':'넥쏘','JK':'GV70','JV':'GV70 EV',
+  'JX':'GV80','US':'스타리아','M5':'포터','TS':'ST1','JI':'G80 EV'
+};
+
+function calcIncentive(count) {
+  if (count < 2) return 0;
+  if (count === 2) return count * 300000;
+  if (count === 3) return count * 400000;
+  return count * 500000;
+}
+
+let incentiveData = { branch:{}, agency:{} };
+
+function runIncentive() {
+  const raw = document.getElementById('incentive-paste').value.trim();
+  const st = document.getElementById('incentive-status');
+  if (!raw) { st.textContent='데이터를 붙여넣어 주세요.'; st.style.color='var(--red)'; return; }
+
+  const lines = raw.split('\n').filter(l => l.trim());
+  if (lines.length < 2) { st.textContent='❌ 데이터가 너무 적어요.'; st.style.color='var(--red)'; return; }
+
+  // 헤더 찾기
+  let startIdx = 0;
+  for (let i = 0; i < Math.min(lines.length, 5); i++) {
+    if (lines[i].includes('계출상태') || lines[i].includes('판매코드')) { startIdx = i + 1; break; }
+  }
+
+  // { 거점명: { 카마스터명: { count, cars, isAgency } } }
+  const branchResult = {};  // 지점
+  const agencyResult = {};  // 대리점
+  let totalRows = 0, totalTarget = 0, totalSkip = 0;
+
+  lines.slice(startIdx).forEach(line => {
+    const cols = line.split('\t');
+    if (cols.length < 28) return;
+    totalRows++;
+
+    const status   = cols[1].trim();
+    const saleCode = cols[9].trim();
+    const branchCd = cols[26].trim();
+    const agencyCd = cols[27] ? cols[27].trim() : '';
+    const cmName   = (cols[29] ? cols[29].trim() : '') || (cols[28] ? cols[28].trim() : '');
+
+    if (status !== '출고') { totalSkip++; return; }
+
+    const carPrefix = saleCode.substring(0, 2).toUpperCase();
+    if (!TARGET_CODES.has(carPrefix)) { totalSkip++; return; }
+
+    totalTarget++;
+
+    const carName = CAR_NAMES[carPrefix] || carPrefix;
+    // 카마스타명이 숫자(코드)면 '미확인'으로
+    const cm = (cmName && !/^\d+$/.test(cmName)) ? cmName : '미확인';
+
+    if (agencyCd && AGENCY_CODES.has(agencyCd)) {
+      // 대리점
+      const locName = CALC_CODE_MAP[agencyCd] || agencyCd;
+      if (!agencyResult[locName]) agencyResult[locName] = {};
+      if (!agencyResult[locName][cm]) agencyResult[locName][cm] = { count:0, cars:[] };
+      agencyResult[locName][cm].count++;
+      agencyResult[locName][cm].cars.push(carName);
+    } else {
+      // 지점
+      const locName = CALC_CODE_MAP[branchCd] || branchCd;
+      if (!branchResult[locName]) branchResult[locName] = {};
+      if (!branchResult[locName][cm]) branchResult[locName][cm] = { count:0, cars:[] };
+      branchResult[locName][cm].count++;
+      branchResult[locName][cm].cars.push(carName);
+    }
+  });
+
+  incentiveData = { branch: branchResult, agency: agencyResult };
+
+  const allResults = { ...branchResult, ...agencyResult };
+  const locCount = Object.keys(allResults).length;
+  const totalAmt = Object.values(allResults).reduce((s,b) =>
+    s + Object.values(b).reduce((s2,cm) => s2 + calcIncentive(cm.count), 0), 0);
+  const eligible = Object.values(allResults).reduce((s,b) =>
+    s + Object.values(b).filter(cm => cm.count >= 2).length, 0);
+
+  document.getElementById('incentive-summary').innerHTML = `
+    <div class="scard"><span>대상 출고</span><strong>${totalTarget}대</strong></div>
+    <div class="scard"><span>대상 거점</span><strong>${locCount}개</strong></div>
+    <div class="scard"><span>포상 대상 카마스터</span><strong>${eligible}명</strong></div>
+    <div class="scard"><span style="color:var(--green);font-weight:800;">예상 총 포상금</span><strong style="color:var(--green);">${(totalAmt/10000).toFixed(0)}만원</strong></div>
+  `;
+
+  renderIncentiveGrid();
+  document.getElementById('incentive-result').style.display = 'block';
+  st.textContent = `✅ 집계 완료 · 대상 ${totalTarget}대 / 포상 대상 ${eligible}명`;
+  st.style.color = 'var(--green)';
+}
+
+function renderIncentiveGrid() {
+  const grid = document.getElementById('incentive-grid');
+  grid.innerHTML = '';
+
+  const branchOrder = ['청주북부','청주서부','청주남부','청주','오창','충주','금왕','진천','옥천영동','제천'];
+  const agencyOrder = ['가경','오창제일','서청주','증평삼보','보은','영동금강','진천중앙','제천중앙','교현','연수','음성','단양'];
+
+  function makeSectionTitle(title) {
+    const el = document.createElement('div');
+    el.style.cssText = 'grid-column:1/-1;font-size:14px;font-weight:800;color:var(--blue-dark);padding:8px 0 4px;border-bottom:2px solid var(--line);margin-bottom:4px;';
+    el.textContent = title;
+    grid.appendChild(el);
+  }
+
+  function makeCard(locName, cms, label) {
+    const sortedCms = Object.entries(cms).sort((a,b) => b[1].count - a[1].count);
+    const total = sortedCms.reduce((s,[,cm]) => s + calcIncentive(cm.count), 0);
+    const eligible = sortedCms.filter(([,cm]) => cm.count >= 2).length;
+    const card = document.createElement('div');
+    card.className = 'inc-branch-card';
+    const cmRows = sortedCms.map(([name, cm]) => {
+      const prize = calcIncentive(cm.count);
+      const prizeClass = prize >= 1500000 ? 'high' : '';
+      const carSummary = [...new Set(cm.cars)].join('·');
+      return `<div class="inc-cm-row">
+        <div>
+          <span class="inc-cm-name">${name}</span>
+          <div style="font-size:11px;color:var(--text-sub);margin-top:2px;">${carSummary}</div>
+        </div>
+        <div class="inc-cm-detail">
+          <span class="inc-cm-count">${cm.count}대</span>
+          <span class="inc-cm-prize ${prizeClass}">${prize > 0 ? (prize/10000)+'만원' : '—'}</span>
+        </div>
+      </div>`;
+    }).join('');
+    card.innerHTML = `
+      <div class="inc-branch-head">
+        <h4>${locName}</h4>
+        <span class="inc-total">${label} · 포상 ${eligible}명</span>
+      </div>
+      <div class="inc-branch-body">
+        ${cmRows || '<div class="inc-empty">데이터 없음</div>'}
+        <div class="inc-branch-total-row">
+          <span class="tlabel">합계</span>
+          <span class="tamount">${(total/10000).toFixed(0)}만원</span>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  }
+
+  // 지점
+  const branchData = incentiveData.branch || {};
+  if (Object.keys(branchData).length > 0) {
+    makeSectionTitle('🏢 지점');
+    const sorted = Object.keys(branchData).sort((a,b) => {
+      const ai=branchOrder.indexOf(a), bi=branchOrder.indexOf(b);
+      return (ai===-1?99:ai)-(bi===-1?99:bi);
+    });
+    sorted.forEach(name => makeCard(name, branchData[name], `카마스터 ${Object.keys(branchData[name]).length}명`));
+  }
+
+  // 대리점
+  const agencyData = incentiveData.agency || {};
+  if (Object.keys(agencyData).length > 0) {
+    makeSectionTitle('🏪 대리점');
+    const sorted = Object.keys(agencyData).sort((a,b) => {
+      const ai=agencyOrder.indexOf(a), bi=agencyOrder.indexOf(b);
+      return (ai===-1?99:ai)-(bi===-1?99:bi);
+    });
+    sorted.forEach(name => makeCard(name, agencyData[name], `카마스터 ${Object.keys(agencyData[name]).length}명`));
+  }
+}
+
+function clearIncentive() {
+  document.getElementById('incentive-paste').value = '';
+  document.getElementById('incentive-status').textContent = '';
+  document.getElementById('incentive-result').style.display = 'none';
+  incentiveData = { branch:{}, agency:{} };
+}
+
 function showToast(msg) {
   const t=document.createElement('div');t.className='toast';t.textContent=msg;
   document.getElementById('toast-wrap').appendChild(t);
@@ -835,6 +1069,7 @@ function applyUrlType() {
         const el = document.getElementById('upload-'+currentSection);
         if (el) el.classList.add('show');
         document.getElementById('tab-calc').style.display = '';
+        document.getElementById('tab-incentive').style.display = '';
       } else {
         sessionStorage.removeItem('admin_token');
       }
