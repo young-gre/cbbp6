@@ -898,11 +898,14 @@ function runIncentive() {
 
     const status   = cols[1].trim();
     const saleCode = cols[9].trim();
+    const custName = cols[8] ? cols[8].trim() : '';
     const branchCd = cols[26].trim();
     const agencyCd = cols[27] ? cols[27].trim() : '';
     const cmName   = (cols[29] ? cols[29].trim() : '') || (cols[28] ? cols[28].trim() : '');
 
     if (status !== '출고') { totalSkip++; return; }
+    // 현대자동차(주) 출고 제외
+    if (custName.includes('현대자동차')) { totalSkip++; return; }
 
     const carPrefix = saleCode.substring(0, 2).toUpperCase();
     if (!TARGET_CODES.has(carPrefix)) { totalSkip++; return; }
