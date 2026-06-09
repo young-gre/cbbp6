@@ -265,7 +265,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   </div>
 </div>
 <script>
-const ADMIN_PW = '1234';
+// 비밀번호는 서버에서 검증 (api/auth.js)
 const SK = 'cbbp2026_v2';
 const BRANCH_GROUPS = {
   'A조': ['오창','청주','옥천영동','진천','제천'],
@@ -365,6 +365,7 @@ function handleLogoClick() {
 }
 function toggleAdmin() {
   isAdmin = false;
+  sessionStorage.removeItem('admin_token');
   ['worldcup','inventory','spot'].forEach(s=>{ const el=document.getElementById('upload-'+s); if(el) el.classList.remove('show'); });
   showToast('관리자 모드 종료');
 }
@@ -373,14 +374,37 @@ function closeModal() {
   document.getElementById('pw-input').value='';
   document.getElementById('pw-err').textContent='';
 }
-function checkPw() {
-  if (document.getElementById('pw-input').value===ADMIN_PW) {
-    isAdmin=true; closeModal();
-    const el=document.getElementById('upload-'+currentSection); if(el) el.classList.add('show');
-    showToast('✅ 관리자 모드 활성화');
-  } else {
-    document.getElementById('pw-err').textContent='비밀번호가 올바르지 않습니다.';
-    document.getElementById('pw-input').value='';
+async function checkPw() {
+  const pw = document.getElementById('pw-input').value;
+  const errEl = document.getElementById('pw-err');
+  const btn = document.querySelector('.modal-btns .confirm');
+  if (!pw) { errEl.textContent='비밀번호를 입력해 주세요.'; return; }
+  btn.textContent = '확인 중...';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw })
+    });
+    const json = await res.json();
+    if (json.ok) {
+      sessionStorage.setItem('admin_token', json.token);
+      isAdmin = true;
+      closeModal();
+      const el = document.getElementById('upload-'+currentSection);
+      if (el) el.classList.add('show');
+      showToast('✅ 관리자 모드 활성화');
+    } else {
+      errEl.textContent = '비밀번호가 올바르지 않습니다.';
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+    }
+  } catch(e) {
+    errEl.textContent = '서버 연결 오류. 잠시 후 다시 시도해 주세요.';
+  } finally {
+    btn.textContent = '확인';
+    btn.disabled = false;
   }
 }
 document.getElementById('pw-input').addEventListener('keydown',e=>{ if(e.key==='Enter') checkPw(); });
@@ -608,6 +632,23 @@ function applyUrlType() {
 
 (async () => {
   try { await load(); } catch(e) { console.warn('load 실패:',e); }
+  // 세션 토큰으로 관리자 상태 복원
+  const token = sessionStorage.getItem('admin_token');
+  if (token) {
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const decoded = atob(token);
+      if (decoded.endsWith(':'+today)) {
+        isAdmin = true;
+        const el = document.getElementById('upload-'+currentSection);
+        if (el) el.classList.add('show');
+      } else {
+        sessionStorage.removeItem('admin_token');
+      }
+    } catch(e) {
+      sessionStorage.removeItem('admin_token');
+    }
+  }
   applyUrlType();
   renderAll();
 })();
