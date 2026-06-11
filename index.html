@@ -30,7 +30,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .sec-title{font-size:17px;font-weight:800;color:var(--blue-dark);}
 .sec-sub{font-size:12px;color:var(--text-sub);margin-top:3px;}
 .type-tabs{display:flex;gap:5px;}
-.type-tab{height:34px;padding:0 14px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:12px;font-weight:700;color:#6e8198;background:#fff;cursor:pointer;transition:.18s;}
+.type-tab{height:34px;padding:0 14px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:12px;font-weight:700;color:#6e8198;background:#fff;cursor:pointer;transition:.18px;}
 .type-tab.active{background:var(--blue-dark);color:#fff;border-color:var(--blue-dark);}
 .upload-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px;display:none;}
 .upload-panel.show{display:block;}
@@ -124,7 +124,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .toast.hide{animation:tOut .22s ease forwards;}
 @keyframes tIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
 @keyframes tOut{to{opacity:0;transform:translateY(-5px)}}
-
 /* ── 재고 계산기 ── */
 .calc-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:16px;box-shadow:var(--shadow);}
 .calc-panel h3{font-size:15px;font-weight:800;color:var(--blue-dark);margin-bottom:6px;}
@@ -307,25 +306,18 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       </div>
       <div class="upload-status" id="calc-status" style="margin-top:10px;"></div>
     </div>
-
-    <!-- 처리 요약 -->
     <div class="calc-summary" id="calc-summary">
       <div class="calc-summary-grid" id="calc-summary-grid"></div>
-      <!-- 결과 테이블 -->
       <div class="calc-result-grid" id="calc-result-grid"></div>
-      <!-- 미매핑 경고 -->
       <div class="unmapped-box" id="calc-unmapped"></div>
-      <!-- 적용 버튼 -->
       <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
         <button class="calc-btn calc-btn-apply" onclick="applyCalcToInv()">✅ 재고 맞수에 적용</button>
         <span style="font-size:12px;color:var(--text-sub);align-self:center;">결과를 📦 재고 맞수 탭에 바로 반영합니다</span>
       </div>
     </div>
   </div>
-
 </div>
 <script>
-// 비밀번호는 서버에서 검증 (api/auth.js)
 const SK = 'cbbp2026_v2';
 const BRANCH_GROUPS = {
   'A조': ['오창','청주','옥천영동','진천','제천'],
@@ -387,6 +379,10 @@ function fixData() {
   if (!data.spot.branch) data.spot.branch = {};
   if (!data.spot.agency) data.spot.agency = {};
   if (!data.updatedAt) data.updatedAt = {};
+}
+
+function nowStr() {
+  return new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
 }
 
 async function save() {
@@ -521,13 +517,13 @@ function parsePasteSimple(raw) {
     const name=parts[0].trim().replace(/\s/g,'');
     if(!name) return;
     if(skipNames.some(s=>name.includes(s))) return;
-    // 쉼표 제거 후 숫자 파싱
     const rawVal=parts[parts.length-1].trim().replace(/,/g,'');
     const val=parseInt(rawVal);
     if(name&&!isNaN(val)&&val>=0) result[name]=val;
   });
   return result;
 }
+
 function applyWcPaste(type) {
   const raw=document.getElementById('wc-paste-'+type).value.trim();
   const st=document.getElementById('upload-status-worldcup');
@@ -536,7 +532,9 @@ function applyWcPaste(type) {
   const count=Object.keys(parsed).length;
   if(!count){st.textContent='❌ 인식된 데이터가 없어요.';st.style.color='var(--red)';return;}
   Object.assign(data.wc[type],parsed);
-  data.updatedAt['wc_'+type]=new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  const ts=nowStr();
+  data.updatedAt['wc_'+type]=ts;
+  data.updatedAt['_latest']=ts;
   save().then(()=>renderAll());
   st.textContent=`✅ ${count}개 거점 적용 완료`;st.style.color='var(--green)';
   document.getElementById('wc-paste-'+type).value='';
@@ -550,7 +548,9 @@ function applyInvPaste(type) {
   const count=Object.keys(parsed).length;
   if(!count){st.textContent='❌ 인식된 데이터가 없어요.';st.style.color='var(--red)';return;}
   Object.assign(data.inv[type],parsed);
-  data.updatedAt['inv_'+type]=new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  const ts=nowStr();
+  data.updatedAt['inv_'+type]=ts;
+  data.updatedAt['_latest']=ts;
   save().then(()=>renderAll());
   st.textContent=`✅ ${count}개 거점 적용 완료`;st.style.color='var(--green)';
   document.getElementById('inv-paste-'+type).value='';
@@ -564,7 +564,9 @@ function applySpotPaste(type) {
   const count=Object.keys(parsed).length;
   if(!count){st.textContent='❌ 인식된 데이터가 없어요.';st.style.color='var(--red)';return;}
   Object.assign(data.spot[type],parsed);
-  data.updatedAt['spot_'+type]=new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  const ts=nowStr();
+  data.updatedAt['spot_'+type]=ts;
+  data.updatedAt['_latest']=ts;
   save().then(()=>renderAll());
   st.textContent=`✅ ${count}개 거점 적용 완료`;st.style.color='var(--green)';
   document.getElementById('sp-paste-'+type).value='';
@@ -573,8 +575,9 @@ function applySpotPaste(type) {
 
 function renderAll() {
   fixData();
-  const times=Object.values(data.updatedAt).filter(Boolean);
-  document.getElementById('last-upd').textContent=times.length?'업데이트: '+times[times.length-1]:'데이터 없음';
+  // _latest에 저장된 가장 최근 업데이트 시각 표시
+  const latest = data.updatedAt['_latest'];
+  document.getElementById('last-upd').textContent = latest ? '업데이트: ' + latest : '데이터 없음';
   renderWc('branch');renderWc('agency');
   renderInv('agency');renderInv('branch');
   renderSpot('branch');renderSpot('agency');
@@ -666,7 +669,6 @@ function renderSpot(type) {
   }).join('');
 }
 
-// ── 재고 계산기 ─────────────────────────────────────────
 const CALC_CODE_MAP = {
   'DG27001':'가경','DG16002':'오창제일','DG22001':'음성','DG21003':'연수',
   'DG23003':'제천중앙','DG42001':'서청주','G27':'청주서부','G21':'충주',
@@ -680,27 +682,21 @@ const AGENCY_CODES = new Set([
   'DG42001','DG13001','DG21004','DG17001','DG23001',
   'DG18001','DG13003'
 ]);
-
-let calcResult = { branch:{}, agency:{}, summary:{} };
+let calcResult = { branch:{}, agency:{} };
 
 function runCalc() {
   const raw = document.getElementById('calc-paste').value.trim();
   const st = document.getElementById('calc-status');
   if (!raw) { st.textContent='데이터를 붙여넣어 주세요.'; st.style.color='var(--red)'; return; }
-
   const lines = raw.split('\n').filter(l => l.trim());
   if (lines.length < 2) { st.textContent='❌ 데이터가 너무 적어요.'; st.style.color='var(--red)'; return; }
-
-  // 헤더 찾기
   let startIdx = 0;
   const headerKws = ['계출상태','차량구분','지점'];
   for (let i = 0; i < Math.min(lines.length, 5); i++) {
     if (headerKws.some(kw => lines[i].includes(kw))) { startIdx = i + 1; break; }
   }
-
   const branchResult = {}, agencyResult = {}, unmapped = {};
   let total=0, cntShipped=0, cntNormal=0, cntSkip=0, cntValid=0;
-
   lines.slice(startIdx).forEach(line => {
     const cols = line.split('\t');
     if (cols.length < 27) return;
@@ -709,35 +705,26 @@ function runCalc() {
     const carType  = cols[12].trim();
     const branchCd = cols[26].trim();
     const agencyCd = cols.length > 27 ? cols[27].trim() : '';
-
     if (status !== '출고') { cntSkip++; return; }
     cntShipped++;
     if (carType === '정상재고') { cntNormal++; return; }
     cntValid++;
-
     const code = agencyCd || branchCd;
     const name = CALC_CODE_MAP[code];
     if (!name) { unmapped[code] = (unmapped[code]||0) + 1; return; }
-
     if (agencyCd && AGENCY_CODES.has(agencyCd)) {
       agencyResult[name] = (agencyResult[name]||0) + 1;
     } else {
       branchResult[name] = (branchResult[name]||0) + 1;
     }
   });
-
   calcResult = { branch: branchResult, agency: agencyResult, unmapped };
-
-  // 요약 카드
   document.getElementById('calc-summary-grid').innerHTML = `
     <div class="cscard"><span>전체 데이터</span><strong>${total}건</strong></div>
     <div class="cscard"><span>출고</span><strong>${cntShipped}건</strong></div>
     <div class="cscard"><span>출고 아님 제외</span><strong>${cntSkip}건</strong></div>
     <div class="cscard"><span>정상재고 제외</span><strong>${cntNormal}건</strong></div>
-    <div class="cscard"><span style="color:var(--green);font-weight:800;">발급가능재고</span><strong style="color:var(--green);">${cntValid}대</strong></div>
-  `;
-
-  // 결과 테이블
+    <div class="cscard"><span style="color:var(--green);font-weight:800;">발급가능재고</span><strong style="color:var(--green);">${cntValid}대</strong></div>`;
   const makeTable = (title, result) => {
     const sorted = Object.entries(result).sort((a,b)=>b[1]-a[1]);
     const tot = sorted.reduce((s,[,v])=>s+v,0);
@@ -747,28 +734,16 @@ function runCalc() {
       const bar = '█'.repeat(Math.round(cnt/maxV*12));
       return `<tr><td style="text-align:left;font-weight:700;">${name}</td><td>${cnt}대</td><td>${pct}%</td><td class="bar-cell" style="color:var(--blue);font-size:10px;">${bar}</td></tr>`;
     }).join('');
-    return `<div>
-      <div style="font-size:13px;font-weight:800;color:var(--blue-dark);margin-bottom:8px;">${title} (총 ${tot}대)</div>
-      <table class="calc-result-table">
-        <thead><tr><th>거점명</th><th>출고</th><th>비율</th><th>막대</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="4" style="color:var(--text-sub);">데이터 없음</td></tr>'}</tbody>
-      </table>
-    </div>`;
+    return `<div><div style="font-size:13px;font-weight:800;color:var(--blue-dark);margin-bottom:8px;">${title} (총 ${tot}대)</div>
+      <table class="calc-result-table"><thead><tr><th>거점명</th><th>출고</th><th>비율</th><th>막대</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="4" style="color:var(--text-sub);">데이터 없음</td></tr>'}</tbody></table></div>`;
   };
-
-  document.getElementById('calc-result-grid').innerHTML =
-    makeTable('📍 지점별', branchResult) + makeTable('🏪 대리점별', agencyResult);
-
-  // 미매핑 경고
+  document.getElementById('calc-result-grid').innerHTML = makeTable('📍 지점별', branchResult) + makeTable('🏪 대리점별', agencyResult);
   const unmappedEl = document.getElementById('calc-unmapped');
   if (Object.keys(unmapped).length > 0) {
-    unmappedEl.innerHTML = '⚠️ 미매핑 거점 코드 (CODE_MAP 확인 필요): ' +
-      Object.entries(unmapped).map(([k,v])=>`<b>${k}</b>(${v}건)`).join(', ');
+    unmappedEl.innerHTML = '⚠️ 미매핑 거점 코드: ' + Object.entries(unmapped).map(([k,v])=>`<b>${k}</b>(${v}건)`).join(', ');
     unmappedEl.classList.add('show');
-  } else {
-    unmappedEl.classList.remove('show');
-  }
-
+  } else { unmappedEl.classList.remove('show'); }
   document.getElementById('calc-summary').classList.add('show');
   st.textContent = `✅ 집계 완료 · 발급가능재고 ${cntValid}대`;
   st.style.color = 'var(--green)';
@@ -776,12 +751,13 @@ function runCalc() {
 
 function applyCalcToInv() {
   if (!Object.keys(calcResult.branch).length && !Object.keys(calcResult.agency).length) {
-    showToast('❌ 먼저 집계를 실행해 주세요.');
-    return;
+    showToast('❌ 먼저 집계를 실행해 주세요.'); return;
   }
   Object.assign(data.inv.branch, calcResult.branch);
   Object.assign(data.inv.agency, calcResult.agency);
-  data.updatedAt['inv_calc'] = new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  const ts = nowStr();
+  data.updatedAt['inv_calc'] = ts;
+  data.updatedAt['_latest'] = ts;
   save().then(() => renderAll());
   showToast('✅ 재고 맞수에 적용 완료!');
   switchSection('inventory');
@@ -824,7 +800,6 @@ function applyUrlType() {
 
 (async () => {
   try { await load(); } catch(e) { console.warn('load 실패:',e); }
-  // 세션 토큰으로 관리자 상태 복원
   const token = sessionStorage.getItem('admin_token');
   if (token) {
     try {
@@ -835,12 +810,8 @@ function applyUrlType() {
         const el = document.getElementById('upload-'+currentSection);
         if (el) el.classList.add('show');
         document.getElementById('tab-calc').style.display = '';
-      } else {
-        sessionStorage.removeItem('admin_token');
-      }
-    } catch(e) {
-      sessionStorage.removeItem('admin_token');
-    }
+      } else { sessionStorage.removeItem('admin_token'); }
+    } catch(e) { sessionStorage.removeItem('admin_token'); }
   }
   applyUrlType();
   renderAll();
