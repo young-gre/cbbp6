@@ -195,11 +195,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <p>HYUNDAI MOTOR · CHUNGBUK REGIONAL HQ · 2026.06</p>
   </div>
   <div class="topnav-tabs">
-    <button class="topnav-tab active" onclick="switchSection('worldcup')">⚽ 월드컵</button>
-    <button class="topnav-tab" onclick="switchSection('semifinal')">🏆 전반전</button>
-    <button class="topnav-tab" onclick="switchSection('inventory')">📦 재고 맞수</button>
-    <button class="topnav-tab" onclick="switchSection('spot')">📋 계약 Spot</button>
-    <button class="topnav-tab" id="tab-calc" style="display:none;" onclick="switchSection('calc')">🧮 재고 계산기</button>
+    <button class="topnav-tab" onclick="switchSection('semifinal')">월드컵 전반전</button>
+    <button class="topnav-tab" onclick="switchSection('inventory')">재고 맞수</button>
+    <button class="topnav-tab" onclick="switchSection('spot')">계약 Spot</button>
+    <button class="topnav-tab" id="tab-calc" style="display:none;" onclick="switchSection('calc')">재고 계산기</button>
   </div>
   <div class="topnav-right">
     <span class="last-upd" id="last-upd">데이터 없음</span>
@@ -755,12 +754,12 @@ function renderSf(type) {
     // 포상금 안내
     const prizeMap = {
       branch: {
-        champ:   '1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',
-        premier: '1위 50만 / 2위 40만 / 3위 30만 / 4위 20만'
+        champ:   '판촉지원금 1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',
+        premier: '판촉지원금 1위 50만 / 2위 40만 / 3위 30만 / 4위 20만'
       },
       agency: {
-        champ:      '1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',
-        premier:    '1위 60만 / 2위 50만 / 3위 40만 / 4위 30만',
+        champ:      '판촉지원금 1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',
+        premier:    '판촉지원금 1위 60만 / 2위 50만 / 3위 40만 / 4위 30만',
         challenger: '1위 30만 / 2위 20만 / 3위 10만'
       }
     };
