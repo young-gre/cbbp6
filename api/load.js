@@ -12,23 +12,28 @@ export default async function handler(req) {
 
     if (!json.result) {
       return new Response(JSON.stringify({ ok: false, data: null }), {
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store' }
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Cache-Control': 'no-store'
+        }
       });
     }
 
-    // 중첩 JSON 파싱 처리
+    // 중첩 JSON 완전히 풀기
     let parsed = json.result;
-    let maxDepth = 5;
-    while (typeof parsed === 'string' && maxDepth-- > 0) {
+    for (let i = 0; i < 6; i++) {
+      if (typeof parsed !== 'string') break;
       try { parsed = JSON.parse(parsed); } catch(e) { break; }
     }
 
-    // value 키로 감싸진 경우 처리
-    while (parsed && typeof parsed === 'object' && parsed.value !== undefined && !parsed.wc) {
-      parsed = parsed.value;
-      if (typeof parsed === 'string') {
-        try { parsed = JSON.parse(parsed); } catch(e) { break; }
+    // value 키로 감싸진 중첩 구조 처리
+    while (parsed && typeof parsed === 'object' && 'value' in parsed && !parsed.wc) {
+      let inner = parsed.value;
+      if (typeof inner === 'string') {
+        try { inner = JSON.parse(inner); } catch(e) { break; }
       }
+      parsed = inner;
     }
 
     return new Response(JSON.stringify({ ok: true, data: parsed }), {
@@ -41,7 +46,10 @@ export default async function handler(req) {
   } catch(e) {
     return new Response(JSON.stringify({ ok: false, error: e.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
   }
 }
