@@ -675,15 +675,27 @@ function applySfPaste(type) {
   const raw = document.getElementById('sf-paste-'+type).value.trim();
   const st = document.getElementById('upload-status-semifinal');
   if (!raw) { st.textContent='내용을 입력해 주세요.'; st.style.color='var(--red)'; return; }
-  const parsed = parsePasteSimple(raw);
-  const count = Object.keys(parsed).length;
+  const current = parsePasteSimple(raw);           // 현재 누계 출고
+  const count = Object.keys(current).length;
   if (!count) { st.textContent='❌ 인식된 데이터가 없어요.'; st.style.color='var(--red)'; return; }
   if (!data.sf) data.sf = {branch:{}, agency:{}};
-  Object.assign(data.sf[type], parsed);
+
+  const wcBase = (data.wc && data.wc[type]) ? data.wc[type] : {};  // 예선전 누계(6/12)
+  const sfResult = {};
+  const noBase = [];
+  Object.entries(current).forEach(([name, cur]) => {
+    if (!(name in wcBase)) noBase.push(name);
+    sfResult[name] = Math.max(cur - (wcBase[name] || 0), 0);       // 전반전 실적
+  });
+  data.sf[type] = sfResult;   // 전체 덮어쓰기
+
   const _sfTs = new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
   data.updatedAt['sf_'+type] = _sfTs; data.updatedAt['_latest'] = _sfTs;
   save().then(() => renderAll());
-  st.textContent = `✅ ${count}개 거점 적용 완료`; st.style.color = 'var(--green)';
+  let msg = `✅ ${count}개 거점 적용 (현재누계 − 예선누계)`;
+  if (noBase.length) msg += ` · ⚠️ 예선누계 없음: ${noBase.join(', ')}`;
+  st.textContent = msg;
+  st.style.color = noBase.length ? 'var(--orange)' : 'var(--green)';
   document.getElementById('sf-paste-'+type).value = '';
   showToast(`전반전 ${type==='branch'?'지점':'대리점'} ${count}개 업데이트`);
 }
