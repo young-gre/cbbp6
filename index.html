@@ -30,7 +30,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .sec-title{font-size:17px;font-weight:800;color:var(--blue-dark);}
 .sec-sub{font-size:12px;color:var(--text-sub);margin-top:3px;}
 .type-tabs{display:flex;gap:5px;}
-.type-tab{height:34px;padding:0 14px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:12px;font-weight:700;color:#6e8198;background:#fff;cursor:pointer;transition:.18s;}
+.type-tab{height:34px;padding:0 14px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:12px;font-weight:700;color:#6e8198;background:#fff;cursor:pointer;transition:.18px;}
 .type-tab.active{background:var(--blue-dark);color:#fff;border-color:var(--blue-dark);}
 .upload-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px;display:none;}
 .upload-panel.show{display:block;}
@@ -151,6 +151,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .calc-result-table .bar-cell{text-align:left;}
 .unmapped-box{background:#fff8f0;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:12px;color:#b45309;display:none;}
 .unmapped-box.show{display:block;}
+
 /* ── 전반전 ── */
 .sf-league-section{margin-bottom:24px;}
 .sf-league-title{font-size:15px;font-weight:800;color:var(--blue-dark);padding:10px 0 8px;border-bottom:2px solid var(--line);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
@@ -194,7 +195,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <p>HYUNDAI MOTOR · CHUNGBUK REGIONAL HQ · 2026.06</p>
   </div>
   <div class="topnav-tabs">
-    <button class="topnav-tab active" onclick="switchSection('semifinal')">🏆 전반전</button>
+    <button class="topnav-tab active" onclick="switchSection('worldcup')">⚽ 월드컵</button>
+    <button class="topnav-tab" onclick="switchSection('semifinal')">🏆 전반전</button>
     <button class="topnav-tab" onclick="switchSection('inventory')">📦 재고 맞수</button>
     <button class="topnav-tab" onclick="switchSection('spot')">📋 계약 Spot</button>
     <button class="topnav-tab" id="tab-calc" style="display:none;" onclick="switchSection('calc')">🧮 재고 계산기</button>
@@ -204,7 +206,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   </div>
 </nav>
 <div class="page">
-  <div class="section" id="section-worldcup" style="display:none!important;">
+  <div class="section active" id="section-worldcup">
     <div class="upload-panel" id="upload-worldcup">
       <div class="upload-tabs">
         <button class="utab active" id="wc-utab-branch" onclick="switchUpTab('worldcup','branch')">지점 데이터</button>
@@ -222,28 +224,45 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       </div>
       <div class="upload-status" id="upload-status-worldcup"></div>
     </div>
+    <div class="sec-header">
+      <div><div class="sec-title">⚽ 월드컵 캠페인 예선전</div><div class="sec-sub">6월 1일 ~ 12일 · 판매 달성율 기준 조별 순위</div></div>
+      <div class="type-tabs" id="wc-type-tabs">
+        <button class="type-tab active" id="wc-tab-branch" onclick="switchWcType('branch')">지점</button>
+        <button class="type-tab" id="wc-tab-agency" onclick="switchWcType('agency')">대리점</button>
+      </div>
+    </div>
+    <div id="wc-branch-view">
+      <div class="summary-row" id="wc-branch-summary"></div>
+      <div class="groups-grid" id="wc-branch-groups"></div>
+      <div class="promo-panel"><h3>🏆 본선 진출 현황 (예상)</h3><div class="promo-grid" id="wc-branch-promo"></div></div>
+    </div>
+    <div id="wc-agency-view" style="display:none;">
+      <div class="summary-row" id="wc-agency-summary"></div>
+      <div class="groups-grid" id="wc-agency-groups"></div>
+      <div class="promo-panel"><h3>🏆 본선 진출 현황 (예상)</h3><div class="promo-grid" id="wc-agency-promo"></div></div>
+    </div>
   </div>
   <!-- 전반전 -->
-  <div class="section active" id="section-semifinal">
+  <div class="section" id="section-semifinal">
     <div class="upload-panel" id="upload-semifinal">
       <div class="upload-tabs">
         <button class="utab active" id="sf-utab-branch" onclick="switchUpTab('semifinal','branch')">지점 데이터</button>
         <button class="utab" id="sf-utab-agency" onclick="switchUpTab('semifinal','agency')">대리점 데이터</button>
       </div>
       <div class="upload-section active" id="sf-up-branch">
-        <div class="paste-hint">시스템에서 <b>현재 누계 출고</b> 복사 → 붙여넣기 · 예선전(6/12) 누계 자동 차감</div>
+        <div class="paste-hint">엑셀에서 <b>거점명 + 3주차 출고</b> 복사 → 붙여넣기 (WC_TARGETS 기준 달성율 계산)</div>
         <textarea class="paste-area" id="sf-paste-branch" placeholder="오창&#9;12&#10;옥천영동&#9;15&#10;청주북부&#9;20"></textarea>
         <button class="apply-btn" onclick="applySfPaste('branch')">✅ 지점 적용</button>
       </div>
       <div class="upload-section" id="sf-up-agency">
-        <div class="paste-hint">시스템에서 <b>현재 누계 출고</b> 복사 → 붙여넣기 · 예선전(6/12) 누계 자동 차감</div>
+        <div class="paste-hint">엑셀에서 <b>거점명 + 3주차 출고</b> 복사 → 붙여넣기</div>
         <textarea class="paste-area" id="sf-paste-agency" placeholder="영동금강&#9;18&#10;오창제일&#9;50"></textarea>
         <button class="apply-btn" onclick="applySfPaste('agency')">✅ 대리점 적용</button>
       </div>
       <div class="upload-status" id="upload-status-semifinal"></div>
     </div>
     <div class="sec-header">
-      <div><div class="sec-title">🏆 전반전 (6/15 ~ 6/19)</div><div class="sec-sub">6/15 ~ 6/19 · 현재 누계 출고 입력 시 예선전(6/12) 누계 자동 차감</div></div>
+      <div><div class="sec-title">🏆 전반전 (6/15 ~ 6/19)</div><div class="sec-sub">3주차 판매 달성율 기준 순위 산정 · 승점 부여</div></div>
       <div class="type-tabs" id="sf-type-tabs">
         <button class="type-tab active" id="sf-tab-branch" onclick="switchSfType('branch')">지점</button>
         <button class="type-tab" id="sf-tab-agency" onclick="switchSfType('agency')">대리점</button>
@@ -258,6 +277,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       <div id="sf-agency-leagues"></div>
     </div>
   </div>
+
   <div class="section" id="section-inventory">
     <div class="upload-panel" id="upload-inventory">
       <div class="upload-tabs">
@@ -338,7 +358,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
         국내판매시스템에서 전체 데이터 복사(Ctrl+A → Ctrl+C) → 아래 붙여넣기<br/>
         <b>자동 처리:</b> 계출상태=출고 / 차량구분≠정상재고 / 거점코드→거점명 변환
       </div>
-      <textarea class="calc-textarea" id="calc-paste" placeholder="엑셀 전체 데이터를 여기에 붙여넣기 하세요 (헤더 포함)"></textarea>
+      <textarea class="calc-textarea" id="calc-paste" placeholder="엑셀 전체 데이터를 여기에 붙여넣기 하세요 (헤더 포함)&#10;&#10;No	계출상태	계약번호	...	지점	대리점&#10;1	출고	..."></textarea>
       <div class="calc-btn-row">
         <button class="calc-btn calc-btn-primary" onclick="runCalc()">🔍 집계 실행</button>
         <button class="calc-btn calc-btn-clear" onclick="clearCalc()">🗑️ 초기화</button>
@@ -358,257 +378,462 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 </div>
 <script>
 const SK = 'cbbp2026_v2';
-const BRANCH_GROUPS = {'A조':['오창','청주','옥천영동','진천','제천'],'B조':['청주북부','청주서부','충주','청주남부','금왕']};
-const AGENCY_GROUPS = {'A조':['영동금강','제천중앙','연수'],'B조':['오창제일','진천중앙','가경'],'C조':['서청주','교현','음성'],'D조':['증평삼보','보은','단양']};
-const WC_TARGETS = {'청주북부':60,'옥천영동':46,'청주서부':91,'청주남부':130,'충주':96,'청주':70,'오창':42,'진천':54,'금왕':40,'제천':73,'영동금강':47,'증평삼보':81,'오창제일':139,'보은':65,'서청주':133,'가경':143,'진천중앙':67,'제천중앙':75,'교현':80,'연수':84,'음성':65,'단양':44};
-const INV_MATCHES_AGENCY = [{no:'1조',a:'가경',b:'오창제일',prize:'60만'},{no:'2조',a:'서청주',b:'연수',prize:'50만'},{no:'3조',a:'증평삼보',b:'교현',prize:'40만'},{no:'4조',a:'제천중앙',b:'진천중앙',prize:'30만'},{no:'5조',a:'보은',b:'음성',prize:'20만'},{no:'6조',a:'영동금강',b:'단양',prize:'10만'}];
-const INV_MATCHES_BRANCH = [{no:'1조',a:'청주남부',b:'충주',prize:'60만'},{no:'2조',a:'청주서부',b:'제천',prize:'50만'},{no:'3조',a:'청주',b:'청주북부',prize:'40만'},{no:'4조',a:'진천',b:'옥천영동',prize:'30만'},{no:'5조',a:'오창',b:'금왕',prize:'20만'}];
-const SPOT_TARGETS = {'오창':38,'옥천영동':45,'청주북부':58,'청주남부':128,'청주':69,'충주':93,'금왕':39,'진천':53,'청주서부':89,'제천':71,'오창제일':136,'영동금강':46,'증평삼보':78,'서청주':130,'보은':64,'제천중앙':74,'진천중앙':66,'가경':139,'음성':64,'교현':78,'연수':82,'단양':43};
+const BRANCH_GROUPS = {
+  'A조': ['오창','청주','옥천영동','진천','제천'],
+  'B조': ['청주북부','청주서부','충주','청주남부','금왕']
+};
+const AGENCY_GROUPS = {
+  'A조': ['영동금강','제천중앙','연수'],
+  'B조': ['오창제일','진천중앙','가경'],
+  'C조': ['서청주','교현','음성'],
+  'D조': ['증평삼보','보은','단양']
+};
+const WC_TARGETS = {
+  '청주북부':60,'옥천영동':46,'청주서부':91,'청주남부':130,
+  '충주':96,'청주':70,'오창':42,'진천':54,'금왕':40,'제천':73,
+  '영동금강':47,'증평삼보':81,'오창제일':139,'보은':65,
+  '서청주':133,'가경':143,'진천중앙':67,'제천중앙':75,
+  '교현':80,'연수':84,'음성':65,'단양':44
+};
+const INV_MATCHES_AGENCY = [
+  {no:'1조',a:'가경',b:'오창제일',prize:'60만'},{no:'2조',a:'서청주',b:'연수',prize:'50만'},
+  {no:'3조',a:'증평삼보',b:'교현',prize:'40만'},{no:'4조',a:'제천중앙',b:'진천중앙',prize:'30만'},
+  {no:'5조',a:'보은',b:'음성',prize:'20만'},{no:'6조',a:'영동금강',b:'단양',prize:'10만'},
+];
+const INV_MATCHES_BRANCH = [
+  {no:'1조',a:'청주남부',b:'충주',prize:'60만'},{no:'2조',a:'청주서부',b:'제천',prize:'50만'},
+  {no:'3조',a:'청주',b:'청주북부',prize:'40만'},{no:'4조',a:'진천',b:'옥천영동',prize:'30만'},
+  {no:'5조',a:'오창',b:'금왕',prize:'20만'},
+];
+const SPOT_TARGETS = {
+  '오창':38,'옥천영동':45,'청주북부':58,'청주남부':128,
+  '청주':69,'충주':93,'금왕':39,'진천':53,'청주서부':89,'제천':71,
+  '오창제일':136,'영동금강':46,'증평삼보':78,'서청주':130,
+  '보은':64,'제천중앙':74,'진천중앙':66,'가경':139,
+  '음성':64,'교현':78,'연수':82,'단양':43
+};
 const SPOT_PRIZE = 2000000;
-const SF_BRANCH_LEAGUES = {champ:['오창','옥천영동','청주북부','청주남부'],premier:['청주','진천','제천','청주서부','충주','금왕']};
-const SF_AGENCY_LEAGUES = {champ:['영동금강','오창제일','서청주','증평삼보'],premier:['연수','진천중앙','음성','보은'],challenger:['제천중앙','가경','교현','단양']};
-const SF_POINTS = {branch:{champ:[10,7,5,3],premier:[10,8,6,4,2,1]},agency:{champ:[10,7,5,3],premier:[10,7,5,3],challenger:[10,7,5,3]}};
-const CALC_CODE_MAP = {'DG27001':'가경','DG16002':'오창제일','DG22001':'음성','DG21003':'연수','DG23003':'제천중앙','DG42001':'서청주','G27':'청주서부','G21':'충주','G42':'청주남부','G16':'청주북부','DG13001':'보은','DG21004':'교현','DG17001':'증평삼보','G18':'진천','DG23001':'단양','G17':'오창','G22':'금왕','G11':'청주','G23':'제천','G13':'옥천영동','DG18001':'진천중앙','DG13003':'영동금강'};
-const AGENCY_CODES = new Set(['DG27001','DG16002','DG22001','DG21003','DG23003','DG42001','DG13001','DG21004','DG17001','DG23001','DG18001','DG13003']);
 
-let isAdmin=false, currentSection='semifinal', wcType='branch', invType='agency', spotType='branch', sfType='branch';
-let logoClickCount=0, logoClickTimer=null;
-let calcResult={branch:{},agency:{}};
-let data={wc:{branch:{},agency:{}},inv:{branch:{},agency:{}},spot:{branch:{},agency:{}},sf:{branch:{},agency:{}},updatedAt:{}};
+let isAdmin = false;
+let currentSection = 'worldcup';
+let wcType = 'branch', invType = 'agency', spotType = 'branch';
+let logoClickCount = 0, logoClickTimer = null;
 
-function fixData(){
-  if(!data)data={};
-  ['wc','inv','spot','sf'].forEach(k=>{if(!data[k])data[k]={};if(!data[k].branch)data[k].branch={};if(!data[k].agency)data[k].agency={};});
-  if(!data.updatedAt)data.updatedAt={};
+let data = {
+  wc:{branch:{},agency:{}},
+  inv:{branch:{},agency:{}},
+  spot:{branch:{},agency:{}},
+  sf:{branch:{},agency:{}},
+  updatedAt:{}
+};
+
+function fixData() {
+  if (!data) data = {};
+  if (!data.wc) data.wc = {};
+  if (!data.wc.branch) data.wc.branch = {};
+  if (!data.wc.agency) data.wc.agency = {};
+  if (!data.inv) data.inv = {};
+  if (!data.inv.branch) data.inv.branch = {};
+  if (!data.inv.agency) data.inv.agency = {};
+  if (!data.spot) data.spot = {};
+  if (!data.spot.branch) data.spot.branch = {};
+  if (!data.spot.agency) data.spot.agency = {};
+  if (!data.updatedAt) data.updatedAt = {};
+  if (!data.sf) data.sf = {};
+  if (!data.sf.branch) data.sf.branch = {};
+  if (!data.sf.agency) data.sf.agency = {};
 }
-function nowStr(){return new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}
 
-async function save(){
-  try{
-    const res=await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-    const json=await res.json();
-    if(!json.ok)throw new Error();
+function nowStr() {
+  return new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+
+async function save() {
+  try {
+    const res = await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    const json = await res.json();
+    if (!json.ok) throw new Error('save failed');
     localStorage.setItem(SK,JSON.stringify(data));
-  }catch(e){
+  } catch(e) {
     localStorage.setItem(SK,JSON.stringify(data));
+    console.warn('API 저장 실패, 로컬 백업:', e);
     showToast('⚠️ 서버 저장 실패 (로컬 백업됨)');
   }
 }
-async function load(){
-  try{
-    const res=await fetch('/api/load');
-    if(res.ok){const json=await res.json();if(json.ok&&json.data){data=json.data;fixData();localStorage.setItem(SK,JSON.stringify(data));return;}}
-  }catch(e){}
-  try{const r=localStorage.getItem(SK);if(r)data=JSON.parse(r);}catch(e){}
+async function load() {
+  try {
+    const res = await fetch('/api/load');
+    if (res.ok) {
+      const json = await res.json();
+      if (json.ok && json.data) { data = json.data; fixData(); localStorage.setItem(SK,JSON.stringify(data)); return; }
+    }
+  } catch(e) {}
+  try { const r = localStorage.getItem(SK); if (r) data = JSON.parse(r); } catch(e){}
   fixData();
 }
 
-function handleLogoClick(){
+function handleLogoClick() {
   logoClickCount++;
-  if(logoClickTimer)clearTimeout(logoClickTimer);
-  if(logoClickCount>=5){logoClickCount=0;isAdmin?toggleAdmin():(document.getElementById('pw-modal').classList.add('show'),setTimeout(()=>document.getElementById('pw-input').focus(),100));return;}
-  logoClickTimer=setTimeout(()=>{logoClickCount=0;},2000);
+  if (logoClickTimer) clearTimeout(logoClickTimer);
+  if (logoClickCount >= 5) {
+    logoClickCount = 0;
+    isAdmin ? toggleAdmin() : (document.getElementById('pw-modal').classList.add('show'), setTimeout(()=>document.getElementById('pw-input').focus(),100));
+    return;
+  }
+  logoClickTimer = setTimeout(()=>{ logoClickCount=0; },2000);
 }
-function toggleAdmin(){
-  isAdmin=false;sessionStorage.removeItem('admin_token');
-  ['worldcup','semifinal','inventory','spot'].forEach(s=>{const el=document.getElementById('upload-'+s);if(el)el.classList.remove('show');});
-  document.getElementById('tab-calc').style.display='none';
-  if(currentSection==='calc')switchSection('semifinal');
+function toggleAdmin() {
+  isAdmin = false;
+  sessionStorage.removeItem('admin_token');
+  ['worldcup','semifinal','inventory','spot'].forEach(s=>{ const el=document.getElementById('upload-'+s); if(el) el.classList.remove('show'); });
+  document.getElementById('tab-calc').style.display = 'none';
+  if (currentSection === 'calc') switchSection('worldcup');
   showToast('관리자 모드 종료');
 }
-function closeModal(){document.getElementById('pw-modal').classList.remove('show');document.getElementById('pw-input').value='';document.getElementById('pw-err').textContent='';}
-async function checkPw(){
-  const pw=document.getElementById('pw-input').value;
-  const errEl=document.getElementById('pw-err');
-  const btn=document.querySelector('.modal-btns .confirm');
-  if(!pw){errEl.textContent='비밀번호를 입력해 주세요.';return;}
-  btn.textContent='확인 중...';btn.disabled=true;
-  try{
-    const res=await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
-    const json=await res.json();
-    if(json.ok){
-      sessionStorage.setItem('admin_token',json.token);isAdmin=true;closeModal();
-      const el=document.getElementById('upload-'+currentSection);if(el)el.classList.add('show');
-      document.getElementById('tab-calc').style.display='';showToast('✅ 관리자 모드 활성화');
-    }else{errEl.textContent='비밀번호가 올바르지 않습니다.';document.getElementById('pw-input').value='';document.getElementById('pw-input').focus();}
-  }catch(e){errEl.textContent='서버 연결 오류.';}
-  finally{btn.textContent='확인';btn.disabled=false;}
+function closeModal() {
+  document.getElementById('pw-modal').classList.remove('show');
+  document.getElementById('pw-input').value='';
+  document.getElementById('pw-err').textContent='';
 }
-document.getElementById('pw-input').addEventListener('keydown',e=>{if(e.key==='Enter')checkPw();});
+async function checkPw() {
+  const pw = document.getElementById('pw-input').value;
+  const errEl = document.getElementById('pw-err');
+  const btn = document.querySelector('.modal-btns .confirm');
+  if (!pw) { errEl.textContent='비밀번호를 입력해 주세요.'; return; }
+  btn.textContent = '확인 중...';
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw })
+    });
+    const json = await res.json();
+    if (json.ok) {
+      sessionStorage.setItem('admin_token', json.token);
+      isAdmin = true;
+      closeModal();
+      const el = document.getElementById('upload-'+currentSection);
+      if (el) el.classList.add('show');
+      document.getElementById('tab-calc').style.display = '';
+      showToast('✅ 관리자 모드 활성화');
+    } else {
+      errEl.textContent = '비밀번호가 올바르지 않습니다.';
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+    }
+  } catch(e) {
+    errEl.textContent = '서버 연결 오류. 잠시 후 다시 시도해 주세요.';
+  } finally {
+    btn.textContent = '확인';
+    btn.disabled = false;
+  }
+}
+document.getElementById('pw-input').addEventListener('keydown',e=>{ if(e.key==='Enter') checkPw(); });
 
-function switchSection(s){
+function switchSection(s) {
   currentSection=s;
   document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
   document.getElementById('section-'+s).classList.add('active');
-  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['semifinal','inventory','spot','calc'][i]===s));
-  ['worldcup','semifinal','inventory','spot'].forEach(sec=>{const el=document.getElementById('upload-'+sec);if(el)el.classList.toggle('show',isAdmin&&sec===s);});
+  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['worldcup','semifinal','inventory','spot','calc'][i]===s));
+  ['worldcup','semifinal','inventory','spot'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
 }
-function switchSfType(t){
-  sfType=t;
+function switchWcType(t) {
+  wcType=t;
   ['branch','agency'].forEach(x=>{
-    document.getElementById('sf-tab-'+x).classList.toggle('active',x===t);
-    document.getElementById('sf-'+x+'-view').style.display=x===t?'block':'none';
-    const ut=document.getElementById('sf-utab-'+x);if(ut)ut.classList.toggle('active',x===t);
-    const up=document.getElementById('sf-up-'+x);if(up)up.classList.toggle('active',x===t);
+    document.getElementById('wc-tab-'+x).classList.toggle('active',x===t);
+    document.getElementById('wc-'+x+'-view').style.display=x===t?'block':'none';
+    const ut=document.getElementById('wc-utab-'+x); if(ut) ut.classList.toggle('active',x===t);
+    const up=document.getElementById('wc-up-'+x); if(up) up.classList.toggle('active',x===t);
   });
 }
-function switchWcType(t){wcType=t;['branch','agency'].forEach(x=>{document.getElementById('wc-tab-'+x).classList.toggle('active',x===t);document.getElementById('wc-'+x+'-view').style.display=x===t?'block':'none';});}
-function switchInvType(t){invType=t;['agency','branch'].forEach(x=>{document.getElementById('inv-tab-'+x).classList.toggle('active',x===t);document.getElementById('inv-'+x+'-view').style.display=x===t?'block':'none';});}
-function switchSpotType(t){spotType=t;['branch','agency'].forEach(x=>{document.getElementById('sp-tab-'+x).classList.toggle('active',x===t);document.getElementById('sp-'+x+'-view').style.display=x===t?'block':'none';const ut=document.getElementById('sp-utab-'+x);if(ut)ut.classList.toggle('active',x===t);const up=document.getElementById('sp-up-'+x);if(up)up.classList.toggle('active',x===t);});}
-function switchUpTab(campaign,t){
-  const prefix=campaign==='worldcup'?'wc':campaign==='spot'?'sp':campaign==='semifinal'?'sf':'inv';
-  ['branch','agency'].forEach(x=>{const ut=document.getElementById(prefix+'-utab-'+x);if(ut)ut.classList.toggle('active',x===t);const us=document.getElementById(prefix+'-up-'+x);if(us)us.classList.toggle('active',x===t);});
+function switchInvType(t) {
+  invType=t;
+  ['agency','branch'].forEach(x=>{
+    document.getElementById('inv-tab-'+x).classList.toggle('active',x===t);
+    document.getElementById('inv-'+x+'-view').style.display=x===t?'block':'none';
+  });
+}
+function switchSpotType(t) {
+  spotType=t;
+  ['branch','agency'].forEach(x=>{
+    document.getElementById('sp-tab-'+x).classList.toggle('active',x===t);
+    document.getElementById('sp-'+x+'-view').style.display=x===t?'block':'none';
+    const ut=document.getElementById('sp-utab-'+x); if(ut) ut.classList.toggle('active',x===t);
+    const up=document.getElementById('sp-up-'+x); if(up) up.classList.toggle('active',x===t);
+  });
+}
+function switchUpTab(campaign,t) {
+  const prefix=campaign==='worldcup'?'wc':campaign==='spot'?'sp':'inv';
+  ['branch','agency'].forEach(x=>{
+    const ut=document.getElementById(prefix+'-utab-'+x); if(ut) ut.classList.toggle('active',x===t);
+    const us=document.getElementById(prefix+'-up-'+x); if(us) us.classList.toggle('active',x===t);
+  });
 }
 
-function parsePasteSimple(raw){
+function parsePasteSimple(raw) {
   const result={};
-  const skip=['거점명','지점명','대리점명','합계','소계','total','sum'];
+  const skipNames=['거점명','지점명','대리점명','합계','소계','total','sum'];
   raw.split('\n').forEach(line=>{
-    const parts=line.split('\t');if(parts.length<2)return;
-    const name=parts[0].trim().replace(/\s/g,'');if(!name)return;
-    if(skip.some(s=>name.includes(s)))return;
-    const val=parseInt(parts[parts.length-1].trim().replace(/,/g,''));
-    if(name&&!isNaN(val)&&val>=0)result[name]=val;
+    const parts=line.split('\t');
+    if(parts.length<2) return;
+    const name=parts[0].trim().replace(/\s/g,'');
+    if(!name) return;
+    if(skipNames.some(s=>name.includes(s))) return;
+    const rawVal=parts[parts.length-1].trim().replace(/,/g,'');
+    const val=parseInt(rawVal);
+    if(name&&!isNaN(val)&&val>=0) result[name]=val;
   });
   return result;
 }
 
-function applyWcPaste(type){
+function applyWcPaste(type) {
   const raw=document.getElementById('wc-paste-'+type).value.trim();
   const st=document.getElementById('upload-status-worldcup');
   if(!raw){st.textContent='내용을 입력해 주세요.';st.style.color='var(--red)';return;}
-  const parsed=parsePasteSimple(raw);const count=Object.keys(parsed).length;
+  const parsed=parsePasteSimple(raw);
+  const count=Object.keys(parsed).length;
   if(!count){st.textContent='❌ 인식된 데이터가 없어요.';st.style.color='var(--red)';return;}
   Object.assign(data.wc[type],parsed);
-  const ts=nowStr();data.updatedAt['wc_'+type]=ts;data.updatedAt['_latest']=ts;
+  const ts=nowStr();
+  data.updatedAt['wc_'+type]=ts;
+  data.updatedAt['_latest']=ts;
   save().then(()=>renderAll());
   st.textContent=`✅ ${count}개 거점 적용 완료`;st.style.color='var(--green)';
   document.getElementById('wc-paste-'+type).value='';
+  showToast(`월드컵 ${type==='branch'?'지점':'대리점'} ${count}개 업데이트`);
 }
-
-function applySfPaste(type){
-  const raw=document.getElementById('sf-paste-'+type).value.trim();
-  const st=document.getElementById('upload-status-semifinal');
-  if(!raw){st.textContent='내용을 입력해 주세요.';st.style.color='var(--red)';return;}
-  const current=parsePasteSimple(raw);const count=Object.keys(current).length;
-  if(!count){st.textContent='❌ 인식된 데이터가 없어요.';st.style.color='var(--red)';return;}
-  const wcBase=type==='branch'?(data.wc.branch||{}):(data.wc.agency||{});
-  const sfResult={};
-  Object.entries(current).forEach(([name,cur])=>{
-    const base=wcBase[name]||0;
-    sfResult[name]=Math.max(cur-base,0);
-  });
-  Object.assign(data.sf[type],sfResult);
-  const ts=nowStr();data.updatedAt['sf_'+type]=ts;data.updatedAt['_latest']=ts;
-  save().then(()=>renderAll());
-  const total=Object.values(sfResult).reduce((s,v)=>s+v,0);
-  st.textContent=`✅ ${count}개 거점 적용 완료 (전반전 합계 ${total}대)`;st.style.color='var(--green)';
-  document.getElementById('sf-paste-'+type).value='';
-  showToast(`전반전 ${type==='branch'?'지점':'대리점'} ${count}개 업데이트`);
-}
-
-function applyInvPaste(type){
+function applyInvPaste(type) {
   const raw=document.getElementById('inv-paste-'+type).value.trim();
   const st=document.getElementById('upload-status-inventory');
   if(!raw){st.textContent='내용을 입력해 주세요.';st.style.color='var(--red)';return;}
-  const parsed=parsePasteSimple(raw);const count=Object.keys(parsed).length;
+  const parsed=parsePasteSimple(raw);
+  const count=Object.keys(parsed).length;
   if(!count){st.textContent='❌ 인식된 데이터가 없어요.';st.style.color='var(--red)';return;}
   Object.assign(data.inv[type],parsed);
-  const ts=nowStr();data.updatedAt['inv_'+type]=ts;data.updatedAt['_latest']=ts;
+  const ts=nowStr();
+  data.updatedAt['inv_'+type]=ts;
+  data.updatedAt['_latest']=ts;
   save().then(()=>renderAll());
   st.textContent=`✅ ${count}개 거점 적용 완료`;st.style.color='var(--green)';
   document.getElementById('inv-paste-'+type).value='';
   showToast(`재고맞수 ${type==='branch'?'지점':'대리점'} ${count}개 업데이트`);
 }
-
-function applySpotPaste(type){
+function applySpotPaste(type) {
   const raw=document.getElementById('sp-paste-'+type).value.trim();
   const st=document.getElementById('upload-status-spot');
   if(!raw){st.textContent='내용을 입력해 주세요.';st.style.color='var(--red)';return;}
-  const parsed=parsePasteSimple(raw);const count=Object.keys(parsed).length;
+  const parsed=parsePasteSimple(raw);
+  const count=Object.keys(parsed).length;
   if(!count){st.textContent='❌ 인식된 데이터가 없어요.';st.style.color='var(--red)';return;}
   Object.assign(data.spot[type],parsed);
-  const ts=nowStr();data.updatedAt['spot_'+type]=ts;data.updatedAt['_latest']=ts;
+  const ts=nowStr();
+  data.updatedAt['spot_'+type]=ts;
+  data.updatedAt['_latest']=ts;
   save().then(()=>renderAll());
   st.textContent=`✅ ${count}개 거점 적용 완료`;st.style.color='var(--green)';
   document.getElementById('sp-paste-'+type).value='';
   showToast(`계약Spot ${type==='branch'?'지점':'대리점'} ${count}개 업데이트`);
 }
 
-function renderAll(){
+// ── 전반전 ─────────────────────────────────────────────
+const SF_BRANCH_LEAGUES = {
+  champ: ['오창','옥천영동','청주북부','청주남부'],
+  premier: ['청주','진천','제천','청주서부','충주','금왕']
+};
+const SF_AGENCY_LEAGUES = {
+  champ: ['영동금강','오창제일','서청주','증평삼보'],
+  premier: ['연수','진천중앙','음성','보은'],
+  challenger: ['제천중앙','가경','교현','단양']
+};
+// 전반전 승점표
+const SF_POINTS = {
+  branch: {
+    champ:   [10,7,5,3],
+    premier: [10,8,6,4,2,1]
+  },
+  agency: {
+    champ:      [10,7,5,3],
+    premier:    [10,7,5,3],
+    challenger: [10,7,5,3]
+  }
+};
+
+let sfType = 'branch';
+
+function switchSfType(t) {
+  sfType = t;
+  ['branch','agency'].forEach(x => {
+    document.getElementById('sf-tab-'+x).classList.toggle('active', x===t);
+    document.getElementById('sf-'+x+'-view').style.display = x===t?'block':'none';
+    const ut=document.getElementById('sf-utab-'+x); if(ut) ut.classList.toggle('active', x===t);
+    const up=document.getElementById('sf-up-'+x); if(up) up.classList.toggle('active', x===t);
+  });
+}
+
+function applySfPaste(type) {
+  const raw = document.getElementById('sf-paste-'+type).value.trim();
+  const st = document.getElementById('upload-status-semifinal');
+  if (!raw) { st.textContent='내용을 입력해 주세요.'; st.style.color='var(--red)'; return; }
+  const parsed = parsePasteSimple(raw);
+  const count = Object.keys(parsed).length;
+  if (!count) { st.textContent='❌ 인식된 데이터가 없어요.'; st.style.color='var(--red)'; return; }
+  if (!data.sf) data.sf = {branch:{}, agency:{}};
+  Object.assign(data.sf[type], parsed);
+  const _sfTs = new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  data.updatedAt['sf_'+type] = _sfTs; data.updatedAt['_latest'] = _sfTs;
+  save().then(() => renderAll());
+  st.textContent = `✅ ${count}개 거점 적용 완료`; st.style.color = 'var(--green)';
+  document.getElementById('sf-paste-'+type).value = '';
+  showToast(`전반전 ${type==='branch'?'지점':'대리점'} ${count}개 업데이트`);
+}
+
+function renderSf(type) {
+  const leagues = type === 'branch' ? SF_BRANCH_LEAGUES : SF_AGENCY_LEAGUES;
+  const shipped = (data.sf && data.sf[type]) ? data.sf[type] : {};
+  const points = SF_POINTS[type];
+
+  // 전체 요약
+  const allNames = Object.values(leagues).flat();
+  const totalShip = allNames.reduce((s,n)=>s+(shipped[n]||0),0);
+  const totalTgt = allNames.reduce((s,n)=>s+(WC_TARGETS[n]||0),0);
+  document.getElementById(`sf-${type}-summary`).innerHTML = `
+    <div class="scard"><span>전체 거점</span><strong>${allNames.length}개</strong></div>
+    <div class="scard"><span>3주차 출고</span><strong>${totalShip}대</strong></div>
+    <div class="scard"><span>3주차 목표</span><strong>${totalTgt}대</strong></div>
+    <div class="scard"><span>달성율</span><strong>${totalTgt?(totalShip/totalTgt*100).toFixed(1):0}%</strong></div>
+  `;
+
+  const leaguesEl = document.getElementById(`sf-${type}-leagues`);
+  leaguesEl.innerHTML = '';
+
+  const leagueInfo = {
+    champ:      { label: '🏆 챔피언스 리그', badgeClass: 'sf-badge-champ' },
+    premier:    { label: '⚽ 프리미어 리그', badgeClass: 'sf-badge-premier' },
+    challenger: { label: '🌱 챌린저스 리그', badgeClass: 'sf-badge-challenger' }
+  };
+
+  Object.entries(leagues).forEach(([leagueKey, members]) => {
+    const info = leagueInfo[leagueKey];
+    const pts = points[leagueKey] || [];
+
+    // 달성율 기준 정렬
+    const ranked = [...members].sort((a,b) => {
+      const ra = (shipped[a]||0)/(WC_TARGETS[a]||1);
+      const rb = (shipped[b]||0)/(WC_TARGETS[b]||1);
+      return rb - ra;
+    });
+
+    const rows = ranked.map((name, i) => {
+      const s = shipped[name]||0;
+      const tgt = WC_TARGETS[name]||1;
+      const rate = s/tgt;
+      const barW = Math.min(rate*100,100).toFixed(0);
+      const pt = pts[i] || 0;
+      const rankClass = ['sf-r1','sf-r2','sf-r3','sf-r4','sf-r5','sf-r6'][i] || 'sf-r6';
+      return `<tr class="${i===0?'sf-rank1':''}">
+        <td><span class="sf-rank ${rankClass}">${i+1}</span></td>
+        <td style="text-align:left;font-weight:700;">${name}</td>
+        <td>${s} / ${tgt}</td>
+        <td><div class="sf-rate-bar"><div class="sf-bar-wrap"><div class="sf-bar-fill" style="width:${barW}%"></div></div><span style="font-size:12px;font-weight:800;color:var(--blue-dark);min-width:42px;text-align:right;">${(rate*100).toFixed(1)}%</span></div></td>
+        <td><span class="sf-point${pt>=10?' high':''}">${pt}점</span></td>
+      </tr>`;
+    }).join('');
+
+    // 포상금 안내
+    const prizeMap = {
+      branch: {
+        champ:   '1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',
+        premier: '1위 50만 / 2위 40만 / 3위 30만 / 4위 20만'
+      },
+      agency: {
+        champ:      '1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',
+        premier:    '1위 60만 / 2위 50만 / 3위 40만 / 4위 30만',
+        challenger: '1위 30만 / 2위 20만 / 3위 10만'
+      }
+    };
+    const prize = prizeMap[type][leagueKey] || '';
+
+    const section = document.createElement('div');
+    section.className = 'sf-league-section';
+    section.innerHTML = `
+      <div class="sf-league-title">
+        <span class="sf-league-badge ${info.badgeClass}">${info.label}</span>
+        <span class="sf-prize-info">${prize}</span>
+      </div>
+      <div class="sf-table-wrap">
+        <table class="sf-table">
+          <thead><tr><th>순위</th><th>${type==='branch'?'지점':'대리점'}</th><th>출고/목표</th><th>달성율</th><th>승점</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    leaguesEl.appendChild(section);
+  });
+}
+
+function renderAll() {
   fixData();
-  const latest=data.updatedAt&&data.updatedAt['_latest'];
-  document.getElementById('last-upd').textContent=latest?'업데이트: '+latest:'데이터 없음';
+  // _latest에 저장된 가장 최근 업데이트 시각 표시
+  const latest = data.updatedAt['_latest'];
+  document.getElementById('last-upd').textContent = latest ? '업데이트: ' + latest : '데이터 없음';
   renderWc('branch');renderWc('agency');
   renderSf('branch');renderSf('agency');
   renderInv('agency');renderInv('branch');
   renderSpot('branch');renderSpot('agency');
 }
 
-function renderSf(type){
-  const leagues=type==='branch'?SF_BRANCH_LEAGUES:SF_AGENCY_LEAGUES;
-  const shipped=(data.sf&&data.sf[type])?data.sf[type]:{};
-  const points=SF_POINTS[type];
-  const allNames=Object.values(leagues).flat();
-  const totalShip=allNames.reduce((s,n)=>s+(shipped[n]||0),0);
-  const totalTgt=allNames.reduce((s,n)=>s+(WC_TARGETS[n]||0),0);
-  document.getElementById(`sf-${type}-summary`).innerHTML=`
-    <div class="scard"><span>전체 거점</span><strong>${allNames.length}개</strong></div>
-    <div class="scard"><span>전반전 출고</span><strong>${totalShip}대</strong></div>
-    <div class="scard"><span>목표</span><strong>${totalTgt}대</strong></div>
-    <div class="scard"><span>달성율</span><strong>${totalTgt?(totalShip/totalTgt*100).toFixed(1):0}%</strong></div>`;
-  const leaguesEl=document.getElementById(`sf-${type}-leagues`);leaguesEl.innerHTML='';
-  const leagueInfo={champ:{label:'🏆 챔피언스 리그',cls:'sf-badge-champ'},premier:{label:'⚽ 프리미어 리그',cls:'sf-badge-premier'},challenger:{label:'🌱 챌린저스 리그',cls:'sf-badge-challenger'}};
-  const prizeMap={branch:{champ:'1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',premier:'1위 50만 / 2위 40만 / 3위 30만 / 4위 20만'},agency:{champ:'1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',premier:'1위 60만 / 2위 50만 / 3위 40만 / 4위 30만',challenger:'1위 30만 / 2위 20만 / 3위 10만'}};
-  Object.entries(leagues).forEach(([key,members])=>{
-    const info=leagueInfo[key];const pts=points[key]||[];
-    const ranked=[...members].sort((a,b)=>(shipped[b]||0)/(WC_TARGETS[b]||1)-(shipped[a]||0)/(WC_TARGETS[a]||1));
-    const rows=ranked.map((name,i)=>{
-      const s=shipped[name]||0,tgt=WC_TARGETS[name]||1,rate=s/tgt;
-      const pt=pts[i]||0;const rc=['sf-r1','sf-r2','sf-r3','sf-r4','sf-r5','sf-r6'][i]||'sf-r6';
-      return `<tr class="${i===0?'sf-rank1':''}"><td><span class="sf-rank ${rc}">${i+1}</span></td><td style="text-align:left;font-weight:700;">${name}</td><td>${s} / ${tgt}</td><td><div class="sf-rate-bar"><div class="sf-bar-wrap"><div class="sf-bar-fill" style="width:${Math.min(rate*100,100).toFixed(0)}%"></div></div><span style="font-size:12px;font-weight:800;color:var(--blue-dark);min-width:42px;text-align:right;">${(rate*100).toFixed(1)}%</span></div></td><td><span class="sf-point${pt>=10?' high':''}">${pt}점</span></td></tr>`;
-    }).join('');
-    const sec=document.createElement('div');sec.className='sf-league-section';
-    sec.innerHTML=`<div class="sf-league-title"><span class="sf-league-badge ${info.cls}">${info.label}</span><span class="sf-prize-info">${prizeMap[type][key]||''}</span></div><div class="sf-table-wrap"><table class="sf-table"><thead><tr><th>순위</th><th>${type==='branch'?'지점':'대리점'}</th><th>출고/목표</th><th>달성율</th><th>승점</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-    leaguesEl.appendChild(sec);
-  });
-}
-
-function renderWc(type){
+function renderWc(type) {
   const groups=type==='branch'?BRANCH_GROUPS:AGENCY_GROUPS;
   const shipped=type==='branch'?data.wc.branch:data.wc.agency;
   const allNames=Object.values(groups).flat();
   const tShip=allNames.reduce((s,n)=>s+(shipped[n]||0),0);
   const tTgt=allNames.reduce((s,n)=>s+(WC_TARGETS[n]||0),0);
-  document.getElementById(`wc-${type}-summary`).innerHTML=`<div class="scard"><span>총 ${type==='branch'?'지점':'대리점'}</span><strong>${allNames.length}개</strong></div><div class="scard"><span>누계 출고</span><strong>${tShip}대</strong></div><div class="scard"><span>목표</span><strong>${tTgt}대</strong></div><div class="scard"><span>달성율</span><strong>${tTgt?(tShip/tTgt*100).toFixed(1):0}%</strong></div>`;
-  const groupsEl=document.getElementById(`wc-${type}-groups`);groupsEl.innerHTML='';
-  const promo={champ:[],premier:[],challenger:[]};const isAg=type==='agency';
+  document.getElementById(`wc-${type}-summary`).innerHTML=`
+    <div class="scard"><span>총 ${type==='branch'?'지점':'대리점'}</span><strong>${allNames.length}개</strong></div>
+    <div class="scard"><span>누계 출고</span><strong>${tShip}대</strong></div>
+    <div class="scard"><span>목표</span><strong>${tTgt}대</strong></div>
+    <div class="scard"><span>달성율</span><strong>${tTgt?(tShip/tTgt*100).toFixed(1):0}%</strong></div>`;
+  const groupsEl=document.getElementById(`wc-${type}-groups`);
+  groupsEl.innerHTML='';
+  const promo={champ:[],premier:[],challenger:[]};
+  const isAg=type==='agency';
   Object.entries(groups).forEach(([gname,members])=>{
     const ranked=[...members].sort((a,b)=>(shipped[b]||0)/WC_TARGETS[b]-(shipped[a]||0)/WC_TARGETS[a]);
-    const rows=ranked.map((name,i)=>{
+    let rows=ranked.map((name,i)=>{
       const s=shipped[name]||0,tgt=WC_TARGETS[name]||1,rate=s/tgt;
-      const bw=Math.min(rate*100,100).toFixed(0);const rc=['r1','r2','r3','r4','r5'][i];
+      const bw=Math.min(rate*100,100).toFixed(0);
+      const rc=['r1','r2','r3','r4','r5'][i];
       const badge=isAg?(i===0?'<span class="abadge ab-champ">챔피언스</span>':i===1?'<span class="abadge ab-premier">프리미어</span>':'<span class="abadge ab-challenger">챌린저스</span>'):(i<2?'<span class="abadge ab-champ">챔피언스</span>':'<span class="abadge ab-premier">프리미어</span>');
       const adv=isAg?(i===0):(i<2);
       return `<tr class="${adv?'advance':''}"><td><span class="rank ${rc}">${i+1}</span></td><td style="text-align:left;font-weight:700;">${name}</td><td>${s} / ${tgt}</td><td><div class="rw"><div class="rb"><div class="rf" style="width:${bw}%"></div></div><span class="rv">${(rate*100).toFixed(1)}%</span></div></td><td>${badge}</td></tr>`;
     }).join('');
     const card=document.createElement('div');card.className='gpanel';
-    card.innerHTML=`<div class="gpanel-head"><h3>${gname}</h3><span>${isAg?'3개':'5개'}</span></div><table class="gtable"><thead><tr><th>순위</th><th>${type==='branch'?'지점':'대리점'}</th><th>출고/목표</th><th>달성율</th><th>본선</th></tr></thead><tbody>${rows}</tbody></table>`;
+    card.innerHTML=`<div class="gpanel-head"><h3>${gname}</h3><span>${isAg?'3개·1위챔피언스/2위프리미어/3위챌린저스':'5개·1~2위챔피언스/3~5위프리미어'}</span></div><table class="gtable"><thead><tr><th>순위</th><th>${type==='branch'?'지점':'대리점'}</th><th>출고/목표</th><th>달성율</th><th>본선</th></tr></thead><tbody>${rows}</tbody></table>`;
     groupsEl.appendChild(card);
-    ranked.forEach((name,i)=>{if(isAg){if(i===0)promo.champ.push({name,group:gname});else if(i===1)promo.premier.push({name,group:gname});else promo.challenger.push({name,group:gname});}else{if(i<2)promo.champ.push({name,group:gname,rank:i+1});else promo.premier.push({name,group:gname,rank:i+1});}});
+    ranked.forEach((name,i)=>{
+      if(isAg){if(i===0)promo.champ.push({name,group:gname});else if(i===1)promo.premier.push({name,group:gname});else promo.challenger.push({name,group:gname});}
+      else{if(i<2)promo.champ.push({name,group:gname,rank:i+1});else promo.premier.push({name,group:gname,rank:i+1});}
+    });
   });
   const promoEl=document.getElementById(`wc-${type}-promo`);
-  if(isAg){promoEl.innerHTML=`<div class="pcard pc-champ"><h4>🏆 챔피언스 (4개)</h4>${promo.champ.map(d=>`<div class="pitem">${d.name} <span style="font-size:11px;color:var(--text-sub)">${d.group}</span></div>`).join('')}</div><div class="pcard pc-premier"><h4>⚽ 프리미어 (4개)</h4>${promo.premier.map(d=>`<div class="pitem">${d.name}</div>`).join('')}</div><div class="pcard pc-challenger"><h4>🌱 챌린저스 (4개)</h4>${promo.challenger.map(d=>`<div class="pitem">${d.name}</div>`).join('')}</div>`;}
-  else{promoEl.innerHTML=`<div class="pcard pc-champ"><h4>🏆 챔피언스 (4개)</h4>${promo.champ.map(d=>`<div class="pitem">${d.name} <span style="font-size:11px;color:var(--text-sub)">${d.group} ${d.rank}위</span></div>`).join('')}</div><div class="pcard pc-premier"><h4>⚽ 프리미어 (6개)</h4>${promo.premier.map(d=>`<div class="pitem">${d.name} <span style="font-size:11px;color:var(--text-sub)">${d.group} ${d.rank}위</span></div>`).join('')}</div><div class="pcard pc-info"><h4>📋 포상 규모</h4><div class="pitem">챔피언스 1위 120만 / 2위 100만</div><div class="pitem">챔피언스 3위 80만 / 4위 70만</div><div class="pitem">프리미어 1위 50만 ~ 6위 20만</div></div>`;}
+  if(isAg){
+    promoEl.innerHTML=`<div class="pcard pc-champ"><h4>🏆 챔피언스 리그 (4개)</h4>${promo.champ.map(d=>`<div class="pitem">${d.name} <span style="font-size:11px;color:var(--text-sub)">${d.group}</span></div>`).join('')}</div><div class="pcard pc-premier"><h4>⚽ 프리미어 리그 (4개)</h4>${promo.premier.map(d=>`<div class="pitem">${d.name} <span style="font-size:11px;color:var(--text-sub)">${d.group}</span></div>`).join('')}</div><div class="pcard pc-challenger"><h4>🌱 챌린저스 리그 (4개)</h4>${promo.challenger.map(d=>`<div class="pitem">${d.name} <span style="font-size:11px;color:var(--text-sub)">${d.group}</span></div>`).join('')}</div>`;
+  } else {
+    promoEl.innerHTML=`<div class="pcard pc-champ"><h4>🏆 챔피언스 리그 (4개)</h4>${promo.champ.map(d=>`<div class="pitem">${d.name} <span style="font-size:11px;color:var(--text-sub)">${d.group} ${d.rank}위</span></div>`).join('')}</div><div class="pcard pc-premier"><h4>⚽ 프리미어 리그 (6개)</h4>${promo.premier.map(d=>`<div class="pitem">${d.name} <span style="font-size:11px;color:var(--text-sub)">${d.group} ${d.rank}위</span></div>`).join('')}</div><div class="pcard pc-info"><h4>📋 포상 규모 (총 510만원)</h4><div class="pitem">챔피언스 1위 120만 / 2위 100만</div><div class="pitem">챔피언스 3위 80만 / 4위 70만</div><div class="pitem">프리미어 1위 50만 ~ 6위 20만</div></div>`;
+  }
 }
 
-function renderInv(type){
+function renderInv(type) {
   const matches=type==='agency'?INV_MATCHES_AGENCY:INV_MATCHES_BRANCH;
   const shipped=type==='agency'?data.inv.agency:data.inv.branch;
   const allNames=matches.flatMap(m=>[m.a,m.b]);
   const tShip=allNames.reduce((s,n)=>s+(shipped[n]||0),0);
   const tTgt=allNames.reduce((s,n)=>s+(WC_TARGETS[n]||0),0);
-  document.getElementById(`inv-${type}-summary`).innerHTML=`<div class="scard"><span>총 대진</span><strong>${matches.length}조</strong></div><div class="scard"><span>발급재고 출고</span><strong>${tShip}대</strong></div><div class="scard"><span>전체 목표</span><strong>${tTgt}대</strong></div><div class="scard"><span>달성율</span><strong>${tTgt?(tShip/tTgt*100).toFixed(1):0}%</strong></div>`;
+  document.getElementById(`inv-${type}-summary`).innerHTML=`
+    <div class="scard"><span>총 대진</span><strong>${matches.length}조</strong></div>
+    <div class="scard"><span>발급재고 출고</span><strong>${tShip}대</strong></div>
+    <div class="scard"><span>전체 목표</span><strong>${tTgt}대</strong></div>
+    <div class="scard"><span>전체 달성율</span><strong>${tTgt?(tShip/tTgt*100).toFixed(1):0}%</strong></div>`;
   const el=document.getElementById(`inv-${type}-matches`);el.innerHTML='';
   matches.forEach(m=>{
     const aS=shipped[m.a]||0,bS=shipped[m.b]||0;
@@ -622,7 +847,7 @@ function renderInv(type){
   });
 }
 
-function renderSpot(type){
+function renderSpot(type) {
   const allNames=Object.values(type==='branch'?BRANCH_GROUPS:AGENCY_GROUPS).flat();
   const contracted=type==='branch'?data.spot.branch:data.spot.agency;
   const ranked=[...allNames].sort((a,b)=>(contracted[b]||0)/SPOT_TARGETS[b]-(contracted[a]||0)/SPOT_TARGETS[a]);
@@ -631,7 +856,11 @@ function renderSpot(type){
   const rewardMap={};
   passers.forEach(n=>{rewardMap[n]=totalPass>0?Math.floor(SPOT_PRIZE*(contracted[n]||0)/totalPass/1000)*1000:0;});
   const tCont=allNames.reduce((s,n)=>s+(contracted[n]||0),0);
-  document.getElementById(`sp-${type}-summary`).innerHTML=`<div class="scard"><span>기준 달성 거점</span><strong>${passers.length}개</strong></div><div class="scard"><span>누계 계약</span><strong>${tCont}대</strong></div><div class="scard"><span>달성 거점 계약합계</span><strong>${totalPass}대</strong></div><div class="scard"><span>포상 재원</span><strong>200만원</strong></div>`;
+  document.getElementById(`sp-${type}-summary`).innerHTML=`
+    <div class="scard"><span>기준 달성 거점</span><strong>${passers.length}개</strong></div>
+    <div class="scard"><span>누계 계약</span><strong>${tCont}대</strong></div>
+    <div class="scard"><span>달성 거점 계약합계</span><strong>${totalPass}대</strong></div>
+    <div class="scard"><span>포상 재원</span><strong>200만원</strong></div>`;
   document.getElementById(`sp-${type}-tbody`).innerHTML=ranked.map((name,i)=>{
     const c=contracted[name]||0,tgt=SPOT_TARGETS[name]||1,rate=c/tgt;
     const pass=rate>=0.6,rew=rewardMap[name]||0;
@@ -639,68 +868,127 @@ function renderSpot(type){
   }).join('');
 }
 
-function runCalc(){
-  const raw=document.getElementById('calc-paste').value.trim();
-  const st=document.getElementById('calc-status');
-  if(!raw){st.textContent='데이터를 붙여넣어 주세요.';st.style.color='var(--red)';return;}
-  const lines=raw.split('\n').filter(l=>l.trim());
-  if(lines.length<2){st.textContent='❌ 데이터가 너무 적어요.';st.style.color='var(--red)';return;}
-  let startIdx=0;
-  for(let i=0;i<Math.min(lines.length,5);i++){if(['계출상태','차량구분','지점'].some(kw=>lines[i].includes(kw))){startIdx=i+1;break;}}
-  const branchResult={},agencyResult={},unmapped={};
-  let total=0,cntShipped=0,cntNormal=0,cntSkip=0,cntValid=0;
-  lines.slice(startIdx).forEach(line=>{
-    const cols=line.split('\t');if(cols.length<27)return;total++;
-    const status=cols[1].trim(),carType=cols[12].trim(),branchCd=cols[26].trim(),agencyCd=cols.length>27?cols[27].trim():'';
-    if(status!=='출고'){cntSkip++;return;}cntShipped++;
-    if(carType==='정상재고'){cntNormal++;return;}cntValid++;
-    const code=agencyCd||branchCd,name=CALC_CODE_MAP[code];
-    if(!name){unmapped[code]=(unmapped[code]||0)+1;return;}
-    if(agencyCd&&AGENCY_CODES.has(agencyCd))agencyResult[name]=(agencyResult[name]||0)+1;
-    else branchResult[name]=(branchResult[name]||0)+1;
+const CALC_CODE_MAP = {
+  'DG27001':'가경','DG16002':'오창제일','DG22001':'음성','DG21003':'연수',
+  'DG23003':'제천중앙','DG42001':'서청주','G27':'청주서부','G21':'충주',
+  'G42':'청주남부','G16':'청주북부','DG13001':'보은','DG21004':'교현',
+  'DG17001':'증평삼보','G18':'진천','DG23001':'단양','G17':'오창',
+  'G22':'금왕','G11':'청주','G23':'제천','G13':'옥천영동',
+  'DG18001':'진천중앙','DG13003':'영동금강'
+};
+const AGENCY_CODES = new Set([
+  'DG27001','DG16002','DG22001','DG21003','DG23003',
+  'DG42001','DG13001','DG21004','DG17001','DG23001',
+  'DG18001','DG13003'
+]);
+let calcResult = { branch:{}, agency:{} };
+
+function runCalc() {
+  const raw = document.getElementById('calc-paste').value.trim();
+  const st = document.getElementById('calc-status');
+  if (!raw) { st.textContent='데이터를 붙여넣어 주세요.'; st.style.color='var(--red)'; return; }
+  const lines = raw.split('\n').filter(l => l.trim());
+  if (lines.length < 2) { st.textContent='❌ 데이터가 너무 적어요.'; st.style.color='var(--red)'; return; }
+  let startIdx = 0;
+  const headerKws = ['계출상태','차량구분','지점'];
+  for (let i = 0; i < Math.min(lines.length, 5); i++) {
+    if (headerKws.some(kw => lines[i].includes(kw))) { startIdx = i + 1; break; }
+  }
+  const branchResult = {}, agencyResult = {}, unmapped = {};
+  let total=0, cntShipped=0, cntNormal=0, cntSkip=0, cntValid=0;
+  lines.slice(startIdx).forEach(line => {
+    const cols = line.split('\t');
+    if (cols.length < 27) return;
+    total++;
+    const status   = cols[1].trim();
+    const carType  = cols[12].trim();
+    const branchCd = cols[26].trim();
+    const agencyCd = cols.length > 27 ? cols[27].trim() : '';
+    if (status !== '출고') { cntSkip++; return; }
+    cntShipped++;
+    if (carType === '정상재고') { cntNormal++; return; }
+    cntValid++;
+    const code = agencyCd || branchCd;
+    const name = CALC_CODE_MAP[code];
+    if (!name) { unmapped[code] = (unmapped[code]||0) + 1; return; }
+    if (agencyCd && AGENCY_CODES.has(agencyCd)) {
+      agencyResult[name] = (agencyResult[name]||0) + 1;
+    } else {
+      branchResult[name] = (branchResult[name]||0) + 1;
+    }
   });
-  calcResult={branch:branchResult,agency:agencyResult,unmapped};
-  document.getElementById('calc-summary-grid').innerHTML=`<div class="cscard"><span>전체 데이터</span><strong>${total}건</strong></div><div class="cscard"><span>출고</span><strong>${cntShipped}건</strong></div><div class="cscard"><span>출고 아님 제외</span><strong>${cntSkip}건</strong></div><div class="cscard"><span>정상재고 제외</span><strong>${cntNormal}건</strong></div><div class="cscard"><span style="color:var(--green);font-weight:800;">발급가능재고</span><strong style="color:var(--green);">${cntValid}대</strong></div>`;
-  const makeTable=(title,result)=>{
-    const sorted=Object.entries(result).sort((a,b)=>b[1]-a[1]);
-    const tot=sorted.reduce((s,[,v])=>s+v,0);const maxV=sorted[0]?.[1]||1;
-    const rows=sorted.map(([name,cnt])=>`<tr><td style="text-align:left;font-weight:700;">${name}</td><td>${cnt}대</td><td>${(cnt/tot*100).toFixed(1)}%</td><td class="bar-cell" style="color:var(--blue);font-size:10px;">${'█'.repeat(Math.round(cnt/maxV*12))}</td></tr>`).join('');
-    return `<div><div style="font-size:13px;font-weight:800;color:var(--blue-dark);margin-bottom:8px;">${title} (총 ${tot}대)</div><table class="calc-result-table"><thead><tr><th>거점명</th><th>출고</th><th>비율</th><th>막대</th></tr></thead><tbody>${rows||'<tr><td colspan="4" style="color:var(--text-sub);">데이터 없음</td></tr>'}</tbody></table></div>`;
+  calcResult = { branch: branchResult, agency: agencyResult, unmapped };
+  document.getElementById('calc-summary-grid').innerHTML = `
+    <div class="cscard"><span>전체 데이터</span><strong>${total}건</strong></div>
+    <div class="cscard"><span>출고</span><strong>${cntShipped}건</strong></div>
+    <div class="cscard"><span>출고 아님 제외</span><strong>${cntSkip}건</strong></div>
+    <div class="cscard"><span>정상재고 제외</span><strong>${cntNormal}건</strong></div>
+    <div class="cscard"><span style="color:var(--green);font-weight:800;">발급가능재고</span><strong style="color:var(--green);">${cntValid}대</strong></div>`;
+  const makeTable = (title, result) => {
+    const sorted = Object.entries(result).sort((a,b)=>b[1]-a[1]);
+    const tot = sorted.reduce((s,[,v])=>s+v,0);
+    const maxV = sorted[0]?.[1] || 1;
+    const rows = sorted.map(([name,cnt]) => {
+      const pct = (cnt/tot*100).toFixed(1);
+      const bar = '█'.repeat(Math.round(cnt/maxV*12));
+      return `<tr><td style="text-align:left;font-weight:700;">${name}</td><td>${cnt}대</td><td>${pct}%</td><td class="bar-cell" style="color:var(--blue);font-size:10px;">${bar}</td></tr>`;
+    }).join('');
+    return `<div><div style="font-size:13px;font-weight:800;color:var(--blue-dark);margin-bottom:8px;">${title} (총 ${tot}대)</div>
+      <table class="calc-result-table"><thead><tr><th>거점명</th><th>출고</th><th>비율</th><th>막대</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="4" style="color:var(--text-sub);">데이터 없음</td></tr>'}</tbody></table></div>`;
   };
-  document.getElementById('calc-result-grid').innerHTML=makeTable('📍 지점별',branchResult)+makeTable('🏪 대리점별',agencyResult);
-  const unmappedEl=document.getElementById('calc-unmapped');
-  if(Object.keys(unmapped).length>0){unmappedEl.innerHTML='⚠️ 미매핑: '+Object.entries(unmapped).map(([k,v])=>`<b>${k}</b>(${v}건)`).join(', ');unmappedEl.classList.add('show');}
-  else unmappedEl.classList.remove('show');
+  document.getElementById('calc-result-grid').innerHTML = makeTable('📍 지점별', branchResult) + makeTable('🏪 대리점별', agencyResult);
+  const unmappedEl = document.getElementById('calc-unmapped');
+  if (Object.keys(unmapped).length > 0) {
+    unmappedEl.innerHTML = '⚠️ 미매핑 거점 코드: ' + Object.entries(unmapped).map(([k,v])=>`<b>${k}</b>(${v}건)`).join(', ');
+    unmappedEl.classList.add('show');
+  } else { unmappedEl.classList.remove('show'); }
   document.getElementById('calc-summary').classList.add('show');
-  st.textContent=`✅ 집계 완료 · 발급가능재고 ${cntValid}대`;st.style.color='var(--green)';
+  st.textContent = `✅ 집계 완료 · 발급가능재고 ${cntValid}대`;
+  st.style.color = 'var(--green)';
 }
 
-function applyCalcToInv(){
-  if(!Object.keys(calcResult.branch).length&&!Object.keys(calcResult.agency).length){showToast('❌ 먼저 집계를 실행해 주세요.');return;}
-  Object.assign(data.inv.branch,calcResult.branch);Object.assign(data.inv.agency,calcResult.agency);
-  const ts=nowStr();data.updatedAt['inv_calc']=ts;data.updatedAt['_latest']=ts;
-  save().then(()=>renderAll());showToast('✅ 재고 맞수에 적용 완료!');switchSection('inventory');
+function applyCalcToInv() {
+  if (!Object.keys(calcResult.branch).length && !Object.keys(calcResult.agency).length) {
+    showToast('❌ 먼저 집계를 실행해 주세요.'); return;
+  }
+  Object.assign(data.inv.branch, calcResult.branch);
+  Object.assign(data.inv.agency, calcResult.agency);
+  const ts = nowStr();
+  data.updatedAt['inv_calc'] = ts;
+  data.updatedAt['_latest'] = ts;
+  save().then(() => renderAll());
+  showToast('✅ 재고 맞수에 적용 완료!');
+  switchSection('inventory');
 }
 
-function clearCalc(){
-  document.getElementById('calc-paste').value='';document.getElementById('calc-status').textContent='';
-  document.getElementById('calc-summary').classList.remove('show');document.getElementById('calc-unmapped').classList.remove('show');
-  calcResult={branch:{},agency:{}};
+function clearCalc() {
+  document.getElementById('calc-paste').value = '';
+  document.getElementById('calc-status').textContent = '';
+  document.getElementById('calc-summary').classList.remove('show');
+  document.getElementById('calc-unmapped').classList.remove('show');
+  calcResult = { branch:{}, agency:{} };
 }
 
-function showToast(msg){
+function showToast(msg) {
   const t=document.createElement('div');t.className='toast';t.textContent=msg;
   document.getElementById('toast-wrap').appendChild(t);
   setTimeout(()=>{t.classList.add('hide');setTimeout(()=>t.remove(),220);},2400);
 }
 
-function applyUrlType(){
-  const params=new URLSearchParams(window.location.search);const type=params.get('type');if(!type)return;
-  ['sf-type-tabs','inv-type-tabs','sp-type-tabs'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
-  [['sf',['branch','agency']],['inv',['agency','branch']],['sp',['branch','agency']]].forEach(([prefix,types])=>{
+function applyUrlType() {
+  const params=new URLSearchParams(window.location.search);
+  const type=params.get('type');
+  if(!type) return;
+  ['wc-type-tabs','inv-type-tabs','sp-type-tabs'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display='none';
+  });
+  [['wc',['branch','agency']],['inv',['agency','branch']],['sp',['branch','agency']]].forEach(([prefix,types])=>{
     types.forEach(t=>{
-      const vw=document.getElementById(prefix+'-'+t+'-view');const tt=document.getElementById(prefix+'-tab-'+t);
-      if(vw)vw.style.display=t===type?'block':'none';if(tt)tt.classList.toggle('active',t===type);
+      const vw=document.getElementById(prefix+'-'+t+'-view');
+      const tt=document.getElementById(prefix+'-tab-'+t);
+      if(vw) vw.style.display=t===type?'block':'none';
+      if(tt) tt.classList.toggle('active',t===type);
     });
   });
   const badge=document.createElement('span');
@@ -709,20 +997,23 @@ function applyUrlType(){
   document.querySelector('.topnav-brand h1').appendChild(badge);
 }
 
-(async()=>{
-  try{await load();}catch(e){console.warn('load 실패:',e);}
-  const token=sessionStorage.getItem('admin_token');
-  if(token){
-    try{
-      const today=new Date().toISOString().slice(0,10);
-      if(atob(token).endsWith(':'+today)){
-        isAdmin=true;
-        const el=document.getElementById('upload-'+currentSection);if(el)el.classList.add('show');
-        document.getElementById('tab-calc').style.display='';
-      }else sessionStorage.removeItem('admin_token');
-    }catch(e){sessionStorage.removeItem('admin_token');}
+(async () => {
+  try { await load(); } catch(e) { console.warn('load 실패:',e); }
+  const token = sessionStorage.getItem('admin_token');
+  if (token) {
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const decoded = atob(token);
+      if (decoded.endsWith(':'+today)) {
+        isAdmin = true;
+        const el = document.getElementById('upload-'+currentSection);
+        if (el) el.classList.add('show');
+        document.getElementById('tab-calc').style.display = '';
+      } else { sessionStorage.removeItem('admin_token'); }
+    } catch(e) { sessionStorage.removeItem('admin_token'); }
   }
-  applyUrlType();renderAll();
+  applyUrlType();
+  renderAll();
 })();
 </script>
 </body>
