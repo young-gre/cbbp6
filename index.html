@@ -195,17 +195,17 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <p>HYUNDAI MOTOR · CHUNGBUK REGIONAL HQ · 2026.06</p>
   </div>
   <div class="topnav-tabs">
-    <button class="topnav-tab" onclick="switchSection('semifinal')">월드컵 전반전</button>
-    <button class="topnav-tab" onclick="switchSection('inventory')">재고 맞수</button>
-    <button class="topnav-tab" onclick="switchSection('spot')">계약 Spot</button>
-    <button class="topnav-tab" id="tab-calc" style="display:none;" onclick="switchSection('calc')">재고 계산기</button>
+    <button class="topnav-tab active" onclick="switchSection('semifinal')">⚽ 월드컵 전반전</button>
+    <button class="topnav-tab" onclick="switchSection('inventory')">📦 재고 맞수</button>
+    <button class="topnav-tab" onclick="switchSection('spot')">📋 계약 Spot</button>
+    <button class="topnav-tab" id="tab-calc" style="display:none;" onclick="switchSection('calc')">🧮 재고 계산기</button>
   </div>
   <div class="topnav-right">
     <span class="last-upd" id="last-upd">데이터 없음</span>
   </div>
 </nav>
 <div class="page">
-  <div class="section active" id="section-worldcup">
+  <div class="section" id="section-worldcup">
     <div class="upload-panel" id="upload-worldcup">
       <div class="upload-tabs">
         <button class="utab active" id="wc-utab-branch" onclick="switchUpTab('worldcup','branch')">지점 데이터</button>
@@ -242,26 +242,26 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     </div>
   </div>
   <!-- 전반전 -->
-  <div class="section" id="section-semifinal">
+  <div class="section active" id="section-semifinal">
     <div class="upload-panel" id="upload-semifinal">
       <div class="upload-tabs">
         <button class="utab active" id="sf-utab-branch" onclick="switchUpTab('semifinal','branch')">지점 데이터</button>
         <button class="utab" id="sf-utab-agency" onclick="switchUpTab('semifinal','agency')">대리점 데이터</button>
       </div>
       <div class="upload-section active" id="sf-up-branch">
-        <div class="paste-hint">엑셀에서 <b>거점명 + 3주차 출고</b> 복사 → 붙여넣기 (WC_TARGETS 기준 달성율 계산)</div>
+        <div class="paste-hint">엑셀에서 <b>거점명 + 현재 누계출고</b> 복사 → 붙여넣기 (예선전 누계 자동 차감 → 전반전 실적 산출)</div>
         <textarea class="paste-area" id="sf-paste-branch" placeholder="오창&#9;12&#10;옥천영동&#9;15&#10;청주북부&#9;20"></textarea>
         <button class="apply-btn" onclick="applySfPaste('branch')">✅ 지점 적용</button>
       </div>
       <div class="upload-section" id="sf-up-agency">
-        <div class="paste-hint">엑셀에서 <b>거점명 + 3주차 출고</b> 복사 → 붙여넣기</div>
+        <div class="paste-hint">엑셀에서 <b>거점명 + 현재 누계출고</b> 복사 → 붙여넣기 (예선전 누계 자동 차감 → 전반전 실적 산출)</div>
         <textarea class="paste-area" id="sf-paste-agency" placeholder="영동금강&#9;18&#10;오창제일&#9;50"></textarea>
         <button class="apply-btn" onclick="applySfPaste('agency')">✅ 대리점 적용</button>
       </div>
       <div class="upload-status" id="upload-status-semifinal"></div>
     </div>
     <div class="sec-header">
-      <div><div class="sec-title">🏆 전반전 (6/15 ~ 6/19)</div><div class="sec-sub">3주차 판매 달성율 기준 순위 산정 · 승점 부여</div></div>
+      <div><div class="sec-title">🏆 전반전 (6/15 ~ 6/19)</div><div class="sec-sub">현재 누계출고 − 예선전 누계(6/12) = 전반전 실적 · 달성율 기준 순위·승점</div></div>
       <div class="type-tabs" id="sf-type-tabs">
         <button class="type-tab active" id="sf-tab-branch" onclick="switchSfType('branch')">지점</button>
         <button class="type-tab" id="sf-tab-agency" onclick="switchSfType('agency')">대리점</button>
@@ -414,7 +414,7 @@ const SPOT_TARGETS = {
 const SPOT_PRIZE = 2000000;
 
 let isAdmin = false;
-let currentSection = 'worldcup';
+let currentSection = 'semifinal';
 let wcType = 'branch', invType = 'agency', spotType = 'branch';
 let logoClickCount = 0, logoClickTimer = null;
 
@@ -486,7 +486,7 @@ function toggleAdmin() {
   sessionStorage.removeItem('admin_token');
   ['worldcup','semifinal','inventory','spot'].forEach(s=>{ const el=document.getElementById('upload-'+s); if(el) el.classList.remove('show'); });
   document.getElementById('tab-calc').style.display = 'none';
-  if (currentSection === 'calc') switchSection('worldcup');
+  if (currentSection === 'calc') switchSection('semifinal');
   showToast('관리자 모드 종료');
 }
 function closeModal() {
@@ -534,7 +534,7 @@ function switchSection(s) {
   currentSection=s;
   document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
   document.getElementById('section-'+s).classList.add('active');
-  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['worldcup','semifinal','inventory','spot','calc'][i]===s));
+  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['semifinal','inventory','spot','calc'][i]===s));
   ['worldcup','semifinal','inventory','spot'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
 }
 function switchWcType(t) {
@@ -710,8 +710,8 @@ function renderSf(type) {
   const totalTgt = allNames.reduce((s,n)=>s+(WC_TARGETS[n]||0),0);
   document.getElementById(`sf-${type}-summary`).innerHTML = `
     <div class="scard"><span>전체 거점</span><strong>${allNames.length}개</strong></div>
-    <div class="scard"><span>3주차 출고</span><strong>${totalShip}대</strong></div>
-    <div class="scard"><span>3주차 목표</span><strong>${totalTgt}대</strong></div>
+    <div class="scard"><span>전반전 실적</span><strong>${totalShip}대</strong></div>
+    <div class="scard"><span>전체 목표</span><strong>${totalTgt}대</strong></div>
     <div class="scard"><span>달성율</span><strong>${totalTgt?(totalShip/totalTgt*100).toFixed(1):0}%</strong></div>
   `;
 
@@ -754,12 +754,12 @@ function renderSf(type) {
     // 포상금 안내
     const prizeMap = {
       branch: {
-        champ:   '판촉지원금 1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',
-        premier: '판촉지원금 1위 50만 / 2위 40만 / 3위 30만 / 4위 20만'
+        champ:   '1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',
+        premier: '1위 50만 / 2위 40만 / 3위 30만 / 4위 20만'
       },
       agency: {
-        champ:      '판촉지원금 1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',
-        premier:    '판촉지원금 1위 60만 / 2위 50만 / 3위 40만 / 4위 30만',
+        champ:      '1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',
+        premier:    '1위 60만 / 2위 50만 / 3위 40만 / 4위 30만',
         challenger: '1위 30만 / 2위 20만 / 3위 10만'
       }
     };
@@ -774,7 +774,7 @@ function renderSf(type) {
       </div>
       <div class="sf-table-wrap">
         <table class="sf-table">
-          <thead><tr><th>순위</th><th>${type==='branch'?'지점':'대리점'}</th><th>출고/목표</th><th>달성율</th><th>승점</th></tr></thead>
+          <thead><tr><th>순위</th><th>${type==='branch'?'지점':'대리점'}</th><th>실적/목표</th><th>달성율</th><th>승점</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
       </div>`;
