@@ -30,7 +30,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .sec-title{font-size:17px;font-weight:800;color:var(--blue-dark);}
 .sec-sub{font-size:12px;color:var(--text-sub);margin-top:3px;}
 .type-tabs{display:flex;gap:5px;}
-.type-tab{height:34px;padding:0 14px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:12px;font-weight:700;color:#6e8198;background:#fff;cursor:pointer;transition:.18s;}
+.type-tab{height:34px;padding:0 14px;border-radius:9px;border:1px solid var(--line);font-family:inherit;font-size:12px;font-weight:700;color:#6e8198;background:#fff;cursor:pointer;transition:.18px;}
 .type-tab.active{background:var(--blue-dark);color:#fff;border-color:var(--blue-dark);}
 .upload-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px;display:none;}
 .upload-panel.show{display:block;}
@@ -124,7 +124,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .toast.hide{animation:tOut .22s ease forwards;}
 @keyframes tIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
 @keyframes tOut{to{opacity:0;transform:translateY(-5px)}}
-
 /* ── 재고 계산기 ── */
 .calc-panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:16px;box-shadow:var(--shadow);}
 .calc-panel h3{font-size:15px;font-weight:800;color:var(--blue-dark);margin-bottom:6px;}
@@ -152,6 +151,28 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .calc-result-table .bar-cell{text-align:left;}
 .unmapped-box{background:#fff8f0;border:1px solid #fde68a;border-radius:10px;padding:12px 14px;margin-top:10px;font-size:12px;color:#b45309;display:none;}
 .unmapped-box.show{display:block;}
+
+/* ── 전반전 ── */
+.sf-league-section{margin-bottom:24px;}
+.sf-league-title{font-size:15px;font-weight:800;color:var(--blue-dark);padding:10px 0 8px;border-bottom:2px solid var(--line);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.sf-league-badge{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;font-size:11px;font-weight:800;}
+.sf-badge-champ{background:#fef3c7;color:#b45309;border:1px solid #fde68a;}
+.sf-badge-premier{background:#e0e7ff;color:#3730a3;border:1px solid #c7d2fe;}
+.sf-badge-challenger{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;}
+.sf-table-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:10px;}
+.sf-table{width:100%;border-collapse:collapse;}
+.sf-table th{background:#eef5fc;font-size:11px;font-weight:800;color:var(--blue-dark);padding:9px 12px;text-align:center;letter-spacing:.04em;}
+.sf-table td{padding:11px 12px;text-align:center;border-bottom:1px solid #f0f4f8;font-size:13px;font-weight:600;color:#294564;}
+.sf-table tr:last-child td{border-bottom:none;}
+.sf-table tr.sf-rank1 td{background:rgba(255,235,150,.12);}
+.sf-rank{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:800;}
+.sf-r1{background:#fef3c7;color:#b45309;}.sf-r2{background:#f1f5f9;color:#475569;}.sf-r3{background:#fff7ed;color:#92400e;}.sf-r4,.sf-r5,.sf-r6{background:#f8fafc;color:#94a3b8;}
+.sf-point{font-size:15px;font-weight:800;color:var(--blue-dark);}
+.sf-point.high{color:#b45309;}
+.sf-rate-bar{display:flex;align-items:center;gap:6px;justify-content:center;}
+.sf-bar-wrap{width:80px;height:6px;border-radius:999px;background:#e7eef6;overflow:hidden;flex-shrink:0;}
+.sf-bar-fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,#0f69b4,#4b97d6);transition:.4s;}
+.sf-prize-info{font-size:11px;color:var(--text-sub);margin-top:4px;}
 </style>
 </head>
 <body>
@@ -174,7 +195,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <p>HYUNDAI MOTOR · CHUNGBUK REGIONAL HQ · 2026.06</p>
   </div>
   <div class="topnav-tabs">
-    <button class="topnav-tab active" onclick="switchSection('worldcup')">⚽ 월드컵</button>
+    <button class="topnav-tab active" onclick="switchSection('semifinal')">⚽ 월드컵 전반전</button>
     <button class="topnav-tab" onclick="switchSection('inventory')">📦 재고 맞수</button>
     <button class="topnav-tab" onclick="switchSection('spot')">📋 계약 Spot</button>
     <button class="topnav-tab" id="tab-calc" style="display:none;" onclick="switchSection('calc')">🧮 재고 계산기</button>
@@ -184,7 +205,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   </div>
 </nav>
 <div class="page">
-  <div class="section active" id="section-worldcup">
+  <div class="section" id="section-worldcup">
     <div class="upload-panel" id="upload-worldcup">
       <div class="upload-tabs">
         <button class="utab active" id="wc-utab-branch" onclick="switchUpTab('worldcup','branch')">지점 데이터</button>
@@ -220,6 +241,42 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       <div class="promo-panel"><h3>🏆 본선 진출 현황 (예상)</h3><div class="promo-grid" id="wc-agency-promo"></div></div>
     </div>
   </div>
+  <!-- 전반전 -->
+  <div class="section active" id="section-semifinal">
+    <div class="upload-panel" id="upload-semifinal">
+      <div class="upload-tabs">
+        <button class="utab active" id="sf-utab-branch" onclick="switchUpTab('semifinal','branch')">지점 데이터</button>
+        <button class="utab" id="sf-utab-agency" onclick="switchUpTab('semifinal','agency')">대리점 데이터</button>
+      </div>
+      <div class="upload-section active" id="sf-up-branch">
+        <div class="paste-hint">엑셀에서 <b>거점명 + 현재 누계출고</b> 복사 → 붙여넣기 (예선전 누계 자동 차감 → 전반전 실적 산출)</div>
+        <textarea class="paste-area" id="sf-paste-branch" placeholder="오창&#9;12&#10;옥천영동&#9;15&#10;청주북부&#9;20"></textarea>
+        <button class="apply-btn" onclick="applySfPaste('branch')">✅ 지점 적용</button>
+      </div>
+      <div class="upload-section" id="sf-up-agency">
+        <div class="paste-hint">엑셀에서 <b>거점명 + 현재 누계출고</b> 복사 → 붙여넣기 (예선전 누계 자동 차감 → 전반전 실적 산출)</div>
+        <textarea class="paste-area" id="sf-paste-agency" placeholder="영동금강&#9;18&#10;오창제일&#9;50"></textarea>
+        <button class="apply-btn" onclick="applySfPaste('agency')">✅ 대리점 적용</button>
+      </div>
+      <div class="upload-status" id="upload-status-semifinal"></div>
+    </div>
+    <div class="sec-header">
+      <div><div class="sec-title">🏆 전반전 (6/15 ~ 6/19)</div><div class="sec-sub">현재 누계출고 − 예선전 누계(6/12) = 전반전 실적 · 달성율 기준 순위·승점</div></div>
+      <div class="type-tabs" id="sf-type-tabs">
+        <button class="type-tab active" id="sf-tab-branch" onclick="switchSfType('branch')">지점</button>
+        <button class="type-tab" id="sf-tab-agency" onclick="switchSfType('agency')">대리점</button>
+      </div>
+    </div>
+    <div id="sf-branch-view">
+      <div class="summary-row" id="sf-branch-summary"></div>
+      <div id="sf-branch-leagues"></div>
+    </div>
+    <div id="sf-agency-view" style="display:none;">
+      <div class="summary-row" id="sf-agency-summary"></div>
+      <div id="sf-agency-leagues"></div>
+    </div>
+  </div>
+
   <div class="section" id="section-inventory">
     <div class="upload-panel" id="upload-inventory">
       <div class="upload-tabs">
@@ -307,25 +364,18 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
       </div>
       <div class="upload-status" id="calc-status" style="margin-top:10px;"></div>
     </div>
-
-    <!-- 처리 요약 -->
     <div class="calc-summary" id="calc-summary">
       <div class="calc-summary-grid" id="calc-summary-grid"></div>
-      <!-- 결과 테이블 -->
       <div class="calc-result-grid" id="calc-result-grid"></div>
-      <!-- 미매핑 경고 -->
       <div class="unmapped-box" id="calc-unmapped"></div>
-      <!-- 적용 버튼 -->
       <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
         <button class="calc-btn calc-btn-apply" onclick="applyCalcToInv()">✅ 재고 맞수에 적용</button>
         <span style="font-size:12px;color:var(--text-sub);align-self:center;">결과를 📦 재고 맞수 탭에 바로 반영합니다</span>
       </div>
     </div>
   </div>
-
 </div>
 <script>
-// 비밀번호는 서버에서 검증 (api/auth.js)
 const SK = 'cbbp2026_v2';
 const BRANCH_GROUPS = {
   'A조': ['오창','청주','옥천영동','진천','제천'],
@@ -364,7 +414,7 @@ const SPOT_TARGETS = {
 const SPOT_PRIZE = 2000000;
 
 let isAdmin = false;
-let currentSection = 'worldcup';
+let currentSection = 'semifinal';
 let wcType = 'branch', invType = 'agency', spotType = 'branch';
 let logoClickCount = 0, logoClickTimer = null;
 
@@ -372,6 +422,7 @@ let data = {
   wc:{branch:{},agency:{}},
   inv:{branch:{},agency:{}},
   spot:{branch:{},agency:{}},
+  sf:{branch:{},agency:{}},
   updatedAt:{}
 };
 
@@ -387,6 +438,13 @@ function fixData() {
   if (!data.spot.branch) data.spot.branch = {};
   if (!data.spot.agency) data.spot.agency = {};
   if (!data.updatedAt) data.updatedAt = {};
+  if (!data.sf) data.sf = {};
+  if (!data.sf.branch) data.sf.branch = {};
+  if (!data.sf.agency) data.sf.agency = {};
+}
+
+function nowStr() {
+  return new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
 }
 
 async function save() {
@@ -426,9 +484,9 @@ function handleLogoClick() {
 function toggleAdmin() {
   isAdmin = false;
   sessionStorage.removeItem('admin_token');
-  ['worldcup','inventory','spot'].forEach(s=>{ const el=document.getElementById('upload-'+s); if(el) el.classList.remove('show'); });
+  ['worldcup','semifinal','inventory','spot'].forEach(s=>{ const el=document.getElementById('upload-'+s); if(el) el.classList.remove('show'); });
   document.getElementById('tab-calc').style.display = 'none';
-  if (currentSection === 'calc') switchSection('worldcup');
+  if (currentSection === 'calc') switchSection('semifinal');
   showToast('관리자 모드 종료');
 }
 function closeModal() {
@@ -476,8 +534,8 @@ function switchSection(s) {
   currentSection=s;
   document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
   document.getElementById('section-'+s).classList.add('active');
-  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['worldcup','inventory','spot','calc'][i]===s));
-  ['worldcup','inventory','spot'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
+  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['semifinal','inventory','spot','calc'][i]===s));
+  ['worldcup','semifinal','inventory','spot'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
 }
 function switchWcType(t) {
   wcType=t;
@@ -521,13 +579,13 @@ function parsePasteSimple(raw) {
     const name=parts[0].trim().replace(/\s/g,'');
     if(!name) return;
     if(skipNames.some(s=>name.includes(s))) return;
-    // 쉼표 제거 후 숫자 파싱
     const rawVal=parts[parts.length-1].trim().replace(/,/g,'');
     const val=parseInt(rawVal);
     if(name&&!isNaN(val)&&val>=0) result[name]=val;
   });
   return result;
 }
+
 function applyWcPaste(type) {
   const raw=document.getElementById('wc-paste-'+type).value.trim();
   const st=document.getElementById('upload-status-worldcup');
@@ -536,7 +594,9 @@ function applyWcPaste(type) {
   const count=Object.keys(parsed).length;
   if(!count){st.textContent='❌ 인식된 데이터가 없어요.';st.style.color='var(--red)';return;}
   Object.assign(data.wc[type],parsed);
-  data.updatedAt['wc_'+type]=new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  const ts=nowStr();
+  data.updatedAt['wc_'+type]=ts;
+  data.updatedAt['_latest']=ts;
   save().then(()=>renderAll());
   st.textContent=`✅ ${count}개 거점 적용 완료`;st.style.color='var(--green)';
   document.getElementById('wc-paste-'+type).value='';
@@ -550,7 +610,9 @@ function applyInvPaste(type) {
   const count=Object.keys(parsed).length;
   if(!count){st.textContent='❌ 인식된 데이터가 없어요.';st.style.color='var(--red)';return;}
   Object.assign(data.inv[type],parsed);
-  data.updatedAt['inv_'+type]=new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  const ts=nowStr();
+  data.updatedAt['inv_'+type]=ts;
+  data.updatedAt['_latest']=ts;
   save().then(()=>renderAll());
   st.textContent=`✅ ${count}개 거점 적용 완료`;st.style.color='var(--green)';
   document.getElementById('inv-paste-'+type).value='';
@@ -564,18 +626,169 @@ function applySpotPaste(type) {
   const count=Object.keys(parsed).length;
   if(!count){st.textContent='❌ 인식된 데이터가 없어요.';st.style.color='var(--red)';return;}
   Object.assign(data.spot[type],parsed);
-  data.updatedAt['spot_'+type]=new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  const ts=nowStr();
+  data.updatedAt['spot_'+type]=ts;
+  data.updatedAt['_latest']=ts;
   save().then(()=>renderAll());
   st.textContent=`✅ ${count}개 거점 적용 완료`;st.style.color='var(--green)';
   document.getElementById('sp-paste-'+type).value='';
   showToast(`계약Spot ${type==='branch'?'지점':'대리점'} ${count}개 업데이트`);
 }
 
+// ── 전반전 ─────────────────────────────────────────────
+const SF_BRANCH_LEAGUES = {
+  champ: ['오창','옥천영동','청주북부','청주남부'],
+  premier: ['청주','진천','제천','청주서부','충주','금왕']
+};
+const SF_AGENCY_LEAGUES = {
+  champ: ['영동금강','오창제일','서청주','증평삼보'],
+  premier: ['연수','진천중앙','음성','보은'],
+  challenger: ['제천중앙','가경','교현','단양']
+};
+// 전반전 승점표
+const SF_POINTS = {
+  branch: {
+    champ:   [10,7,5,3],
+    premier: [10,8,6,4,2,1]
+  },
+  agency: {
+    champ:      [10,7,5,3],
+    premier:    [10,7,5,3],
+    challenger: [10,7,5,3]
+  }
+};
+
+let sfType = 'branch';
+
+function switchSfType(t) {
+  sfType = t;
+  ['branch','agency'].forEach(x => {
+    document.getElementById('sf-tab-'+x).classList.toggle('active', x===t);
+    document.getElementById('sf-'+x+'-view').style.display = x===t?'block':'none';
+    const ut=document.getElementById('sf-utab-'+x); if(ut) ut.classList.toggle('active', x===t);
+    const up=document.getElementById('sf-up-'+x); if(up) up.classList.toggle('active', x===t);
+  });
+}
+
+function applySfPaste(type) {
+  const raw = document.getElementById('sf-paste-'+type).value.trim();
+  const st = document.getElementById('upload-status-semifinal');
+  if (!raw) { st.textContent='내용을 입력해 주세요.'; st.style.color='var(--red)'; return; }
+  const current = parsePasteSimple(raw);           // 현재 누계 출고
+  const count = Object.keys(current).length;
+  if (!count) { st.textContent='❌ 인식된 데이터가 없어요.'; st.style.color='var(--red)'; return; }
+  if (!data.sf) data.sf = {branch:{}, agency:{}};
+
+  const wcBase = (data.wc && data.wc[type]) ? data.wc[type] : {};  // 예선전 누계(6/12)
+  const sfResult = {};
+  const noBase = [];
+  Object.entries(current).forEach(([name, cur]) => {
+    if (!(name in wcBase)) noBase.push(name);
+    sfResult[name] = Math.max(cur - (wcBase[name] || 0), 0);       // 전반전 실적
+  });
+  data.sf[type] = sfResult;   // 전체 덮어쓰기
+
+  const _sfTs = new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  data.updatedAt['sf_'+type] = _sfTs; data.updatedAt['_latest'] = _sfTs;
+  save().then(() => renderAll());
+  let msg = `✅ ${count}개 거점 적용 (현재누계 − 예선누계)`;
+  if (noBase.length) msg += ` · ⚠️ 예선누계 없음: ${noBase.join(', ')}`;
+  st.textContent = msg;
+  st.style.color = noBase.length ? 'var(--orange)' : 'var(--green)';
+  document.getElementById('sf-paste-'+type).value = '';
+  showToast(`전반전 ${type==='branch'?'지점':'대리점'} ${count}개 업데이트`);
+}
+
+function renderSf(type) {
+  const leagues = type === 'branch' ? SF_BRANCH_LEAGUES : SF_AGENCY_LEAGUES;
+  const shipped = (data.sf && data.sf[type]) ? data.sf[type] : {};
+  const points = SF_POINTS[type];
+
+  // 전체 요약
+  const allNames = Object.values(leagues).flat();
+  const totalShip = allNames.reduce((s,n)=>s+(shipped[n]||0),0);
+  const totalTgt = allNames.reduce((s,n)=>s+(WC_TARGETS[n]||0),0);
+  document.getElementById(`sf-${type}-summary`).innerHTML = `
+    <div class="scard"><span>전체 거점</span><strong>${allNames.length}개</strong></div>
+    <div class="scard"><span>전반전 실적</span><strong>${totalShip}대</strong></div>
+    <div class="scard"><span>전체 목표</span><strong>${totalTgt}대</strong></div>
+    <div class="scard"><span>달성율</span><strong>${totalTgt?(totalShip/totalTgt*100).toFixed(1):0}%</strong></div>
+  `;
+
+  const leaguesEl = document.getElementById(`sf-${type}-leagues`);
+  leaguesEl.innerHTML = '';
+
+  const leagueInfo = {
+    champ:      { label: '🏆 챔피언스 리그', badgeClass: 'sf-badge-champ' },
+    premier:    { label: '⚽ 프리미어 리그', badgeClass: 'sf-badge-premier' },
+    challenger: { label: '🌱 챌린저스 리그', badgeClass: 'sf-badge-challenger' }
+  };
+
+  Object.entries(leagues).forEach(([leagueKey, members]) => {
+    const info = leagueInfo[leagueKey];
+    const pts = points[leagueKey] || [];
+
+    // 달성율 기준 정렬
+    const ranked = [...members].sort((a,b) => {
+      const ra = (shipped[a]||0)/(WC_TARGETS[a]||1);
+      const rb = (shipped[b]||0)/(WC_TARGETS[b]||1);
+      return rb - ra;
+    });
+
+    const rows = ranked.map((name, i) => {
+      const s = shipped[name]||0;
+      const tgt = WC_TARGETS[name]||1;
+      const rate = s/tgt;
+      const barW = Math.min(rate*100,100).toFixed(0);
+      const pt = pts[i] || 0;
+      const rankClass = ['sf-r1','sf-r2','sf-r3','sf-r4','sf-r5','sf-r6'][i] || 'sf-r6';
+      return `<tr class="${i===0?'sf-rank1':''}">
+        <td><span class="sf-rank ${rankClass}">${i+1}</span></td>
+        <td style="text-align:left;font-weight:700;">${name}</td>
+        <td>${s} / ${tgt}</td>
+        <td><div class="sf-rate-bar"><div class="sf-bar-wrap"><div class="sf-bar-fill" style="width:${barW}%"></div></div><span style="font-size:12px;font-weight:800;color:var(--blue-dark);min-width:42px;text-align:right;">${(rate*100).toFixed(1)}%</span></div></td>
+        <td><span class="sf-point${pt>=10?' high':''}">${pt}점</span></td>
+      </tr>`;
+    }).join('');
+
+    // 포상금 안내
+    const prizeMap = {
+      branch: {
+        champ:   '1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',
+        premier: '1위 50만 / 2위 40만 / 3위 30만 / 4위 20만'
+      },
+      agency: {
+        champ:      '1위 120만 / 2위 100만 / 3위 80만 / 4위 70만',
+        premier:    '1위 60만 / 2위 50만 / 3위 40만 / 4위 30만',
+        challenger: '1위 30만 / 2위 20만 / 3위 10만'
+      }
+    };
+    const prize = prizeMap[type][leagueKey] || '';
+
+    const section = document.createElement('div');
+    section.className = 'sf-league-section';
+    section.innerHTML = `
+      <div class="sf-league-title">
+        <span class="sf-league-badge ${info.badgeClass}">${info.label}</span>
+        <span class="sf-prize-info">${prize}</span>
+      </div>
+      <div class="sf-table-wrap">
+        <table class="sf-table">
+          <thead><tr><th>순위</th><th>${type==='branch'?'지점':'대리점'}</th><th>실적/목표</th><th>달성율</th><th>승점</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+    leaguesEl.appendChild(section);
+  });
+}
+
 function renderAll() {
   fixData();
-  const times=Object.values(data.updatedAt).filter(Boolean);
-  document.getElementById('last-upd').textContent=times.length?'업데이트: '+times[times.length-1]:'데이터 없음';
+  // _latest에 저장된 가장 최근 업데이트 시각 표시
+  const latest = data.updatedAt['_latest'];
+  document.getElementById('last-upd').textContent = latest ? '업데이트: ' + latest : '데이터 없음';
   renderWc('branch');renderWc('agency');
+  renderSf('branch');renderSf('agency');
   renderInv('agency');renderInv('branch');
   renderSpot('branch');renderSpot('agency');
 }
@@ -666,7 +879,6 @@ function renderSpot(type) {
   }).join('');
 }
 
-// ── 재고 계산기 ─────────────────────────────────────────
 const CALC_CODE_MAP = {
   'DG27001':'가경','DG16002':'오창제일','DG22001':'음성','DG21003':'연수',
   'DG23003':'제천중앙','DG42001':'서청주','G27':'청주서부','G21':'충주',
@@ -680,27 +892,21 @@ const AGENCY_CODES = new Set([
   'DG42001','DG13001','DG21004','DG17001','DG23001',
   'DG18001','DG13003'
 ]);
-
-let calcResult = { branch:{}, agency:{}, summary:{} };
+let calcResult = { branch:{}, agency:{} };
 
 function runCalc() {
   const raw = document.getElementById('calc-paste').value.trim();
   const st = document.getElementById('calc-status');
   if (!raw) { st.textContent='데이터를 붙여넣어 주세요.'; st.style.color='var(--red)'; return; }
-
   const lines = raw.split('\n').filter(l => l.trim());
   if (lines.length < 2) { st.textContent='❌ 데이터가 너무 적어요.'; st.style.color='var(--red)'; return; }
-
-  // 헤더 찾기
   let startIdx = 0;
   const headerKws = ['계출상태','차량구분','지점'];
   for (let i = 0; i < Math.min(lines.length, 5); i++) {
     if (headerKws.some(kw => lines[i].includes(kw))) { startIdx = i + 1; break; }
   }
-
   const branchResult = {}, agencyResult = {}, unmapped = {};
   let total=0, cntShipped=0, cntNormal=0, cntSkip=0, cntValid=0;
-
   lines.slice(startIdx).forEach(line => {
     const cols = line.split('\t');
     if (cols.length < 27) return;
@@ -709,35 +915,26 @@ function runCalc() {
     const carType  = cols[12].trim();
     const branchCd = cols[26].trim();
     const agencyCd = cols.length > 27 ? cols[27].trim() : '';
-
     if (status !== '출고') { cntSkip++; return; }
     cntShipped++;
     if (carType === '정상재고') { cntNormal++; return; }
     cntValid++;
-
     const code = agencyCd || branchCd;
     const name = CALC_CODE_MAP[code];
     if (!name) { unmapped[code] = (unmapped[code]||0) + 1; return; }
-
     if (agencyCd && AGENCY_CODES.has(agencyCd)) {
       agencyResult[name] = (agencyResult[name]||0) + 1;
     } else {
       branchResult[name] = (branchResult[name]||0) + 1;
     }
   });
-
   calcResult = { branch: branchResult, agency: agencyResult, unmapped };
-
-  // 요약 카드
   document.getElementById('calc-summary-grid').innerHTML = `
     <div class="cscard"><span>전체 데이터</span><strong>${total}건</strong></div>
     <div class="cscard"><span>출고</span><strong>${cntShipped}건</strong></div>
     <div class="cscard"><span>출고 아님 제외</span><strong>${cntSkip}건</strong></div>
     <div class="cscard"><span>정상재고 제외</span><strong>${cntNormal}건</strong></div>
-    <div class="cscard"><span style="color:var(--green);font-weight:800;">발급가능재고</span><strong style="color:var(--green);">${cntValid}대</strong></div>
-  `;
-
-  // 결과 테이블
+    <div class="cscard"><span style="color:var(--green);font-weight:800;">발급가능재고</span><strong style="color:var(--green);">${cntValid}대</strong></div>`;
   const makeTable = (title, result) => {
     const sorted = Object.entries(result).sort((a,b)=>b[1]-a[1]);
     const tot = sorted.reduce((s,[,v])=>s+v,0);
@@ -747,28 +944,16 @@ function runCalc() {
       const bar = '█'.repeat(Math.round(cnt/maxV*12));
       return `<tr><td style="text-align:left;font-weight:700;">${name}</td><td>${cnt}대</td><td>${pct}%</td><td class="bar-cell" style="color:var(--blue);font-size:10px;">${bar}</td></tr>`;
     }).join('');
-    return `<div>
-      <div style="font-size:13px;font-weight:800;color:var(--blue-dark);margin-bottom:8px;">${title} (총 ${tot}대)</div>
-      <table class="calc-result-table">
-        <thead><tr><th>거점명</th><th>출고</th><th>비율</th><th>막대</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="4" style="color:var(--text-sub);">데이터 없음</td></tr>'}</tbody>
-      </table>
-    </div>`;
+    return `<div><div style="font-size:13px;font-weight:800;color:var(--blue-dark);margin-bottom:8px;">${title} (총 ${tot}대)</div>
+      <table class="calc-result-table"><thead><tr><th>거점명</th><th>출고</th><th>비율</th><th>막대</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="4" style="color:var(--text-sub);">데이터 없음</td></tr>'}</tbody></table></div>`;
   };
-
-  document.getElementById('calc-result-grid').innerHTML =
-    makeTable('📍 지점별', branchResult) + makeTable('🏪 대리점별', agencyResult);
-
-  // 미매핑 경고
+  document.getElementById('calc-result-grid').innerHTML = makeTable('📍 지점별', branchResult) + makeTable('🏪 대리점별', agencyResult);
   const unmappedEl = document.getElementById('calc-unmapped');
   if (Object.keys(unmapped).length > 0) {
-    unmappedEl.innerHTML = '⚠️ 미매핑 거점 코드 (CODE_MAP 확인 필요): ' +
-      Object.entries(unmapped).map(([k,v])=>`<b>${k}</b>(${v}건)`).join(', ');
+    unmappedEl.innerHTML = '⚠️ 미매핑 거점 코드: ' + Object.entries(unmapped).map(([k,v])=>`<b>${k}</b>(${v}건)`).join(', ');
     unmappedEl.classList.add('show');
-  } else {
-    unmappedEl.classList.remove('show');
-  }
-
+  } else { unmappedEl.classList.remove('show'); }
   document.getElementById('calc-summary').classList.add('show');
   st.textContent = `✅ 집계 완료 · 발급가능재고 ${cntValid}대`;
   st.style.color = 'var(--green)';
@@ -776,12 +961,13 @@ function runCalc() {
 
 function applyCalcToInv() {
   if (!Object.keys(calcResult.branch).length && !Object.keys(calcResult.agency).length) {
-    showToast('❌ 먼저 집계를 실행해 주세요.');
-    return;
+    showToast('❌ 먼저 집계를 실행해 주세요.'); return;
   }
   Object.assign(data.inv.branch, calcResult.branch);
   Object.assign(data.inv.agency, calcResult.agency);
-  data.updatedAt['inv_calc'] = new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  const ts = nowStr();
+  data.updatedAt['inv_calc'] = ts;
+  data.updatedAt['_latest'] = ts;
   save().then(() => renderAll());
   showToast('✅ 재고 맞수에 적용 완료!');
   switchSection('inventory');
@@ -824,7 +1010,6 @@ function applyUrlType() {
 
 (async () => {
   try { await load(); } catch(e) { console.warn('load 실패:',e); }
-  // 세션 토큰으로 관리자 상태 복원
   const token = sessionStorage.getItem('admin_token');
   if (token) {
     try {
@@ -835,12 +1020,8 @@ function applyUrlType() {
         const el = document.getElementById('upload-'+currentSection);
         if (el) el.classList.add('show');
         document.getElementById('tab-calc').style.display = '';
-      } else {
-        sessionStorage.removeItem('admin_token');
-      }
-    } catch(e) {
-      sessionStorage.removeItem('admin_token');
-    }
+      } else { sessionStorage.removeItem('admin_token'); }
+    } catch(e) { sessionStorage.removeItem('admin_token'); }
   }
   applyUrlType();
   renderAll();
