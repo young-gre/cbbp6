@@ -1200,9 +1200,9 @@ function renderFn(type) {
     // 후반전 예상 승점 계산
     const fnPoints = calcPoints(fnShipped, WC_TARGETS, pts, members);
 
-    // 합계 승점 기준 정렬
+    // 후반전 승점 기준 정렬
     const ranked = [...members].sort((a,b) =>
-      ((sfPoints[b]||0)+(fnPoints[b]||0)) - ((sfPoints[a]||0)+(fnPoints[a]||0))
+      (fnPoints[b]||0) - (fnPoints[a]||0)
     );
 
     const rows = ranked.map((name, i) => {
