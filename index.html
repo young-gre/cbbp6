@@ -191,6 +191,22 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .fn-bar-wrap{width:80px;height:6px;border-radius:999px;background:#e7eef6;overflow:hidden;flex-shrink:0;}
 .fn-bar-fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,#0f69b4,#4b97d6);transition:.4s;}
 .fn-prize-info{font-size:11px;color:var(--text-sub);}
+
+/* ── 영업팀 캠페인 ── */
+.team-table-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;}
+.team-table{width:100%;border-collapse:collapse;}
+.team-table th{background:#eef5fc;font-size:11px;font-weight:800;color:var(--blue-dark);padding:10px 12px;text-align:center;letter-spacing:.04em;white-space:nowrap;}
+.team-table td{padding:11px 12px;text-align:center;border-bottom:1px solid #f0f4f8;font-size:12px;font-weight:600;color:#294564;}
+.team-table tr:last-child td{border-bottom:none;}
+.team-rank{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:800;}
+.team-r1{background:#fef3c7;color:#b45309;}
+.team-r2{background:#f1f5f9;color:#475569;}
+.team-r3{background:#fff7ed;color:#92400e;}
+.team-r4,.team-r5,.team-r6{background:#f8fafc;color:#94a3b8;}
+.team-rate-wrap{display:flex;align-items:center;gap:6px;justify-content:center;}
+.team-bar-bg{width:70px;height:5px;border-radius:999px;background:#e7eef6;overflow:hidden;flex-shrink:0;}
+.team-bar-fill{height:100%;border-radius:inherit;transition:.4s;}
+.team-rate-val{font-size:12px;font-weight:800;min-width:42px;text-align:right;}
 </style>
 </head>
 <body>
@@ -217,6 +233,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <button class="topnav-tab active" onclick="switchSection('final')">후반전</button>
     <button class="topnav-tab" onclick="switchSection('inventory')">재고 맞수</button>
     <button class="topnav-tab" onclick="switchSection('spot')">계약 Spot</button>
+    <button class="topnav-tab" id="tab-team" style="display:none;" onclick="switchSection('team')">영업팀 캠페인</button>
     <button class="topnav-tab" id="tab-calc" style="display:none;" onclick="switchSection('calc')">재고 계산기</button>
   </div>
   <div class="topnav-right">
@@ -409,6 +426,45 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
         <tbody id="sp-agency-tbody"></tbody></table></div>
     </div>
   </div>
+  <!-- 영업팀 캠페인 -->
+  <div class="section" id="section-team">
+    <div class="upload-panel" id="upload-team">
+      <div class="upload-tabs">
+        <button class="utab active" id="team-utab-config" onclick="switchTeamUpTab('config')">팀 구성 입력</button>
+        <button class="utab" id="team-utab-data" onclick="switchTeamUpTab('data')">출고 데이터 입력</button>
+      </div>
+      <div class="upload-section active" id="team-up-config">
+        <div class="paste-hint" style="margin-top:4px;">거점명 <b>[탭]</b> 팀명 <b>[탭]</b> 팀장사번 <b>[탭]</b> 목표 <b>[탭]</b> 멤버사번(쉼표구분)</div>
+        <textarea class="paste-area" id="team-paste-config" placeholder="청주남부	A팀	2324181	45	2324181,2414768,2610981&#10;청주남부	B팀	2133527	40	2133527,5218728,2721974&#10;오창	A팀	2415147	30	2415147,5007988,2414954"></textarea>
+        <button class="apply-btn" onclick="applyTeamConfig()">✅ 팀 구성 저장</button>
+      </div>
+      <div class="upload-section" id="team-up-data">
+        <div class="paste-hint" style="margin-top:4px;">국내판매시스템 전체 데이터 복사 → 붙여넣기 (계출상태=출고 자동 필터, 사번 기준 집계)</div>
+        <textarea class="paste-area" id="team-paste-data" style="height:160px;" placeholder="헤더 포함 전체 데이터 붙여넣기"></textarea>
+        <button class="apply-btn" onclick="applyTeamData()">✅ 출고 집계</button>
+      </div>
+      <div class="upload-status" id="upload-status-team"></div>
+    </div>
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">영업팀 캠페인</div>
+        <div class="sec-sub">거점별 영업팀 출고 합계 · 전체 팀 순위 경쟁</div>
+      </div>
+    </div>
+    <div class="summary-row" id="team-summary"></div>
+    <div class="team-table-wrap">
+      <table class="team-table">
+        <thead>
+          <tr>
+            <th>순위</th><th>거점</th><th>팀명</th><th>팀장</th>
+            <th>인원</th><th>목표</th><th>합계 출고</th><th>달성율</th><th>포상금(인당)</th>
+          </tr>
+        </thead>
+        <tbody id="team-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- 재고 계산기 (관리자 전용) -->
   <div class="section" id="section-calc">
     <div class="calc-panel">
@@ -485,6 +541,7 @@ let data = {
   sf:{branch:{},agency:{}},
   fn:{branch:{},agency:{}},
   sfPoints:{branch:{},agency:{}},
+  team:{teams:[],shipped:{}},
   updatedAt:{}
 };
 
@@ -509,6 +566,9 @@ function fixData() {
   if (!data.sfPoints) data.sfPoints = {};
   if (!data.sfPoints.branch) data.sfPoints.branch = {};
   if (!data.sfPoints.agency) data.sfPoints.agency = {};
+  if (!data.team) data.team = {};
+  if (!data.team.teams) data.team.teams = [];
+  if (!data.team.shipped) data.team.shipped = {};
 }
 
 function nowStr() {
@@ -552,9 +612,10 @@ function handleLogoClick() {
 function toggleAdmin() {
   isAdmin = false;
   sessionStorage.removeItem('admin_token');
-  ['worldcup','semifinal','final','inventory','spot'].forEach(s=>{ const el=document.getElementById('upload-'+s); if(el) el.classList.remove('show'); });
+  ['worldcup','semifinal','final','inventory','spot','team'].forEach(s=>{ const el=document.getElementById('upload-'+s); if(el) el.classList.remove('show'); });
   document.getElementById('tab-calc').style.display = 'none';
-  if (currentSection === 'calc') switchSection('final');
+  document.getElementById('tab-team').style.display = 'none';
+  if (currentSection === 'calc' || currentSection === 'team') switchSection('final');
   showToast('관리자 모드 종료');
 }
 function closeModal() {
@@ -583,6 +644,7 @@ async function checkPw() {
       const el = document.getElementById('upload-'+currentSection);
       if (el) el.classList.add('show');
       document.getElementById('tab-calc').style.display = '';
+      document.getElementById('tab-team').style.display = '';
       showToast('✅ 관리자 모드 활성화');
     } else {
       errEl.textContent = '비밀번호가 올바르지 않습니다.';
@@ -602,8 +664,8 @@ function switchSection(s) {
   currentSection=s;
   document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
   document.getElementById('section-'+s).classList.add('active');
-  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['semifinal','final','inventory','spot','calc'][i]===s));
-  ['worldcup','semifinal','final','inventory','spot'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
+  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['semifinal','final','inventory','spot','team','calc'][i]===s));
+  ['worldcup','semifinal','final','inventory','spot','team'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
 }
 function switchWcType(t) {
   wcType=t;
@@ -858,6 +920,7 @@ function renderAll() {
   renderWc('branch');renderWc('agency');
   renderSf('branch');renderSf('agency');
   renderFn('branch');renderFn('agency');
+  renderTeam();
   renderInv('agency');renderInv('branch');
   renderSpot('branch');renderSpot('agency');
 }
@@ -1242,6 +1305,153 @@ function renderFn(type) {
   });
 }
 
+// ── 영업팀 캠페인 ────────────────────────────────────────
+const CM_MAP = {
+  '2663438':'연민기','2663818':'박병열','2869558':'정준구','2323848':'고인기','2324612':'김영수','2790393':'김영섭',
+  '1965293':'김용국','2415147':'김영주','5007988':'정찬영','2414954':'이승복','6350454':'김현웅','6629518':'임한상',
+  '6629727':'강호묵','5218796':'이상철','7606498':'김영권','7606504':'이상준','7606511':'주면종',
+  '2259896':'오남식','1818118':'김형범','2898637':'전인호','2790102':'김태현','2903288':'박종수',
+  '9969016':'손재득','2722352':'김동섭','5109445':'정유성','7606527':'이상국','7606534':'양윤호',
+  '2550968':'하중락','1963666':'김인배','2790623':'신승걸','2869216':'하영호','2323512':'정흥교',
+  '1963517':'김대연','2868987':'정석중','2878758':'권형기','5204192':'김정수','2139412':'김종수',
+  '5204698':'박현재','6719034':'이지훈','2837217':'전종석','7506518':'이재하','7506525':'김영환',
+  '5107951':'김재덕','5108665':'안장식','2836318':'권순일','2898592':'김대중','2129597':'김상영',
+  '2878617':'유길상','2878565':'임희종','6719027':'이채관','7606541':'박동',
+  '1966244':'황정윤','2499366':'최한석','2665973':'이한준','2721788':'김재형','2611747':'노재덕',
+  '5307806':'서동연','2611368':'송영길','5007965':'오정환','1889644':'현춘기','1889502':'이종호',
+  '5205397':'이재홍','1622826':'민성윤','2413475':'김종기','5007942':'신동연','2137697':'배은순',
+  '5107565':'곽원식','2257547':'김성중','2611553':'윤도현','5321672':'이영진',
+  '7606571':'박선용','7606587':'이종기','7606594':'이양주',
+  '2836117':'맹정재','1965717':'박종익','5218483':'박관주','2132955':'김선태','2722218':'이강열',
+  '2324375':'황인만','2722167':'김한진','5218773':'이명열','1965672':'고승환','2132576':'정헌국',
+  '2498451':'민철기','6350566':'백민형','6350543':'박한성',
+  '2324181':'박종용','2414768':'우영제','2610981':'심원보','2133527':'안종진','5218728':'오종섭',
+  '2721974':'김광성','5218498':'박광문','2721825':'조영훈','1889317':'이상진','2789658':'박세철',
+  '2789517':'김형태','2133712':'류용구','5007972':'우봉제','5107588':'권선태','5204511':'박병천',
+  '2135497':'이종경','7506532':'안기태','7506548':'김동일','7506555':'박용희','7506578':'지수영',
+  '7606557':'정지영','7606564':'이창현',
+  '2324568':'전금옥','1819218':'성백익','2325132':'김동섭','5307791':'김연희','1133213':'김경용',
+  '5307828':'이윤덕','6718693':'권순호','2835924':'류극열','5108777':'오국진','7506585':'유성렬','7606608':'곽현영',
+  '0660866':'서원석','1723095':'이재호','2139175':'장민권','2498266':'이진영','1888738':'조면식',
+  '2789844':'이종유','2836794':'이재섭','2789702':'윤영균','2722404':'이영섭','2323706':'이동섭',
+  '2551152':'김영은','1964238':'이상록','2411081':'김남규','2075096':'김학주','2127106':'강신욱',
+  '9469358':'임현식','2411706':'송윤근','6719258':'최진태','7606616':'김남은','7606623':'손광주'
+};
+
+function switchTeamUpTab(tab) {
+  ['config','data'].forEach(x => {
+    document.getElementById('team-utab-'+x).classList.toggle('active', x===tab);
+    document.getElementById('team-up-'+x).classList.toggle('active', x===tab);
+  });
+}
+
+function applyTeamConfig() {
+  const raw = document.getElementById('team-paste-config').value.trim();
+  const st  = document.getElementById('upload-status-team');
+  if (!raw) { st.textContent='내용을 입력해 주세요.'; st.style.color='var(--red)'; return; }
+  const teams = [];
+  const errors = [];
+  raw.split('
+').forEach(line => {
+    const p = line.split('	');
+    if (p.length < 5) return;
+    const branch      = p[0].trim();
+    const teamName    = p[1].trim();
+    const leaderSabun = p[2].trim();
+    const target      = parseInt(p[3].trim().replace(/,/g,'')) || 0;
+    const members     = p[4].trim().split(',').map(s => s.trim()).filter(Boolean);
+    const leaderName  = CM_MAP[leaderSabun] || '(미등록)';
+    if (!branch || !teamName) return;
+    if (!CM_MAP[leaderSabun]) errors.push(leaderSabun);
+    teams.push({ branch, teamName, leaderSabun, leaderName, target, members });
+  });
+  if (!teams.length) { st.textContent='❌ 인식된 팀이 없어요.'; st.style.color='var(--red)'; return; }
+  data.team.teams = teams;
+  const ts = nowStr(); data.updatedAt['team_config'] = ts; data.updatedAt['_latest'] = ts;
+  save().then(() => renderAll());
+  let msg = `✅ ${teams.length}개 팀 구성 저장`;
+  if (errors.length) msg += ` · ⚠️ 미등록 사번: ${errors.join(', ')}`;
+  st.textContent = msg; st.style.color = errors.length ? 'var(--orange)' : 'var(--green)';
+  showToast(`${teams.length}개 팀 구성 저장 완료`);
+}
+
+function applyTeamData() {
+  const raw = document.getElementById('team-paste-data').value.trim();
+  const st  = document.getElementById('upload-status-team');
+  if (!raw) { st.textContent='데이터를 붙여넣어 주세요.'; st.style.color='var(--red)'; return; }
+  const lines = raw.split('
+').filter(l => l.trim());
+  if (lines.length < 2) { st.textContent='❌ 데이터가 너무 적어요.'; st.style.color='var(--red)'; return; }
+  let startIdx = 0;
+  for (let i = 0; i < Math.min(lines.length, 5); i++) {
+    if (lines[i].includes('계출상태') || lines[i].includes('사번')) { startIdx = i + 1; break; }
+  }
+  const shipped = {};
+  let total = 0, counted = 0;
+  lines.slice(startIdx).forEach(line => {
+    const cols = line.split('	');
+    if (cols.length < 2) return;
+    total++;
+    if (cols[1]?.trim() !== '출고') return;
+    const sabun = cols[cols.length - 2]?.trim();
+    if (!sabun) return;
+    shipped[sabun] = (shipped[sabun] || 0) + 1;
+    counted++;
+  });
+  data.team.shipped = shipped;
+  const ts = nowStr(); data.updatedAt['team_data'] = ts; data.updatedAt['_latest'] = ts;
+  save().then(() => renderAll());
+  st.textContent = `✅ 집계 완료 · 출고 ${counted}건 / 전체 ${total}건`;
+  st.style.color = 'var(--green)';
+  showToast(`출고 데이터 집계 완료 (${counted}건)`);
+}
+
+function renderTeam() {
+  if (!document.getElementById('team-tbody')) return;
+  const teams   = data.team?.teams   || [];
+  const shipped = data.team?.shipped || {};
+  if (!teams.length) {
+    document.getElementById('team-tbody').innerHTML =
+      '<tr><td colspan="9" style="color:var(--text-sub);padding:20px;">팀 구성을 먼저 입력해 주세요.</td></tr>';
+    document.getElementById('team-summary').innerHTML = '';
+    return;
+  }
+  const teamResults = teams.map(t => {
+    const total = t.members.reduce((s, sabun) => s + (shipped[sabun] || 0), 0);
+    const rate  = t.target ? total / t.target * 100 : 0;
+    return { ...t, total, rate };
+  });
+  teamResults.sort((a, b) => b.total - a.total);
+  const totalTeams   = teamResults.length;
+  const totalShipped = teamResults.reduce((s,t) => s+t.total, 0);
+  const totalMembers = teamResults.reduce((s,t) => s+t.members.length, 0);
+  const totalTarget  = teamResults.reduce((s,t) => s+t.target, 0);
+  document.getElementById('team-summary').innerHTML = `
+    <div class="scard"><span>총 팀 수</span><strong>${totalTeams}팀</strong></div>
+    <div class="scard"><span>총 인원</span><strong>${totalMembers}명</strong></div>
+    <div class="scard"><span>총 출고</span><strong>${totalShipped}대</strong></div>
+    <div class="scard"><span>전체 달성율</span><strong>${totalTarget?(totalShipped/totalTarget*100).toFixed(1):0}%</strong></div>`;
+  document.getElementById('team-tbody').innerHTML = teamResults.map((t, i) => {
+    const rankClass = ['team-r1','team-r2','team-r3','team-r4','team-r5','team-r6'][i] || 'team-r6';
+    const barW  = Math.min(t.rate, 100).toFixed(0);
+    const color = t.rate >= 100 ? 'linear-gradient(90deg,var(--green),#4db890)'
+                : t.rate >= 70  ? 'linear-gradient(90deg,var(--orange),#f6ad1a)'
+                : 'linear-gradient(90deg,var(--blue),#4b97d6)';
+    const tc = t.rate >= 100 ? 'var(--green)' : t.rate >= 70 ? 'var(--orange)' : 'var(--blue-dark)';
+    return `<tr>
+      <td><span class="team-rank ${rankClass}">${i+1}</span></td>
+      <td style="font-weight:700;">${t.branch}</td>
+      <td style="font-weight:700;">${t.teamName}</td>
+      <td>${t.leaderName}</td>
+      <td>${t.members.length}명</td>
+      <td>${t.target||'—'}</td>
+      <td style="font-weight:800;color:var(--blue-dark);">${t.total}대</td>
+      <td><div class="team-rate-wrap"><div class="team-bar-bg"><div class="team-bar-fill" style="width:${barW}%;background:${color}"></div></div><span class="team-rate-val" style="color:${tc}">${t.rate.toFixed(1)}%</span></div></td>
+      <td style="color:var(--text-sub);">—</td>
+    </tr>`;
+  }).join('');
+}
+
 function showToast(msg) {
   const t=document.createElement('div');t.className='toast';t.textContent=msg;
   document.getElementById('toast-wrap').appendChild(t);
@@ -1281,6 +1491,7 @@ function applyUrlType() {
         const el = document.getElementById('upload-'+currentSection);
         if (el) el.classList.add('show');
         document.getElementById('tab-calc').style.display = '';
+      document.getElementById('tab-team').style.display = '';
       } else { sessionStorage.removeItem('admin_token'); }
     } catch(e) { sessionStorage.removeItem('admin_token'); }
   }
