@@ -1202,7 +1202,7 @@ function renderFn(type) {
 
     // 합계 승점 기준 정렬
     const ranked = [...members].sort((a,b) =>
-      ((sfPoints[b]||0)+(fnPoints[b]||0)) - ((sfPoints[a]||0)+(fnPoints[a]||0))
+      (fnPoints[b]||0) - (fnPoints[a]||0)
     );
 
     const rows = ranked.map((name, i) => {
