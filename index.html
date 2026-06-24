@@ -211,7 +211,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .tm-detail-row td{padding:0 !important;background:#f8fbfe !important;border-bottom:2px solid #c8dff2 !important;}
 .tm-detail-inner{padding:16px 20px 18px;}
 .tm-detail-title{font-size:11px;font-weight:800;color:var(--blue-dark);letter-spacing:.04em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.tm-detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;}
+.tm-detail-grid{display:grid;gap:8px;}
 .tm-member-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
 .tm-member-card.leader-card{border-color:#fde68a;background:#fffbeb;}
 .tm-member-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
@@ -240,7 +240,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .prize-19{background:#fdf4ff;color:#7e22ce;border:1px solid #e9d5ff;}
 .prize-none{background:#f8fafc;color:#94a3b8;border:1px solid #e2e8f0;}
 .tm-bar-wrap{display:flex;align-items:center;gap:8px;}
-.tm-bar-bg{flex:1;height:6px;border-radius:999px;background:#e7eef6;overflow:hidden;min-width:80px;}
+.tm-bar-bg{flex:1;height:6px;border-radius:999px;background:#e7eef6;overflow:hidden;min-width:60px;max-width:100px;}
 .tm-bar-fill{height:100%;border-radius:inherit;transition:.4s;}
 .tm-bar-val{font-size:12px;font-weight:800;min-width:52px;text-align:right;flex-shrink:0;}
 .expand-icon{display:inline-block;font-size:10px;color:var(--text-sub);margin-left:4px;transition:transform .2s;}
@@ -492,8 +492,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
           <colgroup>
             <col style="width:52px;"><col style="width:88px;"><col style="width:76px;">
             <col style="width:72px;"><col style="width:44px;"><col style="width:64px;">
-            <col style="width:72px;"><col style="width:72px;">
-            <col style="min-width:180px;"><col style="width:110px;">
+            <col style="width:72px;"><col style="width:72px;"><col style="width:72px;">
+            <col style="min-width:140px;"><col style="width:110px;">
           </colgroup>
           <thead>
             <tr>
@@ -503,17 +503,18 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
               <th rowspan="2">팀장</th>
               <th rowspan="2">인원</th>
               <th rowspan="2">6월 목표</th>
-              <th colspan="2" style="border-bottom:1px solid var(--line);">총 출고 대수</th>
+              <th colspan="3" style="border-bottom:1px solid var(--line);">총 출고 대수</th>
               <th rowspan="2">달성율</th>
               <th rowspan="2">포상금(인당)</th>
             </tr>
             <tr>
+              <th class="th-sub">전체</th>
               <th class="th-sub">19일 누계</th>
-              <th class="th-sub">캠페인</th>
+              <th class="th-sub">캠페인 기간</th>
             </tr>
           </thead>
           <tbody id="team-tbody">
-            <tr><td colspan="10" style="padding:40px;color:var(--text-sub);font-size:13px;">출고 데이터를 붙여넣기 하면 순위가 표시됩니다.</td></tr>
+            <tr><td colspan="11" style="padding:40px;color:var(--text-sub);font-size:13px;">출고 데이터를 붙여넣기 하면 순위가 표시됩니다.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1602,8 +1603,9 @@ function renderTeam() {
       <td style="font-size:12px;">${t.leader||'—'}</td>
       <td>${t.members.length}명</td>
       <td style="font-weight:800;">${t.target}대</td>
+      <td style="font-weight:800;color:var(--blue-dark);">${t.total}대</td>
       <td style="color:var(--text-sub);">${t.base}대</td>
-      <td style="font-weight:800;color:var(--blue-dark);">${t.camp}대</td>
+      <td style="color:var(--text-sub);">${t.camp}대</td>
       <td><div class="tm-bar-wrap">
         <div class="tm-bar-bg"><div class="tm-bar-fill" style="width:${barW}%;background:${tmRateBarColor(t.rate)};"></div></div>
         <span class="tm-bar-val" style="color:${tmRateTextColor(t.rate)}">${t.rate.toFixed(1)}%</span>
@@ -1612,6 +1614,12 @@ function renderTeam() {
     </tr>`;
 
     if (isExp) {
+      const memberCount = t.members.length;
+      // 인원수에 따라 최적 컬럼 수 결정 (4~7명→4열, 8~10명→5열, 11명 이상→6열, 3명 이하→3열)
+      const cols = memberCount <= 3 ? memberCount
+                 : memberCount <= 7 ? 4
+                 : memberCount <= 10 ? 5
+                 : 6;
       const memberCards = [...t.members]
         .sort((a, b) => {
           const totA = (tmShippedBase[a]||0) + (tmShippedCamp[a]||0);
@@ -1638,7 +1646,7 @@ function renderTeam() {
         <td colspan="10">
           <div class="tm-detail-inner">
             <div class="tm-detail-title">👤 카마스터별 실적 — ${t.tk} (총 ${t.total}대)</div>
-            <div class="tm-detail-grid">${memberCards}</div>
+            <div class="tm-detail-grid" style="grid-template-columns:repeat(${cols},1fr);">${memberCards}</div>
           </div>
         </td>
       </tr>`;
