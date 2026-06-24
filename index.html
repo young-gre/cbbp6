@@ -204,23 +204,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .tm-table td{padding:0;text-align:center;border-bottom:1px solid #f0f4f8;font-size:12px;font-weight:600;color:#294564;}
 .tm-table tr:last-child td{border-bottom:none;}
 .tm-table tbody tr.tm-row{cursor:pointer;transition:.12s;}
-.tm-table tbody tr.tm-row:hover td{background:rgba(15,105,180,.04);}
-.tm-table tbody tr.tm-row.expanded td{background:rgba(15,105,180,.06);}
 .tm-table tbody tr.tm-row td{padding:13px 12px;}
 .tm-table tbody tr.tm-row td.td-left{text-align:left;padding-left:20px;}
-.tm-detail-row td{padding:0 !important;background:#f8fbfe !important;border-bottom:2px solid #c8dff2 !important;}
-.tm-detail-inner{padding:16px 20px 18px;}
-.tm-detail-title{font-size:11px;font-weight:800;color:var(--blue-dark);letter-spacing:.04em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.tm-detail-grid{display:grid;gap:8px;}
-.tm-member-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
-.tm-member-card.leader-card{border-color:#fde68a;background:#fffbeb;}
-.tm-member-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
-.tm-member-avatar.normal{background:#e8f2fc;color:var(--blue-dark);}
-.tm-member-avatar.leader{background:#fef3c7;color:#b45309;}
-.tm-member-info{min-width:0;}
-.tm-member-name{font-size:12px;font-weight:800;color:var(--blue-dark);white-space:nowrap;}
-.tm-member-count{font-size:14px;font-weight:800;color:var(--blue-dark);margin-left:auto;flex-shrink:0;}
-.tm-member-count.zero{color:#c0ccdb;}
 .tm-rank{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:11px;font-weight:800;}
 .tm-r1{background:#fef3c7;color:#b45309;}
 .tm-r2{background:#f1f5f9;color:#475569;}
@@ -243,8 +228,6 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .tm-bar-bg{flex:1;height:6px;border-radius:999px;background:#e7eef6;overflow:hidden;}
 .tm-bar-fill{height:100%;border-radius:inherit;transition:.4s;}
 .tm-bar-val{font-size:12px;font-weight:800;min-width:48px;text-align:right;flex-shrink:0;}
-.expand-icon{display:inline-block;font-size:10px;color:var(--text-sub);margin-left:4px;transition:transform .2s;}
-.tm-row.expanded .expand-icon{transform:rotate(180deg);}
 </style>
 </head>
 <body>
@@ -1476,7 +1459,6 @@ Object.entries(TM_TEAM_CONFIG).forEach(([tk, cfg]) => {
 
 let tmShippedBase = {};
 let tmShippedCamp = {};
-let tmExpandedTeam = null;
 
 function tmGetPrize(rank) {
   if (rank === 1)   return { label:'인당 10만원', cls:'prize-1' };
@@ -1551,7 +1533,6 @@ function applyTeamData() {
   tmShippedCamp = newCamp;
   data.teamShippedBase = newBase;
   data.teamShippedCamp = newCamp;
-  tmExpandedTeam = null;
   const ts = nowStr(); data.updatedAt['team_data'] = ts; data.updatedAt['_latest'] = ts;
   save().then(() => renderAll());
 
@@ -1573,19 +1554,20 @@ function renderTeam() {
     const base  = cfg.members.reduce((s, s2) => s + (tmShippedBase[s2]||0), 0);
     const camp  = cfg.members.reduce((s, s2) => s + (tmShippedCamp[s2]||0), 0);
     const total = base + camp;
-    const rate  = cfg.target > 0 ? total / cfg.target * 100 : 0;
+    const rate  = cfg.target > 0 ? camp / cfg.target * 100 : 0;  // 캠페인 기간 / 목표
     return { tk, ...cfg, base, camp, total, rate };
-  }).sort((a, b) => b.rate - a.rate || b.total - a.total);
+  }).sort((a, b) => b.rate - a.rate || b.camp - a.camp);
 
   const totalMembers = results.reduce((s,t)=>s+t.members.length,0);
   const totalAll     = results.reduce((s,t)=>s+t.total,0);
+  const totalCamp    = results.reduce((s,t)=>s+t.camp,0);
   const totalTarget  = results.reduce((s,t)=>s+t.target,0);
-  const overallRate  = totalTarget ? (totalAll/totalTarget*100).toFixed(1) : 0;
+  const overallRate  = totalTarget ? (totalCamp/totalTarget*100).toFixed(1) : 0;
 
   document.getElementById('team-summary').innerHTML = `
     <div class="scard"><span>총 팀 수</span><strong>${results.length}팀</strong></div>
     <div class="scard"><span>총 인원</span><strong>${totalMembers}명</strong></div>
-    <div class="scard"><span>총 출고</span><strong>${totalAll}대</strong></div>
+    <div class="scard"><span>캠페인 출고</span><strong>${totalCamp}대</strong></div>
     <div class="scard"><span>전체 달성율</span><strong>${overallRate}%</strong></div>`;
 
   let html = '';
@@ -1594,71 +1576,27 @@ function renderTeam() {
     const prize = tmGetPrize(rank);
     const barW  = Math.min(t.rate, 100).toFixed(0);
     const teamLabel = t.tk.replace(t.branch, '');
-    const isExp = tmExpandedTeam === t.tk;
 
-    html += `<tr class="tm-row${isExp?' expanded':''}" onclick="tmToggleDetail('${t.tk}')">
+    html += `<tr class="tm-row">
       <td><span class="tm-rank ${tmRankCls(i)}">${rank}</span></td>
       <td class="td-left" style="font-size:13px;font-weight:700;color:#4a6380;">${t.branch}</td>
-      <td style="font-size:13px;font-weight:800;color:var(--blue-dark);">${teamLabel}<span class="expand-icon">▼</span></td>
+      <td style="font-size:13px;font-weight:800;color:var(--blue-dark);">${teamLabel}</td>
       <td style="font-size:12px;">${t.leader||'—'}</td>
       <td>${t.members.length}명</td>
       <td style="font-weight:800;">${t.target}대</td>
-      <td style="font-weight:800;color:var(--blue-dark);">${t.total}대</td>
+      <td style="font-weight:800;color:var(--blue-dark);">${t.camp}대
+        <span style="font-size:10px;color:var(--text-sub);font-weight:400;"> / ${t.total}</span>
+      </td>
       <td style="color:var(--text-sub);">${t.base}대</td>
-      <td style="color:var(--text-sub);">${t.camp}대</td>
       <td><div class="tm-bar-wrap">
         <div class="tm-bar-bg"><div class="tm-bar-fill" style="width:${barW}%;background:${tmRateBarColor(t.rate)};"></div></div>
         <span class="tm-bar-val" style="color:${tmRateTextColor(t.rate)}">${t.rate.toFixed(1)}%</span>
       </div></td>
-      <td><span class="prize-badge ${prize.cls}">${prize.label}</span></td>
+      <td>${prize.cls === 'prize-none' ? '<span style="color:var(--text-sub);font-weight:700;">—</span>' : `<span class="prize-badge ${prize.cls}">${prize.label}</span>`}</td>
     </tr>`;
-
-    if (isExp) {
-      const memberCount = t.members.length;
-      // 인원수에 따라 최적 컬럼 수 결정 (4~7명→4열, 8~10명→5열, 11명 이상→6열, 3명 이하→3열)
-      const cols = memberCount <= 3 ? memberCount
-                 : memberCount <= 7 ? 4
-                 : memberCount <= 10 ? 5
-                 : 6;
-      const memberCards = [...t.members]
-        .sort((a, b) => {
-          const totA = (tmShippedBase[a]||0) + (tmShippedCamp[a]||0);
-          const totB = (tmShippedBase[b]||0) + (tmShippedCamp[b]||0);
-          return totB - totA;
-        })
-        .map(sabun => {
-          const name     = TM_CM_MAP[sabun] || sabun;
-          const isLeader = sabun === t.leaderSabun;
-          const b = tmShippedBase[sabun]||0;
-          const c = tmShippedCamp[sabun]||0;
-          const tot = b + c;
-          return `<div class="tm-member-card${isLeader?' leader-card':''}">
-            <div class="tm-member-avatar ${isLeader?'leader':'normal'}">${name.slice(0,1)}</div>
-            <div class="tm-member-info">
-              <div class="tm-member-name">${name}${isLeader?' <span style="font-size:9px;color:#b45309;font-weight:700;">팀장</span>':''}</div>
-              <div style="font-size:10px;color:var(--text-sub);">19일 ${b}대 · 캠페인 ${c}대</div>
-            </div>
-            <div class="tm-member-count${tot===0?' zero':''}">${tot}대</div>
-          </div>`;
-        }).join('');
-
-      html += `<tr class="tm-detail-row">
-        <td colspan="10">
-          <div class="tm-detail-inner">
-            <div class="tm-detail-title">👤 카마스터별 실적 — ${t.tk} (총 ${t.total}대)</div>
-            <div class="tm-detail-grid" style="grid-template-columns:repeat(${cols},1fr);">${memberCards}</div>
-          </div>
-        </td>
-      </tr>`;
-    }
   });
 
   document.getElementById('team-tbody').innerHTML = html || '<tr><td colspan="10" style="padding:40px;color:var(--text-sub);font-size:13px;">출고 데이터를 붙여넣기 하면 순위가 표시됩니다.</td></tr>';
-}
-
-function tmToggleDetail(tk) {
-  tmExpandedTeam = tmExpandedTeam === tk ? null : tk;
-  renderTeam();
 }
 
 </script>
