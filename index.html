@@ -522,14 +522,15 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <div class="tm-table-panel">
       <div class="tm-table-panel-head">
         <h3>대리점별 현황</h3>
+        <span style="font-size:12px;color:#18283c;font-weight:700;">※ 트레이드인 목표 미달 시 50% 지급</span>
         <span id="agency-updated"></span>
       </div>
       <div style="overflow-x:auto;">
         <table class="tm-table" style="table-layout:fixed;width:100%;">
           <colgroup>
-            <col style="width:52px;"><col style="width:110px;"><col style="width:70px;">
-            <col style="width:70px;"><col style="width:70px;"><col style="width:70px;">
-            <col style="width:160px;"><col style="width:130px;"><col style="width:130px;">
+            <col style="width:52px;"><col style="width:120px;"><col style="width:130px;">
+            <col style="width:90px;"><col style="width:90px;"><col style="width:90px;"><col style="width:90px;">
+            <col style="width:130px;">
           </colgroup>
           <thead>
             <tr>
@@ -541,11 +542,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
               <th>20대↓</th>
               <th>20대 초과</th>
               <th>포상금</th>
-              <th>트레이드인 보정</th>
             </tr>
           </thead>
           <tbody id="agency-tbody">
-            <tr><td colspan="9" style="padding:40px;color:var(--text-sub);font-size:13px;">출고 데이터를 붙여넣기 하면 현황이 표시됩니다.</td></tr>
+            <tr><td colspan="8" style="padding:40px;color:var(--text-sub);font-size:13px;">출고 데이터를 붙여넣기 하면 현황이 표시됩니다.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1792,10 +1792,6 @@ function renderAgency() {
                    : r.shipped >= 10 ? 'linear-gradient(90deg,#0f69b4,#4b97d6)'
                    : 'linear-gradient(90deg,#e53e3e,#f87171)';
     const prizeStr = r.prize > 0 ? `<b style="color:var(--blue-dark)">${(r.prize/10000).toFixed(0)}만원</b>` : '<span style="color:var(--text-sub)">—</span>';
-    // 트레이드인 50% 보정 포상
-    const tradeStr = r.prize > 0
-      ? `<span style="color:var(--text-sub);font-size:11px;">${(r.prize*0.5/10000).toFixed(0)}만원 <span style="font-size:10px;">(무실적 50%)</span></span>`
-      : '<span style="color:var(--text-sub)">—</span>';
     // 구간 표시
     const bandCell = (v, color) => v > 0
       ? `<span style="font-weight:800;color:${color};">${v}대</span>`
@@ -1815,7 +1811,6 @@ function renderAgency() {
       <td>${bandCell(r.bands.t3,'#f6851a')}</td>
       <td>${bandCell(r.bands.t4,'#1b9d68')}</td>
       <td style="text-align:center;">${prizeStr}</td>
-      <td style="text-align:center;">${tradeStr}</td>
     </tr>`;
   }).join('');
 }
