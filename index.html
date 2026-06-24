@@ -693,7 +693,10 @@ function switchSection(s) {
   currentSection=s;
   document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
   document.getElementById('section-'+s).classList.add('active');
-  document.querySelectorAll('.topnav-tab').forEach((el,i)=>el.classList.toggle('active',['semifinal','final','inventory','spot','team','calc'][i]===s));
+  document.querySelectorAll('.topnav-tab').forEach(el => {
+    const match = el.getAttribute('onclick')?.match(/switchSection\('(\w+)'\)/);
+    if (match) el.classList.toggle('active', match[1] === s);
+  });
   ['worldcup','semifinal','final','inventory','spot','team'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
 }
 function switchWcType(t) {
