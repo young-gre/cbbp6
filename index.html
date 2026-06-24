@@ -1406,13 +1406,17 @@ function applyUrlType() {
   ['wc-type-tabs','inv-type-tabs','sp-type-tabs'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.style.display='none';
   });
-  [['wc',['branch','agency']],['inv',['agency','branch']],['sp',['branch','agency']]].forEach(([prefix,types])=>{
+  [['wc',['branch','agency']],['sf',['branch','agency']],['fn',['branch','agency']],['inv',['agency','branch']],['sp',['branch','agency']]].forEach(([prefix,types])=>{
     types.forEach(t=>{
       const vw=document.getElementById(prefix+'-'+t+'-view');
       const tt=document.getElementById(prefix+'-tab-'+t);
       if(vw) vw.style.display=t===type?'block':'none';
       if(tt) tt.classList.toggle('active',t===type);
     });
+  });
+  // 전반전/후반전 타입탭 숨김
+  ['sf-type-tabs','fn-type-tabs'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display='none';
   });
   // 대리점 캠페인 탭: ?type=branch 일 때만 숨김
   // 영업팀 캠페인 탭: ?type=agency 일 때만 숨김
