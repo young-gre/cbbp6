@@ -271,7 +271,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <button class="topnav-tab active" onclick="switchSection('final')">후반전</button>
     <button class="topnav-tab" onclick="switchSection('inventory')">재고 맞수</button>
     <button class="topnav-tab" onclick="switchSection('spot')">계약 Spot</button>
-    <button class="topnav-tab" id="tab-team" style="display:none;" onclick="switchSection('team')">영업팀 캠페인</button>
+    <button class="topnav-tab" id="tab-team" onclick="switchSection('team')">영업팀 캠페인</button>
     <button class="topnav-tab" id="tab-calc" style="display:none;" onclick="switchSection('calc')">재고 계산기</button>
   </div>
   <div class="topnav-right">
@@ -971,6 +971,7 @@ function renderAll() {
   renderFn('branch');renderFn('agency');
   renderInv('agency');renderInv('branch');
   renderSpot('branch');renderSpot('agency');
+  renderTeam();
 }
 
 function renderWc(type) {
@@ -1374,8 +1375,10 @@ function applyUrlType() {
       if(tt) tt.classList.toggle('active',t===type);
     });
   });
-  // 영업팀 캠페인 탭: ?type=branch 일 때만 표시
-  if (type === 'branch') {
+  // 영업팀 캠페인 탭: ?type=agency 일 때만 숨김
+  if (type === 'agency') {
+    document.getElementById('tab-team').style.display = 'none';
+  } else {
     document.getElementById('tab-team').style.display = '';
   }
   const badge=document.createElement('span');
@@ -1396,7 +1399,7 @@ function applyUrlType() {
         const el = document.getElementById('upload-'+currentSection);
         if (el) el.classList.add('show');
         document.getElementById('tab-calc').style.display = '';
-        document.getElementById('tab-team').style.display = '';
+        // tab-team은 applyUrlType에서 ?type=branch일 때만 표시
       } else { sessionStorage.removeItem('admin_token'); }
     } catch(e) { sessionStorage.removeItem('admin_token'); }
   }
