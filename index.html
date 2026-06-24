@@ -461,7 +461,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <div class="sec-header">
       <div>
         <div class="sec-title">🏆 영업팀 캠페인 (6/22 ~ 6/30)</div>
-        <div class="sec-sub">6월 목표 기준 출고 달성율 순위 (캠페인 기간 동안 출고 달성률 기반 산정)</div>
+        <div class="sec-sub">6월 목표 기준 출고 달성율 순위 · 팀을 클릭하면 카마스터별 실적을 확인할 수 있습니다</div>
       </div>
     </div>
     <div class="summary-row" id="team-summary"></div>
@@ -475,28 +475,24 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
           <colgroup>
             <col style="width:52px;"><col style="width:100px;"><col style="width:90px;">
             <col style="width:80px;"><col style="width:48px;"><col style="width:70px;">
-            <col style="width:80px;"><col style="width:72px;">
+            <col style="width:90px;">
             <col style="width:160px;"><col style="width:110px;">
           </colgroup>
           <thead>
             <tr>
-              <th rowspan="2">순위</th>
-              <th rowspan="2" class="th-left">거점</th>
-              <th rowspan="2">팀명</th>
-              <th rowspan="2">팀장</th>
-              <th rowspan="2">인원</th>
-              <th rowspan="2">6월 목표</th>
-              <th colspan="2" style="border-bottom:1px solid var(--line);">총 출고 대수</th>
-              <th rowspan="2">달성율</th>
-              <th rowspan="2">포상금(인당)</th>
-            </tr>
-            <tr>
-              <th class="th-sub">캠페인 기간 (6/22 ~ 6/30)</th>
-              <th class="th-sub">전체 (참고용)</th>
+              <th>순위</th>
+              <th class="th-left">거점</th>
+              <th>팀명</th>
+              <th>팀장</th>
+              <th>인원</th>
+              <th>6월 목표</th>
+              <th>캠페인 기간 출고</th>
+              <th>달성율</th>
+              <th>포상금(인당)</th>
             </tr>
           </thead>
           <tbody id="team-tbody">
-            <tr><td colspan="10" style="padding:40px;color:var(--text-sub);font-size:13px;">출고 데이터를 붙여넣기 하면 순위가 표시됩니다.</td></tr>
+            <tr><td colspan="9" style="padding:40px;color:var(--text-sub);font-size:13px;">출고 데이터를 붙여넣기 하면 순위가 표시됩니다.</td></tr>
           </tbody>
         </table>
       </div>
@@ -1555,13 +1551,13 @@ function renderTeam() {
     const total = base + camp;
     const rate  = cfg.target > 0 ? camp / cfg.target * 100 : 0;  // 캠페인 기간 / 목표
     return { tk, ...cfg, base, camp, total, rate };
-  }).sort((a, b) => b.rate - a.rate || b.camp - a.camp);
+  }).sort((a, b) => b.rate - a.rate || b.target - a.target);
 
   const totalMembers = results.reduce((s,t)=>s+t.members.length,0);
   const totalAll     = results.reduce((s,t)=>s+t.total,0);
   const totalCamp    = results.reduce((s,t)=>s+t.camp,0);
   const totalTarget  = results.reduce((s,t)=>s+t.target,0);
-  const overallRate  = totalTarget ? (totalCamp/totalTarget*100).toFixed(1) : 0;
+  const overallRate  = totalTarget ? (totalCamp/totalTarget*100).toFixed(2) : 0;
 
   document.getElementById('team-summary').innerHTML = `
     <div class="scard"><span>총 팀 수</span><strong>${results.length}팀</strong></div>
@@ -1570,24 +1566,34 @@ function renderTeam() {
     <div class="scard"><span>전체 달성율</span><strong>${overallRate}%</strong></div>`;
 
   let html = '';
+
+  // 동률 처리: 같은 달성율끼리 그룹핑 → 그룹의 첫 순위(가장 높은 포상) 적용
+  // rate를 소수점 10자리까지 비교해 완전 동률만 묶음
+  let groupStartIdx = 0;
   results.forEach((t, i) => {
-    const rank  = i + 1;
-    const prize = tmGetPrize(rank);
-    const barW  = Math.min(t.rate, 100).toFixed(0);
+    if (i > 0 && t.rate !== results[i-1].rate) groupStartIdx = i;
+    t._groupStart = groupStartIdx;  // 동률 그룹의 시작 인덱스 저장
+  });
+
+  results.forEach((t, i) => {
+    const rank      = t._groupStart + 1;             // 동률이면 그룹 첫 순위
+    const isTie     = results.filter(r => r.rate === t.rate).length > 1;
+    const prize     = tmGetPrize(rank);              // 가장 높은 포상 구간
+    const barW      = Math.min(t.rate, 100).toFixed(0);
     const teamLabel = t.tk.replace(t.branch, '');
+    const rankLabel = isTie ? `${rank}=` : `${rank}`; // 동률 표시
 
     html += `<tr class="tm-row">
-      <td><span class="tm-rank ${tmRankCls(i)}">${rank}</span></td>
+      <td><span class="tm-rank ${tmRankCls(t._groupStart)}">${rankLabel}</span></td>
       <td class="td-left" style="font-size:13px;font-weight:700;color:#4a6380;">${t.branch}</td>
       <td style="font-size:13px;font-weight:800;color:var(--blue-dark);">${teamLabel}</td>
       <td style="font-size:12px;">${t.leader||'—'}</td>
       <td>${t.members.length}명</td>
       <td style="font-weight:800;">${t.target}대</td>
       <td style="font-weight:800;color:var(--blue-dark);">${t.camp}대</td>
-      <td style="color:var(--text-sub);font-size:12px;">${t.total}대</td>
       <td><div class="tm-bar-wrap">
         <div class="tm-bar-bg"><div class="tm-bar-fill" style="width:${barW}%;background:${tmRateBarColor(t.rate)};"></div></div>
-        <span class="tm-bar-val" style="color:${tmRateTextColor(t.rate)}">${t.rate.toFixed(1)}%</span>
+        <span class="tm-bar-val" style="color:${tmRateTextColor(t.rate)}">${t.rate.toFixed(2)}%</span>
       </div></td>
       <td>${prize.cls === 'prize-none' ? '<span style="color:var(--text-sub);font-weight:700;">—</span>' : `<span class="prize-badge ${prize.cls}">${prize.label}</span>`}</td>
     </tr>`;
