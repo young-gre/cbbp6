@@ -252,6 +252,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <div class="topnav-tabs">
     <button class="topnav-tab active" onclick="switchSection('final')">후반전</button>
     <button class="topnav-tab" id="tab-team" onclick="switchSection('team')">영업팀 캠페인</button>
+    <button class="topnav-tab" id="tab-agency" onclick="switchSection('agency')">대리점 캠페인</button>
     <button class="topnav-tab" onclick="switchSection('inventory')">재고 맞수</button>
     <button class="topnav-tab" onclick="switchSection('semifinal')">전반전 (종료)</button>
     <button class="topnav-tab" onclick="switchSection('spot')">계약 Spot (종료)</button>
@@ -500,6 +501,57 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     </div>
   </div>
 
+  <!-- 대리점 캠페인 -->
+  <div class="section" id="section-agency">
+    <div class="upload-panel" id="upload-agency">
+      <div class="paste-hint">
+        국내판매시스템 전체 데이터 복사(Ctrl+A → Ctrl+C) → 아래 붙여넣기<br/>
+        <b>자동 필터:</b> 계출상태=출고 / 대리점(DG코드)만 / 6/22 이후 / 고객명=현대자동차(주) 제외
+      </div>
+      <textarea class="paste-area" id="agency-paste-data" style="height:140px;" placeholder="헤더 포함 전체 데이터 붙여넣기"></textarea>
+      <button class="apply-btn" onclick="applyAgencyData()">✅ 출고 집계</button>
+      <div class="upload-status" id="upload-status-agency"></div>
+    </div>
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">🏪 대리점 캠페인 (6/22 ~ 6/30)</div>
+        <div class="sec-sub">구간별 누적 포상 · 10대 이하 1만 / 15대 이하 2만 / 20대 이하 3만 / 20대 초과 5만 (인당)</div>
+      </div>
+    </div>
+    <div class="summary-row" id="agency-summary"></div>
+    <div class="tm-table-panel">
+      <div class="tm-table-panel-head">
+        <h3>대리점별 현황</h3>
+        <span id="agency-updated"></span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="tm-table" style="table-layout:fixed;width:100%;">
+          <colgroup>
+            <col style="width:52px;"><col style="width:110px;"><col style="width:70px;">
+            <col style="width:70px;"><col style="width:70px;"><col style="width:70px;">
+            <col style="width:160px;"><col style="width:130px;"><col style="width:130px;">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th class="th-left">대리점</th>
+              <th>캠페인 출고</th>
+              <th>10대↓</th>
+              <th>15대↓</th>
+              <th>20대↓</th>
+              <th>20대 초과</th>
+              <th>포상금</th>
+              <th>트레이드인 보정</th>
+            </tr>
+          </thead>
+          <tbody id="agency-tbody">
+            <tr><td colspan="9" style="padding:40px;color:var(--text-sub);font-size:13px;">출고 데이터를 붙여넣기 하면 현황이 표시됩니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <!-- 재고 계산기 (관리자 전용) -->
   <div class="section" id="section-calc">
     <div class="calc-panel">
@@ -600,6 +652,7 @@ function fixData() {
   if (!data.sfPoints) data.sfPoints = {};
   if (!data.sfPoints.branch) data.sfPoints.branch = {};
   if (!data.sfPoints.agency) data.sfPoints.agency = {};
+  if (!data.agencyShipped) data.agencyShipped = {};
 }
 
 function nowStr() {
@@ -697,7 +750,7 @@ function switchSection(s) {
     const match = el.getAttribute('onclick')?.match(/switchSection\('(\w+)'\)/);
     if (match) el.classList.toggle('active', match[1] === s);
   });
-  ['worldcup','semifinal','final','inventory','spot','team'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
+  ['worldcup','semifinal','final','inventory','spot','team','agency'].forEach(sec=>{ const el=document.getElementById('upload-'+sec); if(el) el.classList.toggle('show',isAdmin&&sec===s); });
 }
 function switchWcType(t) {
   wcType=t;
@@ -955,6 +1008,7 @@ function renderAll() {
   renderInv('agency');renderInv('branch');
   renderSpot('branch');renderSpot('agency');
   renderTeam();
+  renderAgency();
 }
 
 function renderWc(type) {
@@ -1358,7 +1412,13 @@ function applyUrlType() {
       if(tt) tt.classList.toggle('active',t===type);
     });
   });
+  // 대리점 캠페인 탭: ?type=branch 일 때만 숨김
   // 영업팀 캠페인 탭: ?type=agency 일 때만 숨김
+  if (type === 'branch') {
+    document.getElementById('tab-agency').style.display = 'none';
+  } else {
+    document.getElementById('tab-agency').style.display = '';
+  }
   if (type === 'agency') {
     document.getElementById('tab-team').style.display = 'none';
   } else {
@@ -1604,6 +1664,160 @@ function renderTeam() {
   });
 
   document.getElementById('team-tbody').innerHTML = html || '<tr><td colspan="10" style="padding:40px;color:var(--text-sub);font-size:13px;">출고 데이터를 붙여넣기 하면 순위가 표시됩니다.</td></tr>';
+}
+
+
+// ── 대리점 캠페인 ────────────────────────────────────────
+const AGENCY_CODE_MAP = {
+  'DG27001':'가경','DG16002':'오창제일','DG22001':'음성','DG21003':'연수',
+  'DG23003':'제천중앙','DG42001':'서청주','DG13001':'보은','DG21004':'교현',
+  'DG17001':'증평삼보','DG23001':'단양','DG18001':'진천중앙','DG13003':'영동금강'
+};
+const AGENCY_NAMES = ['가경','오창제일','서청주','증평삼보','연수','음성','제천중앙','진천중앙','교현','보은','영동금강','단양'];
+
+// 포상금 계산: 구간별 누적
+// 10대 이하: 1만/대, 11~15대: 2만/대, 16~20대: 3만/대, 21대~: 5만/대
+function calcAgencyPrize(shipped) {
+  if (shipped <= 0)  return 0;
+  const t1 = Math.min(shipped, 10);
+  const t2 = Math.max(Math.min(shipped, 15) - 10, 0);
+  const t3 = Math.max(Math.min(shipped, 20) - 15, 0);
+  const t4 = Math.max(shipped - 20, 0);
+  return t1*10000 + t2*20000 + t3*30000 + t4*50000;
+}
+
+// 구간별 대수 분해
+function agencyBands(shipped) {
+  const t1 = Math.min(shipped, 10);
+  const t2 = Math.max(Math.min(shipped, 15) - 10, 0);
+  const t3 = Math.max(Math.min(shipped, 20) - 15, 0);
+  const t4 = Math.max(shipped - 20, 0);
+  return { t1, t2, t3, t4 };
+}
+
+let agencyShipped = {};  // 대리점명 → 캠페인 출고 대수
+
+function applyAgencyData() {
+  const raw = document.getElementById('agency-paste-data').value.trim();
+  const st  = document.getElementById('upload-status-agency');
+  if (!raw) { st.textContent='데이터를 붙여넣어 주세요.'; st.style.color='var(--red)'; return; }
+  const lines = raw.split('\n').filter(l => l.trim());
+  if (lines.length < 2) { st.textContent='❌ 데이터가 너무 적어요.'; st.style.color='var(--red)'; return; }
+
+  let startIdx = 0, dateIdx = -1, custNameIdx = -1;
+  for (let i = 0; i < Math.min(lines.length, 5); i++) {
+    if (lines[i].includes('계출상태')) {
+      const hcols = lines[i].split('\t');
+      dateIdx     = hcols.findIndex(h => h.includes('출고일') || h.includes('예정출고'));
+      custNameIdx = hcols.findIndex(h => h.trim() === '고객명' || h.includes('고객명'));
+      startIdx = i + 1; break;
+    }
+  }
+
+  const result = {};
+  let total = 0, cntValid = 0, cntHyundai = 0;
+  lines.slice(startIdx).forEach(line => {
+    const cols = line.split('\t');
+    if (cols.length < 10) return;
+    total++;
+    if (cols[1]?.trim() !== '출고') return;
+    // 대리점 코드 확인
+    const agencyCd = cols.length > 27 ? cols[27]?.trim() : '';
+    if (!agencyCd || !AGENCY_CODE_MAP[agencyCd]) return;
+    // 현대자동차(주) 제외
+    if (custNameIdx >= 0 && cols[custNameIdx]?.trim().includes('현대자동차')) { cntHyundai++; return; }
+    // 날짜 필터: 6/22 이후만
+    if (dateIdx >= 0) {
+      const d = parseInt((cols[dateIdx]?.trim() || '').replace(/-/g,''));
+      if (!isNaN(d) && d < 20260622) return;
+    }
+    const name = AGENCY_CODE_MAP[agencyCd];
+    result[name] = (result[name]||0) + 1;
+    cntValid++;
+  });
+
+  agencyShipped = result;
+  data.agencyShipped = result;
+  const ts = nowStr(); data.updatedAt['agency_data'] = ts; data.updatedAt['_latest'] = ts;
+  save().then(() => renderAll());
+  let msg = `✅ 집계 완료 · 캠페인 출고 ${cntValid}대 / 전체 ${total}건`;
+  if (cntHyundai > 0) msg += ` · 현대자동차(주) ${cntHyundai}건 제외`;
+  st.textContent = msg;
+  st.style.color = 'var(--green)';
+  showToast(`대리점 출고 집계 완료 (${cntValid}대)`);
+}
+
+function renderAgency() {
+  if (!document.getElementById('agency-tbody')) return;
+  if (!Object.keys(agencyShipped).length && data.agencyShipped) agencyShipped = data.agencyShipped;
+
+  const results = AGENCY_NAMES.map(name => {
+    const shipped = agencyShipped[name] || 0;
+    const prize   = calcAgencyPrize(shipped);
+    const bands   = agencyBands(shipped);
+    return { name, shipped, prize, bands };
+  }).sort((a, b) => b.shipped - a.shipped || b.prize - a.prize);
+
+  const totalShipped = results.reduce((s,r)=>s+r.shipped,0);
+  const totalPrize   = results.reduce((s,r)=>s+r.prize,0);
+  const maxShipped   = results[0]?.shipped || 0;
+
+  document.getElementById('agency-summary').innerHTML = `
+    <div class="scard"><span>총 대리점</span><strong>${results.length}개</strong></div>
+    <div class="scard"><span>캠페인 총 출고</span><strong>${totalShipped}대</strong></div>
+    <div class="scard"><span>총 포상금</span><strong>${(totalPrize/10000).toFixed(0)}만원</strong></div>
+    <div class="scard"><span>최고 출고</span><strong>${maxShipped}대</strong></div>`;
+
+  const tbody = document.getElementById('agency-tbody');
+  if (!results.length || totalShipped === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" style="padding:40px;color:var(--text-sub);font-size:13px;">출고 데이터를 붙여넣기 하면 현황이 표시됩니다.</td></tr>';
+    return;
+  }
+
+  // 동률 처리: 출고 대수 같으면 같은 순위
+  let groupStart = 0;
+  results.forEach((r, i) => {
+    if (i > 0 && r.shipped !== results[i-1].shipped) groupStart = i;
+    r._groupStart = groupStart;
+  });
+
+  tbody.innerHTML = results.map((r, i) => {
+    const rank    = r._groupStart + 1;
+    const isTie   = results.filter(x => x.shipped === r.shipped).length > 1;
+    const rankLabel = isTie ? `${rank}=` : `${rank}`;
+    const rankCls = rank===1?'tm-r1':rank===2?'tm-r2':rank===3?'tm-r3':rank<=6?'tm-r4':rank<=10?'tm-r7':'tm-r11';
+    const barW    = maxShipped > 0 ? (r.shipped/maxShipped*100).toFixed(0) : 0;
+    const barColor = r.shipped >= 20 ? 'linear-gradient(90deg,#1b9d68,#4db890)'
+                   : r.shipped >= 15 ? 'linear-gradient(90deg,#f6851a,#f6ad1a)'
+                   : r.shipped >= 10 ? 'linear-gradient(90deg,#0f69b4,#4b97d6)'
+                   : 'linear-gradient(90deg,#e53e3e,#f87171)';
+    const prizeStr = r.prize > 0 ? `<b style="color:var(--blue-dark)">${(r.prize/10000).toFixed(0)}만원</b>` : '<span style="color:var(--text-sub)">—</span>';
+    // 트레이드인 50% 보정 포상
+    const tradeStr = r.prize > 0
+      ? `<span style="color:var(--text-sub);font-size:11px;">${(r.prize*0.5/10000).toFixed(0)}만원 <span style="font-size:10px;">(무실적 50%)</span></span>`
+      : '<span style="color:var(--text-sub)">—</span>';
+    // 구간 표시
+    const bandCell = (v, color) => v > 0
+      ? `<span style="font-weight:800;color:${color};">${v}대</span>`
+      : `<span style="color:#d0d8e4;">—</span>`;
+
+    return `<tr class="tm-row">
+      <td><span class="tm-rank ${rankCls}">${rankLabel}</span></td>
+      <td class="td-left" style="font-size:13px;font-weight:800;color:var(--blue-dark);">${r.name}</td>
+      <td>
+        <div class="tm-bar-wrap">
+          <div class="tm-bar-bg"><div class="tm-bar-fill" style="width:${barW}%;background:${barColor};"></div></div>
+          <span class="tm-bar-val" style="color:var(--blue-dark);font-size:13px;">${r.shipped}대</span>
+        </div>
+      </td>
+      <td>${bandCell(r.bands.t1,'#6e7f93')}</td>
+      <td>${bandCell(r.bands.t2,'#0f69b4')}</td>
+      <td>${bandCell(r.bands.t3,'#f6851a')}</td>
+      <td>${bandCell(r.bands.t4,'#1b9d68')}</td>
+      <td style="text-align:center;">${prizeStr}</td>
+      <td style="text-align:center;">${tradeStr}</td>
+    </tr>`;
+  }).join('');
 }
 
 </script>
