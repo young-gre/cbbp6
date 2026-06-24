@@ -239,10 +239,10 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .prize-15{background:#fff7ed;color:#c05e0a;border:1px solid #fed7aa;}
 .prize-19{background:#fdf4ff;color:#7e22ce;border:1px solid #e9d5ff;}
 .prize-none{background:#f8fafc;color:#94a3b8;border:1px solid #e2e8f0;}
-.tm-bar-wrap{display:flex;align-items:center;gap:8px;}
-.tm-bar-bg{flex:1;height:6px;border-radius:999px;background:#e7eef6;overflow:hidden;min-width:60px;max-width:100px;}
+.tm-bar-wrap{display:flex;align-items:center;gap:6px;}
+.tm-bar-bg{flex:1;height:6px;border-radius:999px;background:#e7eef6;overflow:hidden;}
 .tm-bar-fill{height:100%;border-radius:inherit;transition:.4s;}
-.tm-bar-val{font-size:12px;font-weight:800;min-width:52px;text-align:right;flex-shrink:0;}
+.tm-bar-val{font-size:12px;font-weight:800;min-width:48px;text-align:right;flex-shrink:0;}
 .expand-icon{display:inline-block;font-size:10px;color:var(--text-sub);margin-left:4px;transition:transform .2s;}
 .tm-row.expanded .expand-icon{transform:rotate(180deg);}
 </style>
@@ -488,12 +488,12 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
         <span id="tm-updated"></span>
       </div>
       <div style="overflow-x:auto;">
-        <table class="tm-table">
+        <table class="tm-table" style="table-layout:fixed;width:100%;">
           <colgroup>
-            <col style="width:52px;"><col style="width:88px;"><col style="width:76px;">
-            <col style="width:72px;"><col style="width:44px;"><col style="width:64px;">
-            <col style="width:72px;"><col style="width:72px;"><col style="width:72px;">
-            <col style="min-width:140px;"><col style="width:110px;">
+            <col style="width:52px;"><col style="width:100px;"><col style="width:90px;">
+            <col style="width:80px;"><col style="width:48px;"><col style="width:70px;">
+            <col style="width:76px;"><col style="width:76px;"><col style="width:76px;">
+            <col style="width:160px;"><col style="width:110px;">
           </colgroup>
           <thead>
             <tr>
