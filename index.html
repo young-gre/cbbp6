@@ -191,6 +191,20 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .fn-bar-wrap{width:80px;height:6px;border-radius:999px;background:#e7eef6;overflow:hidden;flex-shrink:0;}
 .fn-bar-fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,#0f69b4,#4b97d6);transition:.4s;}
 .fn-prize-info{font-size:11px;color:var(--text-sub);}
+
+/* ── 영업팀 캠페인 (신규) ── */
+.tm-table-wrap{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;}
+.tm-table{width:100%;border-collapse:collapse;}
+.tm-table th{background:#eef5fc;font-size:11px;font-weight:800;color:var(--blue-dark);padding:10px 12px;text-align:center;letter-spacing:.04em;white-space:nowrap;}
+.tm-table td{padding:11px 12px;text-align:center;border-bottom:1px solid #f0f4f8;font-size:12px;font-weight:600;color:#294564;}
+.tm-table tr:last-child td{border-bottom:none;}
+.tm-rank{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:800;}
+.tm-r1{background:#fef3c7;color:#b45309;}.tm-r2{background:#f1f5f9;color:#475569;}.tm-r3{background:#fff7ed;color:#92400e;}
+.tm-r4,.tm-r5,.tm-r6{background:#f8fafc;color:#94a3b8;}
+.tm-rate-wrap{display:flex;align-items:center;gap:6px;justify-content:center;}
+.tm-bar-bg{width:70px;height:5px;border-radius:999px;background:#e7eef6;overflow:hidden;flex-shrink:0;}
+.tm-bar-fill{height:100%;border-radius:inherit;transition:.4s;}
+.tm-rate-val{font-size:12px;font-weight:800;min-width:42px;text-align:right;}
 </style>
 </head>
 <body>
@@ -217,7 +231,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <button class="topnav-tab active" onclick="switchSection('final')">후반전</button>
     <button class="topnav-tab" onclick="switchSection('inventory')">재고 맞수</button>
     <button class="topnav-tab" onclick="switchSection('spot')">계약 Spot</button>
-    <button class="topnav-tab" id="tab-team" style="display:none;" onclick="switchSection('team')">영업팀 캠페인</button>
+    <button class="topnav-tab" id="tab-team" onclick="switchSection('team')">영업팀 캠페인</button>
     <button class="topnav-tab" id="tab-calc" style="display:none;" onclick="switchSection('calc')">재고 계산기</button>
   </div>
   <div class="topnav-right">
@@ -413,41 +427,31 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
   <!-- 영업팀 캠페인 -->
   <div class="section" id="section-team">
     <div class="upload-panel" id="upload-team">
-      <div class="upload-tabs">
-        <button class="utab active" id="team-utab-config" onclick="switchTeamUpTab('config')">팀 구성 입력</button>
-        <button class="utab" id="team-utab-data" onclick="switchTeamUpTab('data')">출고 데이터 입력</button>
-      </div>
-      <div class="upload-section active" id="team-up-config">
-        <div class="paste-hint" style="margin-top:4px;">거점명 <b>[탭]</b> 팀명 <b>[탭]</b> 팀장사번 <b>[탭]</b> 목표 <b>[탭]</b> 멤버사번(쉼표구분)</div>
-        <textarea class="paste-area" id="team-paste-config" placeholder="청주남부	A팀	2324181	45	2324181,2414768,2610981&#10;청주남부	B팀	2133527	40	2133527,5218728,2721974"></textarea>
-        <button class="apply-btn" onclick="applyTeamConfig()">✅ 팀 구성 저장</button>
-      </div>
-      <div class="upload-section" id="team-up-data">
-        <div class="paste-hint" style="margin-top:4px;">국내판매시스템 전체 데이터 복사 → 붙여넣기 (계출상태=출고 자동 필터, 사번 기준 집계)</div>
-        <textarea class="paste-area" id="team-paste-data" style="height:160px;" placeholder="헤더 포함 전체 데이터 붙여넣기"></textarea>
-        <button class="apply-btn" onclick="applyTeamData()">✅ 출고 집계</button>
-      </div>
+      <div class="paste-hint">국내판매시스템 전체 데이터 복사 → 붙여넣기<br/>자동 필터: 계출상태=출고 / 지점만(대리점 제외) / 관리자사번(700000) 제외 / CB1(법인택시) 제외</div>
+      <textarea class="paste-area" id="team-paste-data" style="height:180px;" placeholder="헤더 포함 전체 데이터 붙여넣기"></textarea>
+      <button class="apply-btn" onclick="applyTeamData()">✅ 출고 집계</button>
       <div class="upload-status" id="upload-status-team"></div>
     </div>
     <div class="sec-header">
       <div>
-        <div class="sec-title">영업팀 캠페인</div>
-        <div class="sec-sub">거점별 영업팀 출고 합계 · 전체 팀 순위 경쟁</div>
+        <div class="sec-title">영업팀 캠페인 (6/22 ~ 6/30)</div>
+        <div class="sec-sub">팀별 목표 − 19일 누계 = 캠페인 목표 · 잔여기간 출고 / 캠페인 목표 = 달성율</div>
       </div>
     </div>
     <div class="summary-row" id="team-summary"></div>
-    <div class="team-table-wrap">
-      <table class="team-table">
+    <div class="tm-table-wrap">
+      <table class="tm-table">
         <thead>
           <tr>
-            <th>순위</th><th>거점</th><th>팀명</th><th>팀장</th>
-            <th>인원</th><th>목표</th><th>합계 출고</th><th>달성율</th><th>포상금(인당)</th>
+            <th>순위</th><th>지점</th><th>팀명</th><th>팀장</th><th>인원</th>
+            <th>팀별목표</th><th>캠페인목표</th><th>잔여기간 출고</th><th>달성율</th><th>포상금(인당)</th>
           </tr>
         </thead>
         <tbody id="team-tbody"></tbody>
       </table>
     </div>
   </div>
+
 
   <!-- 재고 계산기 (관리자 전용) -->
   <div class="section" id="section-calc">
@@ -525,6 +529,7 @@ let data = {
   sf:{branch:{},agency:{}},
   fn:{branch:{},agency:{}},
   sfPoints:{branch:{},agency:{}},
+  teamShipped:{},
   updatedAt:{}
 };
 
@@ -549,6 +554,7 @@ function fixData() {
   if (!data.sfPoints) data.sfPoints = {};
   if (!data.sfPoints.branch) data.sfPoints.branch = {};
   if (!data.sfPoints.agency) data.sfPoints.agency = {};
+  if (!data.teamShipped) data.teamShipped = {};
 }
 
 function nowStr() {
@@ -594,7 +600,7 @@ function toggleAdmin() {
   sessionStorage.removeItem('admin_token');
   ['worldcup','semifinal','final','inventory','spot','team'].forEach(s=>{ const el=document.getElementById('upload-'+s); if(el) el.classList.remove('show'); });
   document.getElementById('tab-calc').style.display = 'none';
-  if (currentSection === 'calc' || currentSection === 'team') switchSection('final');
+    if (currentSection === 'calc' || currentSection === 'team') switchSection('final');
   showToast('관리자 모드 종료');
 }
 function closeModal() {
@@ -1282,6 +1288,283 @@ function renderFn(type) {
   });
 }
 
+const TEAM_CONFIG = {
+  '금왕1팀':{branch:'금왕',target:40,base19:19,campTarget:21,leader:'김영섭',leaderSabun:'2790393',members:['2323848','2324612','2663438','2663818','2790393','2869558']},
+  '오창1팀':{branch:'오창',target:26,base19:18,campTarget:8,leader:'정찬영',leaderSabun:'5007988',members:['2414954','5007988','6350454','6629727','7606498']},
+  '오창2팀':{branch:'오창',target:15,base19:8,campTarget:7,leader:'김영주',leaderSabun:'2415147',members:['1965293','2415147','5218796','6629518','7606504','7606511']},
+  '옥천영동1팀':{branch:'옥천영동',target:22,base19:16,campTarget:6,leader:'전인호',leaderSabun:'2898637',members:['1818118','2259896','2898637','5109445','7606527']},
+  '옥천영동2팀':{branch:'옥천영동',target:23,base19:7,campTarget:16,leader:'김태현',leaderSabun:'2790102',members:['2722352','2790102','2903288','7606534','9969016']},
+  '제천1팀':{branch:'제천',target:39,base19:36,campTarget:3,leader:'신승걸',leaderSabun:'2790623',members:['1963666','2139412','2790623','2837217','2869216','5204192','6719034']},
+  '제천2팀':{branch:'제천',target:32,base19:19,campTarget:13,leader:'정흥교',leaderSabun:'2323512',members:['1963517','2323512','2550968','2868987','2878758','5204698','7506518','7506525']},
+  '진천1팀':{branch:'진천',target:25,base19:10,campTarget:15,leader:'김재덕',leaderSabun:'5107951',members:['2836318','2878565','2898592','5107951']},
+  '진천2팀':{branch:'진천',target:28,base19:16,campTarget:12,leader:'안장식',leaderSabun:'5108665',members:['2129597','2878617','5108665','6719027','7606541']},
+  '청주1팀':{branch:'청주',target:30,base19:9,campTarget:21,leader:'성백익',leaderSabun:'1819218',members:['1819218','2835924','5108777','5307791','7606608']},
+  '청주2팀':{branch:'청주',target:30,base19:16,campTarget:14,leader:'김동섭',leaderSabun:'2325132',members:['1133213','2324568','2325132','5307828','6718693','7506585']},
+  '청주남부1팀':{branch:'청주남부',target:28,base19:15,campTarget:13,leader:'우영제',leaderSabun:'2414768',members:['2133712','2135497','2414768','2789517','5007972']},
+  '청주남부2팀':{branch:'청주남부',target:40,base19:22,campTarget:18,leader:'심원보',leaderSabun:'2610981',members:['2324181','2610981','2721825','2721974','2789658']},
+  '청주남부3팀':{branch:'청주남부',target:31,base19:18,campTarget:13,leader:'오종섭',leaderSabun:'5218728',members:['1889317','2133527','5107588','5204511','5218498','5218728']},
+  '청주남부4팀':{branch:'청주남부',target:30,base19:12,campTarget:18,leader:'',leaderSabun:'',members:['7506532','7506548','7506555','7506578','7606557','7606564']},
+  '청주북부1팀':{branch:'청주북부',target:26,base19:13,campTarget:13,leader:'맹정재',leaderSabun:'2836117',members:['2132576','2132955','2324375','2722218','2836117','5218773','6350543']},
+  '청주북부2팀':{branch:'청주북부',target:34,base19:20,campTarget:14,leader:'박관주',leaderSabun:'5218483',members:['1965672','1965717','2498451','2722167','5218483','6350566']},
+  '청주서부1팀':{branch:'청주서부',target:24,base19:14,campTarget:10,leader:'김재형',leaderSabun:'2721788',members:['1889644','1966244','2137697','2611553','2665973','2721788']},
+  '청주서부2팀':{branch:'청주서부',target:26,base19:19,campTarget:7,leader:'서동연',leaderSabun:'5307806',members:['1889502','2257547','2413475','5107565','5205397','5307806']},
+  '청주서부3팀':{branch:'청주서부',target:28,base19:16,campTarget:12,leader:'송영길',leaderSabun:'2611368',members:['1622826','2499366','2611368','2611747','5007942','5007965','5321672']},
+  '청주서부4팀':{branch:'청주서부',target:13,base19:6,campTarget:7,leader:'',leaderSabun:'',members:['7606571','7606587','7606594']},
+  '충주1팀':{branch:'충주',target:34,base19:17,campTarget:17,leader:'윤영균',leaderSabun:'2789702',members:['1723095','2139175','2323706','2411706','2722404','2789702','7606623']},
+  '충주2팀':{branch:'충주',target:30,base19:18,campTarget:12,leader:'이재섭',leaderSabun:'2836794',members:['1888738','2075096','2498266','2836794','6719258','9469358']},
+  '충주3팀':{branch:'충주',target:30,base19:19,campTarget:11,leader:'김영은',leaderSabun:'2551152',members:['0660866','1964238','2127106','2411081','2551152','2789844','7606616']},
+};
+const SABUN_TEAM = {
+  '0660866':'충주3팀',
+  '1133213':'청주2팀',
+  '1622826':'청주서부3팀',
+  '1723095':'충주1팀',
+  '1818118':'옥천영동1팀',
+  '1819218':'청주1팀',
+  '1888738':'충주2팀',
+  '1889317':'청주남부3팀',
+  '1889502':'청주서부2팀',
+  '1889644':'청주서부1팀',
+  '1963517':'제천2팀',
+  '1963666':'제천1팀',
+  '1964238':'충주3팀',
+  '1965293':'오창2팀',
+  '1965672':'청주북부2팀',
+  '1965717':'청주북부2팀',
+  '1966244':'청주서부1팀',
+  '2075096':'충주2팀',
+  '2127106':'충주3팀',
+  '2129597':'진천2팀',
+  '2132576':'청주북부1팀',
+  '2132955':'청주북부1팀',
+  '2133527':'청주남부3팀',
+  '2133712':'청주남부1팀',
+  '2135497':'청주남부1팀',
+  '2137697':'청주서부1팀',
+  '2139175':'충주1팀',
+  '2139412':'제천1팀',
+  '2257547':'청주서부2팀',
+  '2259896':'옥천영동1팀',
+  '2323512':'제천2팀',
+  '2323706':'충주1팀',
+  '2323848':'금왕1팀',
+  '2324181':'청주남부2팀',
+  '2324375':'청주북부1팀',
+  '2324568':'청주2팀',
+  '2324612':'금왕1팀',
+  '2325132':'청주2팀',
+  '2411081':'충주3팀',
+  '2411706':'충주1팀',
+  '2413475':'청주서부2팀',
+  '2414768':'청주남부1팀',
+  '2414954':'오창1팀',
+  '2415147':'오창2팀',
+  '2498266':'충주2팀',
+  '2498451':'청주북부2팀',
+  '2499366':'청주서부3팀',
+  '2550968':'제천2팀',
+  '2551152':'충주3팀',
+  '2610981':'청주남부2팀',
+  '2611368':'청주서부3팀',
+  '2611553':'청주서부1팀',
+  '2611747':'청주서부3팀',
+  '2663438':'금왕1팀',
+  '2663818':'금왕1팀',
+  '2665973':'청주서부1팀',
+  '2721788':'청주서부1팀',
+  '2721825':'청주남부2팀',
+  '2721974':'청주남부2팀',
+  '2722167':'청주북부2팀',
+  '2722218':'청주북부1팀',
+  '2722352':'옥천영동2팀',
+  '2722404':'충주1팀',
+  '2789517':'청주남부1팀',
+  '2789658':'청주남부2팀',
+  '2789702':'충주1팀',
+  '2789844':'충주3팀',
+  '2790102':'옥천영동2팀',
+  '2790393':'금왕1팀',
+  '2790623':'제천1팀',
+  '2835924':'청주1팀',
+  '2836117':'청주북부1팀',
+  '2836318':'진천1팀',
+  '2836794':'충주2팀',
+  '2837217':'제천1팀',
+  '2868987':'제천2팀',
+  '2869216':'제천1팀',
+  '2869558':'금왕1팀',
+  '2878565':'진천1팀',
+  '2878617':'진천2팀',
+  '2878758':'제천2팀',
+  '2898592':'진천1팀',
+  '2898637':'옥천영동1팀',
+  '2903288':'옥천영동2팀',
+  '5007942':'청주서부3팀',
+  '5007965':'청주서부3팀',
+  '5007972':'청주남부1팀',
+  '5007988':'오창1팀',
+  '5107565':'청주서부2팀',
+  '5107588':'청주남부3팀',
+  '5107951':'진천1팀',
+  '5108665':'진천2팀',
+  '5108777':'청주1팀',
+  '5109445':'옥천영동1팀',
+  '5204192':'제천1팀',
+  '5204511':'청주남부3팀',
+  '5204698':'제천2팀',
+  '5205397':'청주서부2팀',
+  '5218483':'청주북부2팀',
+  '5218498':'청주남부3팀',
+  '5218728':'청주남부3팀',
+  '5218773':'청주북부1팀',
+  '5218796':'오창2팀',
+  '5307791':'청주1팀',
+  '5307806':'청주서부2팀',
+  '5307828':'청주2팀',
+  '5321672':'청주서부3팀',
+  '6350454':'오창1팀',
+  '6350543':'청주북부1팀',
+  '6350566':'청주북부2팀',
+  '6629518':'오창2팀',
+  '6629727':'오창1팀',
+  '6718693':'청주2팀',
+  '6719027':'진천2팀',
+  '6719034':'제천1팀',
+  '6719258':'충주2팀',
+  '7506518':'제천2팀',
+  '7506525':'제천2팀',
+  '7506532':'청주남부4팀',
+  '7506548':'청주남부4팀',
+  '7506555':'청주남부4팀',
+  '7506578':'청주남부4팀',
+  '7506585':'청주2팀',
+  '7606498':'오창1팀',
+  '7606504':'오창2팀',
+  '7606511':'오창2팀',
+  '7606527':'옥천영동1팀',
+  '7606534':'옥천영동2팀',
+  '7606541':'진천2팀',
+  '7606557':'청주남부4팀',
+  '7606564':'청주남부4팀',
+  '7606571':'청주서부4팀',
+  '7606587':'청주서부4팀',
+  '7606594':'청주서부4팀',
+  '7606608':'청주1팀',
+  '7606616':'충주3팀',
+  '7606623':'충주1팀',
+  '9469358':'충주2팀',
+  '9969016':'옥천영동2팀',
+};
+
+// ── 영업팀 캠페인 ────────────────────────────────────────
+function applyTeamData() {
+  const raw = document.getElementById('team-paste-data').value.trim();
+  const st  = document.getElementById('upload-status-team');
+  if (!raw) { st.textContent='데이터를 붙여넣어 주세요.'; st.style.color='var(--red)'; return; }
+
+  const lines = raw.split('\n').filter(l => l.trim());
+  if (lines.length < 2) { st.textContent='❌ 데이터가 너무 적어요.'; st.style.color='var(--red)'; return; }
+
+  // 헤더에서 고객구분 컬럼 인덱스 찾기
+  let startIdx = 0;
+  let custTypeIdx = -1;
+  for (let i = 0; i < Math.min(lines.length, 5); i++) {
+    if (lines[i].includes('계출상태')) {
+      const hcols = lines[i].split('\t');
+      custTypeIdx = hcols.findIndex(h => h.trim().includes('고객구분'));
+      startIdx = i + 1;
+      break;
+    }
+  }
+
+  const shipped = {}; // 사번 → 출고 건수
+  let total=0, cntShipped=0, cntSkip=0, cntValid=0;
+
+  lines.slice(startIdx).forEach(line => {
+    const cols = line.split('\t');
+    if (cols.length < 2) return;
+    total++;
+
+    // 계출상태 = 출고만
+    if (cols[1]?.trim() !== '출고') { cntSkip++; return; }
+    cntShipped++;
+
+    // 대리점 제외 (대리점코드 있으면 제외)
+    const agencyCd = cols.length > 27 ? cols[27]?.trim() : '';
+    if (agencyCd && AGENCY_CODES.has(agencyCd)) return;
+
+    // 사번 추출 (오른쪽에서 2번째)
+    const sabun = cols[cols.length - 2]?.trim();
+    if (!sabun) return;
+
+    // 관리자 사번(700000) 제외
+    if (sabun === '0700000' || sabun === '700000') return;
+
+    // 고객구분 CB1(법인택시) 제외
+    if (custTypeIdx >= 0 && cols[custTypeIdx]?.trim() === 'CB1') return;
+
+    // SABUN_TEAM에 없으면 제외
+    if (!SABUN_TEAM[sabun]) return;
+
+    cntValid++;
+    shipped[sabun] = (shipped[sabun] || 0) + 1;
+  });
+
+  data.teamShipped = shipped;
+  const ts = nowStr(); data.updatedAt['team_data'] = ts; data.updatedAt['_latest'] = ts;
+  save().then(() => renderAll());
+  st.textContent = `✅ 집계 완료 · 유효 출고 ${cntValid}건 / 전체 ${total}건`;
+  st.style.color = 'var(--green)';
+  showToast(`영업팀 출고 집계 완료 (${cntValid}건)`);
+}
+
+function renderTeam() {
+  if (!document.getElementById('team-tbody')) return;
+  const shipped = data.teamShipped || {};
+
+  // 팀별 잔여기간 출고 집계
+  const teamResults = Object.entries(TEAM_CONFIG).map(([tk, cfg]) => {
+    const campShipped = cfg.members.reduce((s, sabun) => s + (shipped[sabun] || 0), 0);
+    const rate = cfg.campTarget > 0 ? campShipped / cfg.campTarget * 100 : 0;
+    return { tk, ...cfg, campShipped, rate };
+  });
+
+  // 달성율 기준 내림차순
+  teamResults.sort((a, b) => b.rate - a.rate);
+
+  const totalTeams    = teamResults.length;
+  const totalShipped  = teamResults.reduce((s,t) => s+t.campShipped, 0);
+  const totalCampTgt  = teamResults.reduce((s,t) => s+t.campTarget, 0);
+  const totalMembers  = teamResults.reduce((s,t) => s+t.members.length, 0);
+
+  document.getElementById('team-summary').innerHTML = `
+    <div class="scard"><span>총 팀 수</span><strong>${totalTeams}팀</strong></div>
+    <div class="scard"><span>총 인원</span><strong>${totalMembers}명</strong></div>
+    <div class="scard"><span>잔여기간 출고</span><strong>${totalShipped}대</strong></div>
+    <div class="scard"><span>전체 달성율</span><strong>${totalCampTgt?(totalShipped/totalCampTgt*100).toFixed(1):0}%</strong></div>`;
+
+  document.getElementById('team-tbody').innerHTML = teamResults.map((t, i) => {
+    const rankClass = ['tm-r1','tm-r2','tm-r3','tm-r4','tm-r5','tm-r6'][i] || 'tm-r6';
+    const barW  = Math.min(t.rate, 100).toFixed(0);
+    const color = t.rate >= 100 ? 'linear-gradient(90deg,var(--green),#4db890)'
+                : t.rate >= 70  ? 'linear-gradient(90deg,var(--orange),#f6ad1a)'
+                : 'linear-gradient(90deg,var(--blue),#4b97d6)';
+    const tc = t.rate >= 100 ? 'var(--green)' : t.rate >= 70 ? 'var(--orange)' : 'var(--blue-dark)';
+    return `<tr>
+      <td><span class="tm-rank ${rankClass}">${i+1}</span></td>
+      <td style="font-weight:700;">${t.branch}</td>
+      <td style="font-weight:700;">${t.tk.replace(t.branch,'')}</td>
+      <td>${t.leader||'—'}</td>
+      <td>${t.members.length}명</td>
+      <td>${t.target}대</td>
+      <td>${t.campTarget}대</td>
+      <td style="font-weight:800;color:var(--blue-dark);">${t.campShipped}대</td>
+      <td><div class="tm-rate-wrap"><div class="tm-bar-bg"><div class="tm-bar-fill" style="width:${barW}%;background:${color}"></div></div><span class="tm-rate-val" style="color:${tc}">${t.rate.toFixed(1)}%</span></div></td>
+      <td style="color:var(--text-sub);">—</td>
+    </tr>`;
+  }).join('');
+}
+
 function showToast(msg) {
   const t=document.createElement('div');t.className='toast';t.textContent=msg;
   document.getElementById('toast-wrap').appendChild(t);
@@ -1321,8 +1604,331 @@ function applyUrlType() {
         const el = document.getElementById('upload-'+currentSection);
         if (el) el.classList.add('show');
         document.getElementById('tab-calc').style.display = '';
-        document.getElementById('tab-team').style.display = '';
-      } else { sessionStorage.removeItem('admin_token'); }
+        } else { sessionStorage.removeItem('admin_token'); }
+    } catch(e) { sessionStorage.removeItem('admin_token'); }
+  }
+  applyUrlType();
+  renderAll();
+})();
+
+// ── 영업팀 캠페인 ────────────────────────────────────────
+const TEAM_CONFIG = {
+  '금왕1팀':{branch:'금왕',target:40,base19:19,campTarget:21,leader:'김영섭',leaderSabun:'2790393',members:['2323848','2324612','2663438','2663818','2790393','2869558']},
+  '오창1팀':{branch:'오창',target:26,base19:18,campTarget:8,leader:'정찬영',leaderSabun:'5007988',members:['2414954','5007988','6350454','6629727','7606498']},
+  '오창2팀':{branch:'오창',target:15,base19:8,campTarget:7,leader:'김영주',leaderSabun:'2415147',members:['1965293','2415147','5218796','6629518','7606504','7606511']},
+  '옥천영동1팀':{branch:'옥천영동',target:22,base19:16,campTarget:6,leader:'전인호',leaderSabun:'2898637',members:['1818118','2259896','2898637','5109445','7606527']},
+  '옥천영동2팀':{branch:'옥천영동',target:23,base19:7,campTarget:16,leader:'김태현',leaderSabun:'2790102',members:['2722352','2790102','2903288','7606534','9969016']},
+  '제천1팀':{branch:'제천',target:39,base19:36,campTarget:3,leader:'신승걸',leaderSabun:'2790623',members:['1963666','2139412','2790623','2837217','2869216','5204192','6719034']},
+  '제천2팀':{branch:'제천',target:32,base19:19,campTarget:13,leader:'정흥교',leaderSabun:'2323512',members:['1963517','2323512','2550968','2868987','2878758','5204698','7506518','7506525']},
+  '진천1팀':{branch:'진천',target:25,base19:10,campTarget:15,leader:'김재덕',leaderSabun:'5107951',members:['2836318','2878565','2898592','5107951']},
+  '진천2팀':{branch:'진천',target:28,base19:16,campTarget:12,leader:'안장식',leaderSabun:'5108665',members:['2129597','2878617','5108665','6719027','7606541']},
+  '청주1팀':{branch:'청주',target:30,base19:9,campTarget:21,leader:'성백익',leaderSabun:'1819218',members:['1819218','2835924','5108777','5307791','7606608']},
+  '청주2팀':{branch:'청주',target:30,base19:16,campTarget:14,leader:'김동섭',leaderSabun:'2325132',members:['1133213','2324568','2325132','5307828','6718693','7506585']},
+  '청주남부1팀':{branch:'청주남부',target:28,base19:15,campTarget:13,leader:'우영제',leaderSabun:'2414768',members:['2133712','2135497','2414768','2789517','5007972']},
+  '청주남부2팀':{branch:'청주남부',target:40,base19:22,campTarget:18,leader:'심원보',leaderSabun:'2610981',members:['2324181','2610981','2721825','2721974','2789658']},
+  '청주남부3팀':{branch:'청주남부',target:31,base19:18,campTarget:13,leader:'오종섭',leaderSabun:'5218728',members:['1889317','2133527','5107588','5204511','5218498','5218728']},
+  '청주남부4팀':{branch:'청주남부',target:30,base19:12,campTarget:18,leader:'',leaderSabun:'',members:['7506532','7506548','7506555','7506578','7606557','7606564']},
+  '청주북부1팀':{branch:'청주북부',target:26,base19:13,campTarget:13,leader:'맹정재',leaderSabun:'2836117',members:['2132576','2132955','2324375','2722218','2836117','5218773','6350543']},
+  '청주북부2팀':{branch:'청주북부',target:34,base19:20,campTarget:14,leader:'박관주',leaderSabun:'5218483',members:['1965672','1965717','2498451','2722167','5218483','6350566']},
+  '청주서부1팀':{branch:'청주서부',target:24,base19:14,campTarget:10,leader:'김재형',leaderSabun:'2721788',members:['1889644','1966244','2137697','2611553','2665973','2721788']},
+  '청주서부2팀':{branch:'청주서부',target:26,base19:19,campTarget:7,leader:'서동연',leaderSabun:'5307806',members:['1889502','2257547','2413475','5107565','5205397','5307806']},
+  '청주서부3팀':{branch:'청주서부',target:28,base19:16,campTarget:12,leader:'송영길',leaderSabun:'2611368',members:['1622826','2499366','2611368','2611747','5007942','5007965','5321672']},
+  '청주서부4팀':{branch:'청주서부',target:13,base19:6,campTarget:7,leader:'',leaderSabun:'',members:['7606571','7606587','7606594']},
+  '충주1팀':{branch:'충주',target:34,base19:17,campTarget:17,leader:'윤영균',leaderSabun:'2789702',members:['1723095','2139175','2323706','2411706','2722404','2789702','7606623']},
+  '충주2팀':{branch:'충주',target:30,base19:18,campTarget:12,leader:'이재섭',leaderSabun:'2836794',members:['1888738','2075096','2498266','2836794','6719258','9469358']},
+  '충주3팀':{branch:'충주',target:30,base19:19,campTarget:11,leader:'김영은',leaderSabun:'2551152',members:['0660866','1964238','2127106','2411081','2551152','2789844','7606616']},
+};
+const SABUN_TEAM = {
+  '0660866':'충주3팀',
+  '1133213':'청주2팀',
+  '1622826':'청주서부3팀',
+  '1723095':'충주1팀',
+  '1818118':'옥천영동1팀',
+  '1819218':'청주1팀',
+  '1888738':'충주2팀',
+  '1889317':'청주남부3팀',
+  '1889502':'청주서부2팀',
+  '1889644':'청주서부1팀',
+  '1963517':'제천2팀',
+  '1963666':'제천1팀',
+  '1964238':'충주3팀',
+  '1965293':'오창2팀',
+  '1965672':'청주북부2팀',
+  '1965717':'청주북부2팀',
+  '1966244':'청주서부1팀',
+  '2075096':'충주2팀',
+  '2127106':'충주3팀',
+  '2129597':'진천2팀',
+  '2132576':'청주북부1팀',
+  '2132955':'청주북부1팀',
+  '2133527':'청주남부3팀',
+  '2133712':'청주남부1팀',
+  '2135497':'청주남부1팀',
+  '2137697':'청주서부1팀',
+  '2139175':'충주1팀',
+  '2139412':'제천1팀',
+  '2257547':'청주서부2팀',
+  '2259896':'옥천영동1팀',
+  '2323512':'제천2팀',
+  '2323706':'충주1팀',
+  '2323848':'금왕1팀',
+  '2324181':'청주남부2팀',
+  '2324375':'청주북부1팀',
+  '2324568':'청주2팀',
+  '2324612':'금왕1팀',
+  '2325132':'청주2팀',
+  '2411081':'충주3팀',
+  '2411706':'충주1팀',
+  '2413475':'청주서부2팀',
+  '2414768':'청주남부1팀',
+  '2414954':'오창1팀',
+  '2415147':'오창2팀',
+  '2498266':'충주2팀',
+  '2498451':'청주북부2팀',
+  '2499366':'청주서부3팀',
+  '2550968':'제천2팀',
+  '2551152':'충주3팀',
+  '2610981':'청주남부2팀',
+  '2611368':'청주서부3팀',
+  '2611553':'청주서부1팀',
+  '2611747':'청주서부3팀',
+  '2663438':'금왕1팀',
+  '2663818':'금왕1팀',
+  '2665973':'청주서부1팀',
+  '2721788':'청주서부1팀',
+  '2721825':'청주남부2팀',
+  '2721974':'청주남부2팀',
+  '2722167':'청주북부2팀',
+  '2722218':'청주북부1팀',
+  '2722352':'옥천영동2팀',
+  '2722404':'충주1팀',
+  '2789517':'청주남부1팀',
+  '2789658':'청주남부2팀',
+  '2789702':'충주1팀',
+  '2789844':'충주3팀',
+  '2790102':'옥천영동2팀',
+  '2790393':'금왕1팀',
+  '2790623':'제천1팀',
+  '2835924':'청주1팀',
+  '2836117':'청주북부1팀',
+  '2836318':'진천1팀',
+  '2836794':'충주2팀',
+  '2837217':'제천1팀',
+  '2868987':'제천2팀',
+  '2869216':'제천1팀',
+  '2869558':'금왕1팀',
+  '2878565':'진천1팀',
+  '2878617':'진천2팀',
+  '2878758':'제천2팀',
+  '2898592':'진천1팀',
+  '2898637':'옥천영동1팀',
+  '2903288':'옥천영동2팀',
+  '5007942':'청주서부3팀',
+  '5007965':'청주서부3팀',
+  '5007972':'청주남부1팀',
+  '5007988':'오창1팀',
+  '5107565':'청주서부2팀',
+  '5107588':'청주남부3팀',
+  '5107951':'진천1팀',
+  '5108665':'진천2팀',
+  '5108777':'청주1팀',
+  '5109445':'옥천영동1팀',
+  '5204192':'제천1팀',
+  '5204511':'청주남부3팀',
+  '5204698':'제천2팀',
+  '5205397':'청주서부2팀',
+  '5218483':'청주북부2팀',
+  '5218498':'청주남부3팀',
+  '5218728':'청주남부3팀',
+  '5218773':'청주북부1팀',
+  '5218796':'오창2팀',
+  '5307791':'청주1팀',
+  '5307806':'청주서부2팀',
+  '5307828':'청주2팀',
+  '5321672':'청주서부3팀',
+  '6350454':'오창1팀',
+  '6350543':'청주북부1팀',
+  '6350566':'청주북부2팀',
+  '6629518':'오창2팀',
+  '6629727':'오창1팀',
+  '6718693':'청주2팀',
+  '6719027':'진천2팀',
+  '6719034':'제천1팀',
+  '6719258':'충주2팀',
+  '7506518':'제천2팀',
+  '7506525':'제천2팀',
+  '7506532':'청주남부4팀',
+  '7506548':'청주남부4팀',
+  '7506555':'청주남부4팀',
+  '7506578':'청주남부4팀',
+  '7506585':'청주2팀',
+  '7606498':'오창1팀',
+  '7606504':'오창2팀',
+  '7606511':'오창2팀',
+  '7606527':'옥천영동1팀',
+  '7606534':'옥천영동2팀',
+  '7606541':'진천2팀',
+  '7606557':'청주남부4팀',
+  '7606564':'청주남부4팀',
+  '7606571':'청주서부4팀',
+  '7606587':'청주서부4팀',
+  '7606594':'청주서부4팀',
+  '7606608':'청주1팀',
+  '7606616':'충주3팀',
+  '7606623':'충주1팀',
+  '9469358':'충주2팀',
+  '9969016':'옥천영동2팀',
+};
+
+// ── 영업팀 캠페인 ────────────────────────────────────────
+function applyTeamData() {
+  const raw = document.getElementById('team-paste-data').value.trim();
+  const st  = document.getElementById('upload-status-team');
+  if (!raw) { st.textContent='데이터를 붙여넣어 주세요.'; st.style.color='var(--red)'; return; }
+
+  const lines = raw.split('\n').filter(l => l.trim());
+  if (lines.length < 2) { st.textContent='❌ 데이터가 너무 적어요.'; st.style.color='var(--red)'; return; }
+
+  // 헤더에서 고객구분 컬럼 인덱스 찾기
+  let startIdx = 0;
+  let custTypeIdx = -1;
+  for (let i = 0; i < Math.min(lines.length, 5); i++) {
+    if (lines[i].includes('계출상태')) {
+      const hcols = lines[i].split('\t');
+      custTypeIdx = hcols.findIndex(h => h.trim().includes('고객구분'));
+      startIdx = i + 1;
+      break;
+    }
+  }
+
+  const shipped = {}; // 사번 → 출고 건수
+  let total=0, cntShipped=0, cntSkip=0, cntValid=0;
+
+  lines.slice(startIdx).forEach(line => {
+    const cols = line.split('\t');
+    if (cols.length < 2) return;
+    total++;
+
+    // 계출상태 = 출고만
+    if (cols[1]?.trim() !== '출고') { cntSkip++; return; }
+    cntShipped++;
+
+    // 대리점 제외 (대리점코드 있으면 제외)
+    const agencyCd = cols.length > 27 ? cols[27]?.trim() : '';
+    if (agencyCd && AGENCY_CODES.has(agencyCd)) return;
+
+    // 사번 추출 (오른쪽에서 2번째)
+    const sabun = cols[cols.length - 2]?.trim();
+    if (!sabun) return;
+
+    // 관리자 사번(700000) 제외
+    if (sabun === '0700000' || sabun === '700000') return;
+
+    // 고객구분 CB1(법인택시) 제외
+    if (custTypeIdx >= 0 && cols[custTypeIdx]?.trim() === 'CB1') return;
+
+    // SABUN_TEAM에 없으면 제외
+    if (!SABUN_TEAM[sabun]) return;
+
+    cntValid++;
+    shipped[sabun] = (shipped[sabun] || 0) + 1;
+  });
+
+  data.teamShipped = shipped;
+  const ts = nowStr(); data.updatedAt['team_data'] = ts; data.updatedAt['_latest'] = ts;
+  save().then(() => renderAll());
+  st.textContent = `✅ 집계 완료 · 유효 출고 ${cntValid}건 / 전체 ${total}건`;
+  st.style.color = 'var(--green)';
+  showToast(`영업팀 출고 집계 완료 (${cntValid}건)`);
+}
+
+function renderTeam() {
+  if (!document.getElementById('team-tbody')) return;
+  const shipped = data.teamShipped || {};
+
+  // 팀별 잔여기간 출고 집계
+  const teamResults = Object.entries(TEAM_CONFIG).map(([tk, cfg]) => {
+    const campShipped = cfg.members.reduce((s, sabun) => s + (shipped[sabun] || 0), 0);
+    const rate = cfg.campTarget > 0 ? campShipped / cfg.campTarget * 100 : 0;
+    return { tk, ...cfg, campShipped, rate };
+  });
+
+  // 달성율 기준 내림차순
+  teamResults.sort((a, b) => b.rate - a.rate);
+
+  const totalTeams    = teamResults.length;
+  const totalShipped  = teamResults.reduce((s,t) => s+t.campShipped, 0);
+  const totalCampTgt  = teamResults.reduce((s,t) => s+t.campTarget, 0);
+  const totalMembers  = teamResults.reduce((s,t) => s+t.members.length, 0);
+
+  document.getElementById('team-summary').innerHTML = `
+    <div class="scard"><span>총 팀 수</span><strong>${totalTeams}팀</strong></div>
+    <div class="scard"><span>총 인원</span><strong>${totalMembers}명</strong></div>
+    <div class="scard"><span>잔여기간 출고</span><strong>${totalShipped}대</strong></div>
+    <div class="scard"><span>전체 달성율</span><strong>${totalCampTgt?(totalShipped/totalCampTgt*100).toFixed(1):0}%</strong></div>`;
+
+  document.getElementById('team-tbody').innerHTML = teamResults.map((t, i) => {
+    const rankClass = ['tm-r1','tm-r2','tm-r3','tm-r4','tm-r5','tm-r6'][i] || 'tm-r6';
+    const barW  = Math.min(t.rate, 100).toFixed(0);
+    const color = t.rate >= 100 ? 'linear-gradient(90deg,var(--green),#4db890)'
+                : t.rate >= 70  ? 'linear-gradient(90deg,var(--orange),#f6ad1a)'
+                : 'linear-gradient(90deg,var(--blue),#4b97d6)';
+    const tc = t.rate >= 100 ? 'var(--green)' : t.rate >= 70 ? 'var(--orange)' : 'var(--blue-dark)';
+    return `<tr>
+      <td><span class="tm-rank ${rankClass}">${i+1}</span></td>
+      <td style="font-weight:700;">${t.branch}</td>
+      <td style="font-weight:700;">${t.tk.replace(t.branch,'')}</td>
+      <td>${t.leader||'—'}</td>
+      <td>${t.members.length}명</td>
+      <td>${t.target}대</td>
+      <td>${t.campTarget}대</td>
+      <td style="font-weight:800;color:var(--blue-dark);">${t.campShipped}대</td>
+      <td><div class="tm-rate-wrap"><div class="tm-bar-bg"><div class="tm-bar-fill" style="width:${barW}%;background:${color}"></div></div><span class="tm-rate-val" style="color:${tc}">${t.rate.toFixed(1)}%</span></div></td>
+      <td style="color:var(--text-sub);">—</td>
+    </tr>`;
+  }).join('');
+}
+
+function showToast(msg) {
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.getElementById('toast-wrap').appendChild(t);
+  setTimeout(()=>{t.classList.add('hide');setTimeout(()=>t.remove(),220);},2400);
+}
+
+function applyUrlType() {
+  const params=new URLSearchParams(window.location.search);
+  const type=params.get('type');
+  if(!type) return;
+  ['wc-type-tabs','inv-type-tabs','sp-type-tabs'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.style.display='none';
+  });
+  [['wc',['branch','agency']],['inv',['agency','branch']],['sp',['branch','agency']]].forEach(([prefix,types])=>{
+    types.forEach(t=>{
+      const vw=document.getElementById(prefix+'-'+t+'-view');
+      const tt=document.getElementById(prefix+'-tab-'+t);
+      if(vw) vw.style.display=t===type?'block':'none';
+      if(tt) tt.classList.toggle('active',t===type);
+    });
+  });
+  const badge=document.createElement('span');
+  badge.style.cssText='background:rgba(255,255,255,.2);border-radius:8px;padding:2px 10px;font-size:11px;font-weight:700;color:#fff;margin-left:10px;vertical-align:middle;';
+  badge.textContent=(type==='branch'?'지점':'대리점')+' 전용';
+  document.querySelector('.topnav-brand h1').appendChild(badge);
+}
+
+(async () => {
+  try { await load(); } catch(e) { console.warn('load 실패:',e); }
+  const token = sessionStorage.getItem('admin_token');
+  if (token) {
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const decoded = atob(token);
+      if (decoded.endsWith(':'+today)) {
+        isAdmin = true;
+        const el = document.getElementById('upload-'+currentSection);
+        if (el) el.classList.add('show');
+        document.getElementById('tab-calc').style.display = '';
+        } else { sessionStorage.removeItem('admin_token'); }
     } catch(e) { sessionStorage.removeItem('admin_token'); }
   }
   applyUrlType();
@@ -1469,6 +2075,283 @@ function renderTeam() {
       <td>${t.target||'—'}</td>
       <td style="font-weight:800;color:var(--blue-dark);">${t.total}대</td>
       <td><div class="team-rate-wrap"><div class="team-bar-bg"><div class="team-bar-fill" style="width:${barW}%;background:${color}"></div></div><span class="team-rate-val" style="color:${tc}">${t.rate.toFixed(1)}%</span></div></td>
+      <td style="color:var(--text-sub);">—</td>
+    </tr>`;
+  }).join('');
+}
+
+const TEAM_CONFIG = {
+  '금왕1팀':{branch:'금왕',target:40,base19:19,campTarget:21,leader:'김영섭',leaderSabun:'2790393',members:['2323848','2324612','2663438','2663818','2790393','2869558']},
+  '오창1팀':{branch:'오창',target:26,base19:18,campTarget:8,leader:'정찬영',leaderSabun:'5007988',members:['2414954','5007988','6350454','6629727','7606498']},
+  '오창2팀':{branch:'오창',target:15,base19:8,campTarget:7,leader:'김영주',leaderSabun:'2415147',members:['1965293','2415147','5218796','6629518','7606504','7606511']},
+  '옥천영동1팀':{branch:'옥천영동',target:22,base19:16,campTarget:6,leader:'전인호',leaderSabun:'2898637',members:['1818118','2259896','2898637','5109445','7606527']},
+  '옥천영동2팀':{branch:'옥천영동',target:23,base19:7,campTarget:16,leader:'김태현',leaderSabun:'2790102',members:['2722352','2790102','2903288','7606534','9969016']},
+  '제천1팀':{branch:'제천',target:39,base19:36,campTarget:3,leader:'신승걸',leaderSabun:'2790623',members:['1963666','2139412','2790623','2837217','2869216','5204192','6719034']},
+  '제천2팀':{branch:'제천',target:32,base19:19,campTarget:13,leader:'정흥교',leaderSabun:'2323512',members:['1963517','2323512','2550968','2868987','2878758','5204698','7506518','7506525']},
+  '진천1팀':{branch:'진천',target:25,base19:10,campTarget:15,leader:'김재덕',leaderSabun:'5107951',members:['2836318','2878565','2898592','5107951']},
+  '진천2팀':{branch:'진천',target:28,base19:16,campTarget:12,leader:'안장식',leaderSabun:'5108665',members:['2129597','2878617','5108665','6719027','7606541']},
+  '청주1팀':{branch:'청주',target:30,base19:9,campTarget:21,leader:'성백익',leaderSabun:'1819218',members:['1819218','2835924','5108777','5307791','7606608']},
+  '청주2팀':{branch:'청주',target:30,base19:16,campTarget:14,leader:'김동섭',leaderSabun:'2325132',members:['1133213','2324568','2325132','5307828','6718693','7506585']},
+  '청주남부1팀':{branch:'청주남부',target:28,base19:15,campTarget:13,leader:'우영제',leaderSabun:'2414768',members:['2133712','2135497','2414768','2789517','5007972']},
+  '청주남부2팀':{branch:'청주남부',target:40,base19:22,campTarget:18,leader:'심원보',leaderSabun:'2610981',members:['2324181','2610981','2721825','2721974','2789658']},
+  '청주남부3팀':{branch:'청주남부',target:31,base19:18,campTarget:13,leader:'오종섭',leaderSabun:'5218728',members:['1889317','2133527','5107588','5204511','5218498','5218728']},
+  '청주남부4팀':{branch:'청주남부',target:30,base19:12,campTarget:18,leader:'',leaderSabun:'',members:['7506532','7506548','7506555','7506578','7606557','7606564']},
+  '청주북부1팀':{branch:'청주북부',target:26,base19:13,campTarget:13,leader:'맹정재',leaderSabun:'2836117',members:['2132576','2132955','2324375','2722218','2836117','5218773','6350543']},
+  '청주북부2팀':{branch:'청주북부',target:34,base19:20,campTarget:14,leader:'박관주',leaderSabun:'5218483',members:['1965672','1965717','2498451','2722167','5218483','6350566']},
+  '청주서부1팀':{branch:'청주서부',target:24,base19:14,campTarget:10,leader:'김재형',leaderSabun:'2721788',members:['1889644','1966244','2137697','2611553','2665973','2721788']},
+  '청주서부2팀':{branch:'청주서부',target:26,base19:19,campTarget:7,leader:'서동연',leaderSabun:'5307806',members:['1889502','2257547','2413475','5107565','5205397','5307806']},
+  '청주서부3팀':{branch:'청주서부',target:28,base19:16,campTarget:12,leader:'송영길',leaderSabun:'2611368',members:['1622826','2499366','2611368','2611747','5007942','5007965','5321672']},
+  '청주서부4팀':{branch:'청주서부',target:13,base19:6,campTarget:7,leader:'',leaderSabun:'',members:['7606571','7606587','7606594']},
+  '충주1팀':{branch:'충주',target:34,base19:17,campTarget:17,leader:'윤영균',leaderSabun:'2789702',members:['1723095','2139175','2323706','2411706','2722404','2789702','7606623']},
+  '충주2팀':{branch:'충주',target:30,base19:18,campTarget:12,leader:'이재섭',leaderSabun:'2836794',members:['1888738','2075096','2498266','2836794','6719258','9469358']},
+  '충주3팀':{branch:'충주',target:30,base19:19,campTarget:11,leader:'김영은',leaderSabun:'2551152',members:['0660866','1964238','2127106','2411081','2551152','2789844','7606616']},
+};
+const SABUN_TEAM = {
+  '0660866':'충주3팀',
+  '1133213':'청주2팀',
+  '1622826':'청주서부3팀',
+  '1723095':'충주1팀',
+  '1818118':'옥천영동1팀',
+  '1819218':'청주1팀',
+  '1888738':'충주2팀',
+  '1889317':'청주남부3팀',
+  '1889502':'청주서부2팀',
+  '1889644':'청주서부1팀',
+  '1963517':'제천2팀',
+  '1963666':'제천1팀',
+  '1964238':'충주3팀',
+  '1965293':'오창2팀',
+  '1965672':'청주북부2팀',
+  '1965717':'청주북부2팀',
+  '1966244':'청주서부1팀',
+  '2075096':'충주2팀',
+  '2127106':'충주3팀',
+  '2129597':'진천2팀',
+  '2132576':'청주북부1팀',
+  '2132955':'청주북부1팀',
+  '2133527':'청주남부3팀',
+  '2133712':'청주남부1팀',
+  '2135497':'청주남부1팀',
+  '2137697':'청주서부1팀',
+  '2139175':'충주1팀',
+  '2139412':'제천1팀',
+  '2257547':'청주서부2팀',
+  '2259896':'옥천영동1팀',
+  '2323512':'제천2팀',
+  '2323706':'충주1팀',
+  '2323848':'금왕1팀',
+  '2324181':'청주남부2팀',
+  '2324375':'청주북부1팀',
+  '2324568':'청주2팀',
+  '2324612':'금왕1팀',
+  '2325132':'청주2팀',
+  '2411081':'충주3팀',
+  '2411706':'충주1팀',
+  '2413475':'청주서부2팀',
+  '2414768':'청주남부1팀',
+  '2414954':'오창1팀',
+  '2415147':'오창2팀',
+  '2498266':'충주2팀',
+  '2498451':'청주북부2팀',
+  '2499366':'청주서부3팀',
+  '2550968':'제천2팀',
+  '2551152':'충주3팀',
+  '2610981':'청주남부2팀',
+  '2611368':'청주서부3팀',
+  '2611553':'청주서부1팀',
+  '2611747':'청주서부3팀',
+  '2663438':'금왕1팀',
+  '2663818':'금왕1팀',
+  '2665973':'청주서부1팀',
+  '2721788':'청주서부1팀',
+  '2721825':'청주남부2팀',
+  '2721974':'청주남부2팀',
+  '2722167':'청주북부2팀',
+  '2722218':'청주북부1팀',
+  '2722352':'옥천영동2팀',
+  '2722404':'충주1팀',
+  '2789517':'청주남부1팀',
+  '2789658':'청주남부2팀',
+  '2789702':'충주1팀',
+  '2789844':'충주3팀',
+  '2790102':'옥천영동2팀',
+  '2790393':'금왕1팀',
+  '2790623':'제천1팀',
+  '2835924':'청주1팀',
+  '2836117':'청주북부1팀',
+  '2836318':'진천1팀',
+  '2836794':'충주2팀',
+  '2837217':'제천1팀',
+  '2868987':'제천2팀',
+  '2869216':'제천1팀',
+  '2869558':'금왕1팀',
+  '2878565':'진천1팀',
+  '2878617':'진천2팀',
+  '2878758':'제천2팀',
+  '2898592':'진천1팀',
+  '2898637':'옥천영동1팀',
+  '2903288':'옥천영동2팀',
+  '5007942':'청주서부3팀',
+  '5007965':'청주서부3팀',
+  '5007972':'청주남부1팀',
+  '5007988':'오창1팀',
+  '5107565':'청주서부2팀',
+  '5107588':'청주남부3팀',
+  '5107951':'진천1팀',
+  '5108665':'진천2팀',
+  '5108777':'청주1팀',
+  '5109445':'옥천영동1팀',
+  '5204192':'제천1팀',
+  '5204511':'청주남부3팀',
+  '5204698':'제천2팀',
+  '5205397':'청주서부2팀',
+  '5218483':'청주북부2팀',
+  '5218498':'청주남부3팀',
+  '5218728':'청주남부3팀',
+  '5218773':'청주북부1팀',
+  '5218796':'오창2팀',
+  '5307791':'청주1팀',
+  '5307806':'청주서부2팀',
+  '5307828':'청주2팀',
+  '5321672':'청주서부3팀',
+  '6350454':'오창1팀',
+  '6350543':'청주북부1팀',
+  '6350566':'청주북부2팀',
+  '6629518':'오창2팀',
+  '6629727':'오창1팀',
+  '6718693':'청주2팀',
+  '6719027':'진천2팀',
+  '6719034':'제천1팀',
+  '6719258':'충주2팀',
+  '7506518':'제천2팀',
+  '7506525':'제천2팀',
+  '7506532':'청주남부4팀',
+  '7506548':'청주남부4팀',
+  '7506555':'청주남부4팀',
+  '7506578':'청주남부4팀',
+  '7506585':'청주2팀',
+  '7606498':'오창1팀',
+  '7606504':'오창2팀',
+  '7606511':'오창2팀',
+  '7606527':'옥천영동1팀',
+  '7606534':'옥천영동2팀',
+  '7606541':'진천2팀',
+  '7606557':'청주남부4팀',
+  '7606564':'청주남부4팀',
+  '7606571':'청주서부4팀',
+  '7606587':'청주서부4팀',
+  '7606594':'청주서부4팀',
+  '7606608':'청주1팀',
+  '7606616':'충주3팀',
+  '7606623':'충주1팀',
+  '9469358':'충주2팀',
+  '9969016':'옥천영동2팀',
+};
+
+// ── 영업팀 캠페인 ────────────────────────────────────────
+function applyTeamData() {
+  const raw = document.getElementById('team-paste-data').value.trim();
+  const st  = document.getElementById('upload-status-team');
+  if (!raw) { st.textContent='데이터를 붙여넣어 주세요.'; st.style.color='var(--red)'; return; }
+
+  const lines = raw.split('\n').filter(l => l.trim());
+  if (lines.length < 2) { st.textContent='❌ 데이터가 너무 적어요.'; st.style.color='var(--red)'; return; }
+
+  // 헤더에서 고객구분 컬럼 인덱스 찾기
+  let startIdx = 0;
+  let custTypeIdx = -1;
+  for (let i = 0; i < Math.min(lines.length, 5); i++) {
+    if (lines[i].includes('계출상태')) {
+      const hcols = lines[i].split('\t');
+      custTypeIdx = hcols.findIndex(h => h.trim().includes('고객구분'));
+      startIdx = i + 1;
+      break;
+    }
+  }
+
+  const shipped = {}; // 사번 → 출고 건수
+  let total=0, cntShipped=0, cntSkip=0, cntValid=0;
+
+  lines.slice(startIdx).forEach(line => {
+    const cols = line.split('\t');
+    if (cols.length < 2) return;
+    total++;
+
+    // 계출상태 = 출고만
+    if (cols[1]?.trim() !== '출고') { cntSkip++; return; }
+    cntShipped++;
+
+    // 대리점 제외 (대리점코드 있으면 제외)
+    const agencyCd = cols.length > 27 ? cols[27]?.trim() : '';
+    if (agencyCd && AGENCY_CODES.has(agencyCd)) return;
+
+    // 사번 추출 (오른쪽에서 2번째)
+    const sabun = cols[cols.length - 2]?.trim();
+    if (!sabun) return;
+
+    // 관리자 사번(700000) 제외
+    if (sabun === '0700000' || sabun === '700000') return;
+
+    // 고객구분 CB1(법인택시) 제외
+    if (custTypeIdx >= 0 && cols[custTypeIdx]?.trim() === 'CB1') return;
+
+    // SABUN_TEAM에 없으면 제외
+    if (!SABUN_TEAM[sabun]) return;
+
+    cntValid++;
+    shipped[sabun] = (shipped[sabun] || 0) + 1;
+  });
+
+  data.teamShipped = shipped;
+  const ts = nowStr(); data.updatedAt['team_data'] = ts; data.updatedAt['_latest'] = ts;
+  save().then(() => renderAll());
+  st.textContent = `✅ 집계 완료 · 유효 출고 ${cntValid}건 / 전체 ${total}건`;
+  st.style.color = 'var(--green)';
+  showToast(`영업팀 출고 집계 완료 (${cntValid}건)`);
+}
+
+function renderTeam() {
+  if (!document.getElementById('team-tbody')) return;
+  const shipped = data.teamShipped || {};
+
+  // 팀별 잔여기간 출고 집계
+  const teamResults = Object.entries(TEAM_CONFIG).map(([tk, cfg]) => {
+    const campShipped = cfg.members.reduce((s, sabun) => s + (shipped[sabun] || 0), 0);
+    const rate = cfg.campTarget > 0 ? campShipped / cfg.campTarget * 100 : 0;
+    return { tk, ...cfg, campShipped, rate };
+  });
+
+  // 달성율 기준 내림차순
+  teamResults.sort((a, b) => b.rate - a.rate);
+
+  const totalTeams    = teamResults.length;
+  const totalShipped  = teamResults.reduce((s,t) => s+t.campShipped, 0);
+  const totalCampTgt  = teamResults.reduce((s,t) => s+t.campTarget, 0);
+  const totalMembers  = teamResults.reduce((s,t) => s+t.members.length, 0);
+
+  document.getElementById('team-summary').innerHTML = `
+    <div class="scard"><span>총 팀 수</span><strong>${totalTeams}팀</strong></div>
+    <div class="scard"><span>총 인원</span><strong>${totalMembers}명</strong></div>
+    <div class="scard"><span>잔여기간 출고</span><strong>${totalShipped}대</strong></div>
+    <div class="scard"><span>전체 달성율</span><strong>${totalCampTgt?(totalShipped/totalCampTgt*100).toFixed(1):0}%</strong></div>`;
+
+  document.getElementById('team-tbody').innerHTML = teamResults.map((t, i) => {
+    const rankClass = ['tm-r1','tm-r2','tm-r3','tm-r4','tm-r5','tm-r6'][i] || 'tm-r6';
+    const barW  = Math.min(t.rate, 100).toFixed(0);
+    const color = t.rate >= 100 ? 'linear-gradient(90deg,var(--green),#4db890)'
+                : t.rate >= 70  ? 'linear-gradient(90deg,var(--orange),#f6ad1a)'
+                : 'linear-gradient(90deg,var(--blue),#4b97d6)';
+    const tc = t.rate >= 100 ? 'var(--green)' : t.rate >= 70 ? 'var(--orange)' : 'var(--blue-dark)';
+    return `<tr>
+      <td><span class="tm-rank ${rankClass}">${i+1}</span></td>
+      <td style="font-weight:700;">${t.branch}</td>
+      <td style="font-weight:700;">${t.tk.replace(t.branch,'')}</td>
+      <td>${t.leader||'—'}</td>
+      <td>${t.members.length}명</td>
+      <td>${t.target}대</td>
+      <td>${t.campTarget}대</td>
+      <td style="font-weight:800;color:var(--blue-dark);">${t.campShipped}대</td>
+      <td><div class="tm-rate-wrap"><div class="tm-bar-bg"><div class="tm-bar-fill" style="width:${barW}%;background:${color}"></div></div><span class="tm-rate-val" style="color:${tc}">${t.rate.toFixed(1)}%</span></div></td>
       <td style="color:var(--text-sub);">—</td>
     </tr>`;
   }).join('');
