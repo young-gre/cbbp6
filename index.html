@@ -599,12 +599,12 @@ const WC_TARGETS = {
   '서청주':133,'가경':143,'진천중앙':67,'제천중앙':75,
   '교현':80,'연수':84,'음성':65,'단양':44
 };
-const INV_MATCHES_AGENCY = [
+let INV_MATCHES_AGENCY = [
   {no:'1조',a:'가경',b:'오창제일',prize:'60만'},{no:'2조',a:'서청주',b:'연수',prize:'50만'},
   {no:'3조',a:'증평삼보',b:'교현',prize:'40만'},{no:'4조',a:'제천중앙',b:'진천중앙',prize:'30만'},
   {no:'5조',a:'보은',b:'음성',prize:'20만'},{no:'6조',a:'영동금강',b:'단양',prize:'10만'},
 ];
-const INV_MATCHES_BRANCH = [
+let INV_MATCHES_BRANCH = [
   {no:'1조',a:'청주남부',b:'충주',prize:'60만'},{no:'2조',a:'청주서부',b:'제천',prize:'50만'},
   {no:'3조',a:'청주',b:'청주북부',prize:'40만'},{no:'4조',a:'진천',b:'옥천영동',prize:'30만'},
   {no:'5조',a:'오창',b:'금왕',prize:'20만'},
@@ -1403,7 +1403,7 @@ function applyUrlType() {
   const params=new URLSearchParams(window.location.search);
   const type=params.get('type');
   if(!type) return;
-  ['wc-type-tabs','inv-type-tabs','sp-type-tabs'].forEach(id=>{
+  ['wc-type-tabs','inv-type-tabs','sp-type-tabs','sf-type-tabs','fn-type-tabs'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.style.display='none';
   });
   [['wc',['branch','agency']],['sf',['branch','agency']],['fn',['branch','agency']],['inv',['agency','branch']],['sp',['branch','agency']]].forEach(([prefix,types])=>{
@@ -1414,26 +1414,49 @@ function applyUrlType() {
       if(tt) tt.classList.toggle('active',t===type);
     });
   });
-  // 전반전/후반전 타입탭 숨김
-  ['sf-type-tabs','fn-type-tabs'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.style.display='none';
-  });
-  // 대리점 캠페인 탭: ?type=branch 일 때만 숨김
-  // 영업팀 캠페인 탭: ?type=agency 일 때만 숨김
+  // showOn 기반 탭 노출 (null-safe)
+  const tabTeam   = document.getElementById('tab-team');
+  const tabAgency = document.getElementById('tab-agency');
   if (type === 'branch') {
-    document.getElementById('tab-agency').style.display = 'none';
-  } else {
-    document.getElementById('tab-agency').style.display = '';
-  }
-  if (type === 'agency') {
-    document.getElementById('tab-team').style.display = 'none';
-  } else {
-    document.getElementById('tab-team').style.display = '';
+    if(tabAgency) tabAgency.style.display = 'none';
+    if(tabTeam)   tabTeam.style.display   = '';
+  } else if (type === 'agency') {
+    if(tabTeam)   tabTeam.style.display   = 'none';
+    if(tabAgency) tabAgency.style.display = '';
   }
   const badge=document.createElement('span');
   badge.style.cssText='background:rgba(255,255,255,.2);border-radius:8px;padding:2px 10px;font-size:11px;font-weight:700;color:#fff;margin-left:10px;vertical-align:middle;';
   badge.textContent=(type==='branch'?'지점':'대리점')+' 전용';
-  document.querySelector('.topnav-brand h1').appendChild(badge);
+  const h1 = document.querySelector('.topnav-brand h1');
+  if(h1) h1.appendChild(badge);
+}
+
+// ── adminConfig 적용 ──────────────────────────────────────
+function applyConfig() {
+  const ac = data.adminConfig;
+  if (!ac) return;
+
+  // 메타
+  if (ac.meta) {
+    const t = ac.meta.title || '충북지역본부 비즈니스플랜';
+    const s = ac.meta.sub   || '';
+    document.title = t;
+    const h1 = document.querySelector('.topnav-brand h1');
+    const p  = document.querySelector('.topnav-brand p');
+    if(h1) h1.firstChild && (h1.firstChild.textContent = t);
+    if(p)  p.textContent = s;
+  }
+
+  // 거점 목표
+  // (WC_TARGETS / SPOT_TARGETS는 const라 교체 불가 → 하드코딩 유지)
+
+  // 맞수 대진 (방어: 빈 배열이면 하드코딩 유지)
+  if (ac.match) {
+    if (ac.match.branch && ac.match.branch.length) INV_MATCHES_BRANCH = ac.match.branch;
+    if (ac.match.agency && ac.match.agency.length) INV_MATCHES_AGENCY = ac.match.agency;
+  }
+
+  // 코드맵 (CALC_CODE_MAP, AGENCY_CODES는 const → 동적 적용 skip, 하드코딩 유지)
 }
 
 (async () => {
@@ -1448,10 +1471,10 @@ function applyUrlType() {
         const el = document.getElementById('upload-'+currentSection);
         if (el) el.classList.add('show');
         document.getElementById('tab-calc').style.display = '';
-        // tab-team은 applyUrlType에서 ?type=branch일 때만 표시
       } else { sessionStorage.removeItem('admin_token'); }
     } catch(e) { sessionStorage.removeItem('admin_token'); }
   }
+  applyConfig();
   applyUrlType();
   renderAll();
 })();
